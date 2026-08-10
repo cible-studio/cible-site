@@ -202,21 +202,70 @@ Toute modif visuelle doit être testée mobile (360px) et desktop (1440px). CIBL
 
 ### État actuel (2026-08-10)
 
-- **Repo git** : *à créer* (`cible-studio/cible-site` sur GitHub prévu)
-- **Hébergement** : Coolify + Hetzner *à mettre en place*
-- **Domaine** : `cible-ci.com` (DNS OVH)
+- **Repo git** : ✅ https://github.com/Quenum19/cible-site (privé)
+- **Branches** : `main` (prod future) + `develop` (test actif)
+- **Hébergement** : Coolify + Hetzner — **staging actif**, prod à venir
+- **URL de test actuelle** : sur le domaine de dev Coolify (à confirmer avec l'utilisateur)
+- **Domaine final** : `cible-ci.com` (DNS OVH) — migration à venir quand le site sera validé
 
-### Une fois le git init fait
+### 🎯 Workflow git actuel — DEVELOP UNIQUEMENT
 
-- Branche principale : `main` (prod)
-- Pas de branche `develop` séparée pour ce projet (site vitrine faible fréquence de release)
-- Chaque commit `main` = déploiement automatique via Coolify
+**Tant que le site n'est pas migré sur `cible-ci.com`** :
+
+- ✅ **Tous les commits vont sur `develop`** — c'est la branche du lien de test
+- ❌ **NE PAS commit sur `main`** — main est réservée pour la mise en prod finale
+- ❌ **NE PAS merger develop → main** sans instruction explicite utilisateur
+
+Commande type après une modification :
+
+```bash
+git add <fichiers>
+git commit -m "<message>"
+git push origin develop
+```
+
+Coolify redéploie automatiquement le staging à chaque push sur `develop`.
+
+### 🚦 Basculement futur vers prod (cible-ci.com)
+
+Quand l'utilisateur dira *"on migre sur cible-ci.com"* :
+
+1. Merger develop → main via `git merge --no-ff develop -m "..."`
+2. Push main → Coolify prod build l'image
+3. Basculer les DNS A/AAAA OVH vers l'IP Hetzner de la prod (⚠ voir avertissement DNS ci-dessous)
+4. Vérifier le TLS Let's Encrypt (auto Coolify)
+5. Tester `https://cible-ci.com` en profondeur
+
+D'ici là, **rien ne touche à main ni aux DNS**.
 
 ### ⚠️ OVH DNS — INTERDICTION ABSOLUE
 
 Ne JAMAIS toucher aux enregistrements **MX** et **TXT (SPF/DKIM)** du domaine `cible-ci.com` en changeant les DNS. Sinon on casse les mails de toute l'équipe CIBLE (`@cible-ci.com`).
 
-Seuls les enregistrements **A** (pointant vers l'IP Hetzner) et **AAAA** peuvent être modifiés pour la mise en prod du site.
+Seuls les enregistrements **A** (pointant vers l'IP Hetzner) et **AAAA** peuvent être modifiés pour la mise en prod du site — et uniquement au moment du basculement final.
+
+### 🔐 Authentification GitHub
+
+- Compte GitHub utilisé : **Quenum19** (le seul avec droits push)
+- Repo owner : Quenum19 (compte perso, pas org — cible-studio est aussi un compte user auquel Quenum19 n'a que le droit push, pas admin)
+- `gh` CLI est installé et authentifié — utilisable directement pour créer PR / issues
+
+### 📝 Format des commits
+
+Convention alignée sur Panora :
+
+```
+type(scope): sujet court (< 72 char)
+
+Corps optionnel expliquant le POURQUOI, pas le QUOI (le diff dit le quoi).
+Références issues éventuelles.
+
+Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>
+```
+
+Types courants : `feat`, `fix`, `chore`, `ui`, `docs`, `refactor`.
+
+Scopes courants : `home`, `services`, `reseau`, `contact`, `layout`, `map`, `mail`, `seo`, `deploy`.
 
 ---
 
@@ -275,10 +324,13 @@ Pour éditer : ouvrir directement le fichier avec `Edit` ou `Write`. Pas de BDD,
 Quand l'utilisateur t'invoque dans ce dossier :
 
 - [ ] Lire ce `CLAUDE.md` complet
-- [ ] Vérifier `git status` (ou noter que git n'est pas encore init)
+- [ ] Vérifier `git status` — la branche courante doit être `develop` (jamais `main`)
+- [ ] Si tu es sur `main` → `git checkout develop` avant toute modification
+- [ ] `git pull origin develop` pour récupérer les derniers changements avant de coder
 - [ ] Si l'utilisateur mentionne un fichier Word (`.docx`), l'ouvrir avec `Read` avant de proposer quoi que ce soit
 - [ ] Demander sur quelle(s) page(s) portent les modifs
 - [ ] Suivre la RÈGLE N°1 : LISTER → attendre validation → coder → rapport final
+- [ ] Commit + push sur **develop uniquement** (rappel : main = prod, réservé)
 
 ## 📤 Rapport final obligatoire
 
@@ -300,6 +352,10 @@ Fichiers modifiés :
 Tests :
    ✅ php artisan view:cache — OK
    ✅ php artisan config:cache — OK
+
+Git :
+   ✅ Committé et pushé sur develop (branch de test)
+   ✅ Coolify staging redéploiera automatiquement dans ~2min
 ```
 
 ---
