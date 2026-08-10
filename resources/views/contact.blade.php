@@ -94,7 +94,9 @@
     }
     .form-field textarea{min-height:130px;resize:vertical}
     .form-field.error input,.form-field.error select,.form-field.error textarea{border-color:var(--rouge);background:#fef2f2}
-    .form-field .err-msg{color:var(--rouge);font-size:13px;font-family:var(--titre);font-weight:600}
+    /* Règle de base : les messages d'erreur apparaissent aussi dans les
+       fieldsets de choix et les blocs de dépôt, hors de .form-field. */
+    .err-msg{color:var(--rouge);font-size:13px;font-family:var(--titre);font-weight:600}
     .form-field .aide{font-size:12.5px;color:#888;font-family:var(--corps);font-weight:400;text-transform:none;letter-spacing:0}
 
     /* Groupes de cases / radios en pastilles cliquables */
@@ -184,7 +186,15 @@
 
 @section('content')
 
-@php $opt = \App\Http\Controllers\CibleController::formOptions(); @endphp
+@php
+    $opt = \App\Http\Controllers\CibleController::formOptions();
+
+    // Les cases/boutons radio sont validés soit sur le champ lui-même
+    // (`periode`), soit sur chaque élément du tableau (`objectif.0`…).
+    // Ce helper récupère l'erreur dans les deux cas — sans lui, un envoi
+    // forgé afficherait le bandeau global sans rien signaler au champ.
+    $errChoix = fn (string $cle) => $errors->first($cle) ?: $errors->first($cle . '.*');
+@endphp
 
 <section class="contact-wrap">
     <div class="motif" aria-hidden="true"></div>
@@ -312,6 +322,8 @@
                                     </label>
                                 @endforeach
                             </div>
+
+                            @if($e = $errChoix('objectif'))<span class="err-msg" style="display:block;margin-top:10px">{{ $e }}</span>@endif
                         </fieldset>
 
                         <fieldset>
@@ -324,6 +336,8 @@
                                     </label>
                                 @endforeach
                             </div>
+
+                            @if($e = $errChoix('cible'))<span class="err-msg" style="display:block;margin-top:10px">{{ $e }}</span>@endif
                         </fieldset>
 
                         <fieldset>
@@ -336,6 +350,8 @@
                                     </label>
                                 @endforeach
                             </div>
+
+                            @if($e = $errChoix('zone'))<span class="err-msg" style="display:block;margin-top:10px">{{ $e }}</span>@endif
                         </fieldset>
 
                         <fieldset>
@@ -348,6 +364,8 @@
                                     </label>
                                 @endforeach
                             </div>
+
+                            @if($e = $errChoix('periode'))<span class="err-msg" style="display:block;margin-top:10px">{{ $e }}</span>@endif
                         </fieldset>
                     </div>
 
@@ -364,6 +382,8 @@
                                     </label>
                                 @endforeach
                             </div>
+
+                            @if($e = $errChoix('services'))<span class="err-msg" style="display:block;margin-top:10px">{{ $e }}</span>@endif
                         </fieldset>
                     </div>
 
@@ -380,6 +400,8 @@
                                     </label>
                                 @endforeach
                             </div>
+
+                            @if($e = $errChoix('budget'))<span class="err-msg" style="display:block;margin-top:10px">{{ $e }}</span>@endif
                         </fieldset>
                     </div>
 
@@ -402,7 +424,8 @@
                             @foreach(\App\Http\Controllers\CibleController::DOCUMENTS as $champ => $label)
                                 <div class="doc-field @error($champ) error @enderror">
                                     <label for="f-{{ $champ }}">{{ $label }}</label>
-                                    <input id="f-{{ $champ }}" type="file" name="{{ $champ }}">
+                                    <input id="f-{{ $champ }}" type="file" name="{{ $champ }}"
+                                           accept=".pdf,.jpg,.jpeg,.png,.gif,.webp,.ai,.eps,.svg,.zip,.doc,.docx,.ppt,.pptx">
                                     @error($champ) <span class="err-msg">{{ $message }}</span> @enderror
                                 </div>
                             @endforeach
@@ -421,6 +444,8 @@
                                     </label>
                                 @endforeach
                             </div>
+
+                            @if($e = $errChoix('provenance'))<span class="err-msg" style="display:block;margin-top:10px">{{ $e }}</span>@endif
                         </fieldset>
                     </div>
 
