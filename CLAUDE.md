@@ -9,10 +9,10 @@
 ### Nature du projet
 
 - **Site vitrine public** de CIBLE, régie publicitaire ivoirienne fondée en 1994.
-- **Laravel 12 + Blade + SQLite + Leaflet** — statique, sans base de données réelle (SQLite juste pour sessions/cache Laravel).
-- **6 pages** : accueil, qui-sommes-nous, services, réseau (avec carte), références, contact.
+- **Laravel 13 + Blade + SQLite + Leaflet** — statique, sans base de données réelle (SQLite juste pour sessions/cache Laravel).
+- **6 pages** : accueil, qui-sommes-nous, services, réseau, références, contact — **+ 6 pages détail de réalisation** `/references/{slug}` (2026-08-10).
 - **1 endpoint JSON** `/api/reseau-map` alimenté par un fichier statique `public/data/reseau-map.json` (31 communes + GPS).
-- **1 formulaire /devis** → mail à `commercial@cible-ci.com` (rate-limited 5/10min).
+- **1 formulaire /devis** → mail à `commercial@cible-ci.com` (rate-limited 5/10min, **accepte 4 pièces jointes** depuis 2026-08-10).
 
 ### 🚨 Règle N°1 absolue — CIBLE ≠ PANORA
 
@@ -49,10 +49,12 @@ c:\wamp64\www\cible-site\
 │       ├── qui-sommes-nous.blade.php
 │       ├── services.blade.php
 │       ├── reseau.blade.php                    ← Leaflet map + liste communes
-│       ├── references.blade.php
-│       ├── contact.blade.php
+│       ├── references.blade.php                ← grille filtrable (JS) + logos clients
+│       ├── realisation.blade.php               ← détail d'une réalisation (6 slugs)
+│       ├── contact.blade.php                   ← mini-brief 7 blocs + upload
 │       └── emails/cible/devis.blade.php        ← template mail formulaire devis
-├── routes/web.php                              ← 8 routes total
+├── lang/fr/validation.php                      ← messages de validation FR (APP_LOCALE=fr)
+├── routes/web.php                              ← 9 routes total
 ├── Dockerfile                                  ← image lightweight (pas MySQL / pas Redis / pas migrate)
 └── .env.example                                ← config prod-ready (SQLite, file cache, GA optional)
 ```
@@ -109,12 +111,27 @@ c:\wamp64\www\cible-site\
 |---|---|
 | Année fondation | **1994** (30 ans en 2024) |
 | Distinctions État | **3** (2016, 2019, 2020) |
-| Panneaux en propre | **364** |
+| Panneaux en propre | **+400** (arrondi — voir ci-dessous) |
 | Communes couvertes | **31** |
 | Adresse | Rue des Ambassadeurs, Riviera M'Badon, 10 BP 1029, Abidjan |
-| Téléphone | +225 07 00 78 06 28 |
+| Téléphone mobile | +225 07 00 78 06 28 |
+| Téléphone fixe | +225 27 22 20 80 08 |
 | Email commercial | `commercial@cible-ci.com` |
+| Email secrétariat | `secretariat@cible-ci.com` |
 | Email studio | `studio@cible-ci.com` |
+
+### ⚠️ Panneaux : « +400 », jamais un chiffre exact (décision 2026-08-10)
+
+Le parc était communiqué à **364** (180 Abidjan + 184 intérieur). L'utilisateur a
+décidé de ne plus publier de chiffre exact : le site affiche **« +400 panneaux »**
+partout, et **plus aucune répartition chiffrée par zone**.
+
+Concrètement :
+- Ne jamais réintroduire 364, 180 ou 184 dans une vue.
+- La carte Leaflet n'affiche plus le nombre de panneaux par commune (les `total`
+  restent dans `reseau-map.json` pour un usage interne, mais ne sont pas rendus).
+- Les compteurs animés utilisent `data-cible="400"` avec un `+` dans un span
+  **séparé** — `anime()` écrase le `textContent` de sa cible et effacerait le `+`.
 
 ### Distinctions officielles (à ne pas paraphraser)
 
@@ -137,12 +154,17 @@ c:\wamp64\www\cible-site\
 
 Workflow :
 1. L'utilisateur t'envoie un fichier Word avec les nouveaux textes structurés par section (ID_SECTION → texte).
-2. Tu ouvres le fichier avec l'outil `Read` (les .docx sont lisibles).
+2. Tu extrais le texte du .docx (⚠ l'outil `Read` ne lit PAS les .docx : dézipper
+   et parser `word/document.xml`, cf. la commande PowerShell utilisée le 2026-08-10).
 3. Tu identifies dans les vues Blade quels textes correspondent aux IDs.
 4. Tu proposes la LISTE des modifications avant de coder (règle N°1 CIBLE).
 5. Après validation utilisateur, tu appliques toutes les modifs d'un coup.
 
 **Ne jamais inventer de texte** — si un ID n'est pas clair, demande.
+
+⚠️ Les documents de textes contiennent des doublons et des coquilles (IDs répétés
+avec deux valeurs différentes, numérotation qui saute). Les signaler et faire
+trancher plutôt que choisir en silence.
 
 ---
 
@@ -202,7 +224,7 @@ Toute modif visuelle doit être testée mobile (360px) et desktop (1440px). CIBL
 
 ### État actuel (2026-08-10)
 
-- **Repo git** : ✅ https://github.com/Quenum19/cible-site (privé)
+- **Repo git** : ✅ https://github.com/cible-studio/cible-site (privé)
 - **Branches** : `main` (prod future) + `develop` (test actif)
 - **Hébergement** : Coolify + Hetzner — **staging actif**, prod à venir
 - **URL de test actuelle** : sur le domaine de dev Coolify (à confirmer avec l'utilisateur)
@@ -246,9 +268,10 @@ Seuls les enregistrements **A** (pointant vers l'IP Hetzner) et **AAAA** peuvent
 
 ### 🔐 Authentification GitHub
 
-- Compte GitHub utilisé : **Quenum19** (le seul avec droits push)
-- Repo owner : Quenum19 (compte perso, pas org — cible-studio est aussi un compte user auquel Quenum19 n'a que le droit push, pas admin)
-- `gh` CLI est installé et authentifié — utilisable directement pour créer PR / issues
+- Compte GitHub push : **Quenum19** (a le droit `push` sur cible-studio/cible-site, comme sur cible-studio/panora)
+- Repo owner : **cible-studio** (compte user CIBLE — pas une organisation ; seul cible-studio peut CRÉER des repos dessus, Quenum19 peut seulement push sur ceux existants)
+- Historique 2026-08-10 : repo initialement créé sous Quenum19/cible-site puis transféré à cible-studio/cible-site après acceptation du transfer par cible-studio.
+- `gh` CLI est installé et authentifié en tant que Quenum19 — utilisable pour créer PR / issues sur le repo cible-studio/cible-site (le token Quenum19 a les droits `push` requis)
 
 ### 📝 Format des commits
 
@@ -362,7 +385,23 @@ Git :
 
 ## 🆘 Points de vigilance récurrents
 
-- **Chiffres officiels** : 1994, 3, 364, 31 → ne jamais improviser
+- **Chiffres officiels** : 1994, 3, **+400**, 31 → ne jamais improviser
+- **CTA unifié** : le libellé « Demander un devis » a été retiré du site
+  (2026-08-10). Nav et bouton d'envoi = « Recevoir ma recommandation média » ;
+  les CTA de page = « Parler de mon projet » / « Recevoir une recommandation média ».
+- **Réalisations** : les 6 projets vivent dans `CibleController::projets()` —
+  source unique pour l'accueil, `/references` et les pages détail. Ne pas
+  dupliquer les libellés dans une vue.
+- **Formulaire /contact** : les listes de choix viennent de
+  `CibleController::formOptions()`. La validation contrôle les clés puis
+  retraduit en libellés avant l'envoi du mail → le commercial ne reçoit
+  jamais de slug. Ajouter une option = la déclarer là, nulle part ailleurs.
+- **Uploads** : validés par `extensions:` et non `mimes:` (un .ai est un PDF
+  déguisé, un .eps du PostScript → `mimes:` rejetait des fichiers légitimes).
+  Rien n'est stocké : les fichiers partent en pièce jointe et disparaissent.
+  ⚠ `post_max_size` (Dockerfile) borne le corps **entier** de la requête :
+  il doit rester ≥ 4 × `DOC_MAX_KO`, sinon PHP jette le POST avant Laravel
+  et le visiteur reçoit un 419 au lieu d'un message de validation.
 - **Superposition Poppins 900** sur mobile — testé et corrigé 2026-08-04, ne pas ré-augmenter les tailles
 - **Panora n'existe pas ici** → aucune référence
 - **Contact studio** : `studio@cible-ci.com` (l'utilisateur)
