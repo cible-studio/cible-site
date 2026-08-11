@@ -14,8 +14,15 @@ RUN apk add --no-cache nodejs npm git unzip curl zip && \
     chmod +x /usr/local/bin/install-php-extensions && \
     install-php-extensions opcache gd zip xml
 
+# Limites PHP alignées sur le formulaire /contact (2026-08-10) :
+# il accepte 4 documents de 10 Mo chacun. post_max_size borne le corps
+# ENTIER de la requête : laissé à 10M, PHP jetait le POST avant Laravel
+# et le visiteur recevait un 419 illisible au lieu d'un message de
+# validation. 45M = 4 × 10M + marge pour les champs et l'encodage
+# multipart. Toute modification de DOC_MAX_KO doit être répercutée ici.
 RUN echo "upload_max_filesize=10M" > /usr/local/etc/php/conf.d/uploads.ini && \
-    echo "post_max_size=10M"       >> /usr/local/etc/php/conf.d/uploads.ini && \
+    echo "post_max_size=45M"       >> /usr/local/etc/php/conf.d/uploads.ini && \
+    echo "max_file_uploads=10"     >> /usr/local/etc/php/conf.d/uploads.ini && \
     echo "memory_limit=256M"       >> /usr/local/etc/php/conf.d/uploads.ini && \
     echo "max_execution_time=60"   >> /usr/local/etc/php/conf.d/uploads.ini
 

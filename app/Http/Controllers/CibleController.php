@@ -262,8 +262,17 @@ class CibleController extends Controller
         'doc_cahier'  => 'Cahier des charges',
     ];
 
-    /** Formats acceptés pour les 4 documents, et taille max par fichier (Ko). */
-    private const DOC_MIMES   = 'pdf,jpg,jpeg,png,gif,webp,ai,eps,zip,doc,docx,ppt,pptx';
+    /**
+     * Formats acceptés pour les 4 documents, et taille max par fichier (Ko).
+     *
+     * On valide l'extension (`extensions:`) et non le type deviné du
+     * contenu (`mimes:`) : un .ai est un PDF déguisé et un .eps est vu
+     * comme du PostScript, si bien que `mimes:` rejetterait des fichiers
+     * de création parfaitement légitimes. Ces documents ne sont ni
+     * stockés ni servis par le site — ils partent en pièce jointe et
+     * sont analysés par l'antivirus de la boîte destinataire.
+     */
+    private const DOC_EXT     = 'pdf,jpg,jpeg,png,gif,webp,ai,eps,svg,zip,doc,docx,ppt,pptx';
     private const DOC_MAX_KO  = 10240; // 10 Mo
 
     /**
@@ -307,10 +316,10 @@ class CibleController extends Controller
             'consentement' => ['accepted'],
             'website'      => ['nullable', 'string', 'max:0'],  // honeypot
 
-            'doc_brief'    => ['nullable', 'file', 'mimes:' . self::DOC_MIMES, 'max:' . self::DOC_MAX_KO],
-            'doc_logo'     => ['nullable', 'file', 'mimes:' . self::DOC_MIMES, 'max:' . self::DOC_MAX_KO],
-            'doc_charte'   => ['nullable', 'file', 'mimes:' . self::DOC_MIMES, 'max:' . self::DOC_MAX_KO],
-            'doc_cahier'   => ['nullable', 'file', 'mimes:' . self::DOC_MIMES, 'max:' . self::DOC_MAX_KO],
+            'doc_brief'    => ['nullable', 'file', 'extensions:' . self::DOC_EXT, 'max:' . self::DOC_MAX_KO],
+            'doc_logo'     => ['nullable', 'file', 'extensions:' . self::DOC_EXT, 'max:' . self::DOC_MAX_KO],
+            'doc_charte'   => ['nullable', 'file', 'extensions:' . self::DOC_EXT, 'max:' . self::DOC_MAX_KO],
+            'doc_cahier'   => ['nullable', 'file', 'extensions:' . self::DOC_EXT, 'max:' . self::DOC_MAX_KO],
         ], [
             'website.max'          => 'Champ invalide.',
             'consentement.accepted'=> 'Merci d\'accepter d\'être recontacté pour que nous puissions traiter votre demande.',
