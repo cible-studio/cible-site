@@ -13,6 +13,22 @@
     <meta name="description" content="{{ $seo_description ?? 'Régie publicitaire ivoirienne depuis 1994. Affichage grand format, publicité mobile, communication 360°. +400 panneaux dans 31 communes. Réponse sous 24 h ouvrées.' }}">
     <link rel="canonical" href="{{ url()->current() }}">
 
+    {{-- Icônes 2026-08-12 — le <head> n'en déclarait AUCUNE : les navigateurs
+         retombaient sur /favicon.ico (fichier Laravel vide, 0 octet) et
+         affichaient donc l'icône gardée en cache. Les trois PNG sont carrés
+         et sur fond blanc opaque : lisibles sur onglet clair comme sombre.
+         Le `?v=` est indispensable — les favicons sont mis en cache très
+         agressivement et ne se rafraîchissent pas sans changement d'URL. --}}
+    @php
+        $icone = function (string $chemin) {
+            $abs = public_path($chemin);
+            return asset($chemin) . (file_exists($abs) ? '?v=' . filemtime($abs) : '');
+        };
+    @endphp
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ $icone('images/pwa-192.png') }}">
+    <link rel="icon" type="image/png" sizes="512x512" href="{{ $icone('images/pwa-512.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ $icone('images/apple-touch-180.png') }}">
+
     <meta property="og:type" content="website">
     <meta property="og:locale" content="fr_CI">
     <meta property="og:site_name" content="CIBLE">
