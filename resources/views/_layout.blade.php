@@ -110,11 +110,16 @@
     .liens a{position:relative;padding:6px 0}
     .liens a::after{content:"";position:absolute;left:0;right:100%;bottom:0;height:3px;background:var(--c,var(--rouge));transition:right .28s cubic-bezier(.2,.8,.3,1)}
     .liens a:hover::after,.liens a[aria-current="page"]::after{right:0}
-    .liens a:nth-child(1){--c:var(--violet)}
-    .liens a:nth-child(2){--c:var(--rouge)}
-    .liens a:nth-child(3){--c:var(--vert)}
-    .liens a:nth-child(4){--c:var(--jaune)}
-    .liens a:nth-child(5){--c:var(--bleu)}
+    /* Onglet Accueil ajouté 2026-08-12 en 1re position : les règles ont été
+       décalées d'un cran pour que chacune des 5 pages garde EXACTEMENT sa
+       couleur d'origine. Accueil prend --noir (déjà dans la palette) plutôt
+       qu'une 6e teinte ou un doublon — la palette reste à 5 couleurs. */
+    .liens a:nth-child(1){--c:var(--noir)}
+    .liens a:nth-child(2){--c:var(--violet)}
+    .liens a:nth-child(3){--c:var(--rouge)}
+    .liens a:nth-child(4){--c:var(--vert)}
+    .liens a:nth-child(5){--c:var(--jaune)}
+    .liens a:nth-child(6){--c:var(--bleu)}
     .bouton{display:inline-flex;align-items:center;gap:9px;font-family:var(--titre);font-weight:800;font-size:14px;padding:14px 26px;border-radius:999px;transition:transform .18s cubic-bezier(.2,.8,.3,1),background .18s,color .18s;cursor:pointer;border:0;text-decoration:none}
     .bouton .fl{width:15px;transition:transform .22s;flex-shrink:0}
     .bouton:hover .fl{transform:translateX(4px)}
@@ -202,6 +207,7 @@
             <img src="{{ asset('images/logol.png') }}" alt="CIBLE — Vous visez juste">
         </a>
         <div class="liens" id="site-links">
+            <a href="{{ route('home') }}" {{ $current==='home' ? 'aria-current=page' : '' }}>Accueil</a>
             <a href="{{ route('qui') }}" {{ $current==='qui' ? 'aria-current=page' : '' }}>Qui sommes-nous</a>
             <a href="{{ route('services') }}" {{ $current==='services' ? 'aria-current=page' : '' }}>Nos services</a>
             <a href="{{ route('references') }}" {{ $current==='references' ? 'aria-current=page' : '' }}>Nos réalisations</a>
