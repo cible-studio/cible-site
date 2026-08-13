@@ -133,12 +133,6 @@
     .doc-field input[type=file]::file-selector-button:hover{background:#D8D8D8}
     .doc-field .err-msg{display:block;color:var(--rouge);font-size:12.5px;font-family:var(--titre);font-weight:600;margin-top:6px}
 
-    /* Ce que vous recevrez */
-    .recevrez{background:var(--gris);border-radius:16px;padding:24px 26px;margin-top:28px}
-    .recevrez h3{font-family:var(--titre);font-weight:800;font-size:15px;margin-bottom:14px}
-    .recevrez ul{list-style:none;display:flex;flex-direction:column;gap:9px}
-    .recevrez li{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.5;color:#333}
-    .recevrez li::before{content:"✓";color:var(--vert);font-weight:900;flex-shrink:0}
 
     /* Consentement + envoi */
     .consent{display:flex;gap:12px;align-items:flex-start;margin-top:24px;font-size:13.5px;line-height:1.55;color:#444}
@@ -524,19 +518,11 @@
                         </fieldset>
                     </div>
 
-                    {{-- ─────── Ce que vous recevrez ─────── --}}
-                    <div class="recevrez">
-                        <h3>Ce que vous recevrez</h3>
-                        <ul>
-                            <li>Une recommandation média adaptée à vos objectifs</li>
-                            <li>Une sélection des meilleurs emplacements</li>
-                            <li>Une stratégie de visibilité personnalisée</li>
-                            <li>Des propositions d'expériences de marque adaptées à vos audiences</li>
-                            <li>Un calendrier de déploiement</li>
-                            <li>Une estimation budgétaire</li>
-                            <li>Des recommandations pour maximiser l'impact de votre campagne</li>
-                        </ul>
-                    </div>
+                    {{-- Bloc « Ce que vous recevrez » retiré 2026-08-13 : il
+                         faisait doublon avec « Ce que vous obtenez », affiché
+                         en colonne de gauche et visible dès l'arrivée sur la
+                         page, alors que celui-ci n'apparaissait qu'à la 4e
+                         étape. --}}
 
                     <label class="consent @error('consentement') error @enderror">
                         <input type="checkbox" name="consentement" value="1" @checked(old('consentement'))>
