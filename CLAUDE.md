@@ -306,6 +306,7 @@ DB_CONNECTION=sqlite
 
 MAIL_MAILER=smtp                     # log en dev, smtp en prod
 MAIL_HOST=…                           # à configurer selon prestataire
+MAIL_SCHEME=smtp                      # ⚠ PAS MAIL_ENCRYPTION (ignoré en Laravel 11+)
 MAIL_FROM_ADDRESS="site@cible-ci.com"
 MAIL_FROM_NAME="Site CIBLE"
 
@@ -406,6 +407,13 @@ Git :
 - **Panora n'existe pas ici** → aucune référence
 - **Contact studio** : `studio@cible-ci.com` (l'utilisateur)
 - **Aucun compte client, aucun login, aucune BDD relationnelle** — c'est une vitrine pure
+- **Mail SMTP** : Laravel 11+ lit `MAIL_SCHEME`, jamais `MAIL_ENCRYPTION`.
+  Avec Gmail/Workspace, le mot de passe du compte est refusé (`535-5.7.8`) :
+  il faut un mot de passe d'application à 16 caractères, donc la validation
+  en 2 étapes activée sur la boîte.
+- **Logs en prod** : `LOG_CHANNEL=stack` écrit dans `storage/logs/laravel.log`
+  *à l'intérieur* du conteneur — invisible dans l'onglet Logs de Coolify et
+  perdu à chaque redéploiement. Passer à `stderr` pour diagnostiquer.
 
 ---
 
