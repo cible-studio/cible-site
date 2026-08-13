@@ -182,6 +182,42 @@
         font-size:14.5px;line-height:1.5;color:rgba(255,255,255,.88);
     }
     .pq-item i{width:9px;height:9px;border-radius:50%;background:var(--c);flex-shrink:0;margin-top:7px}
+
+    /* ═══ formulaire en étapes (2026-08-13) ═══
+       Les 7 blocs d'un seul tenant décourageaient : on n'en voyait jamais
+       la fin. Le formulaire est découpé en 4 étapes côté client, mais
+       reste UN SEUL <form> avec UN SEUL envoi — la validation serveur et
+       le comportement sans JavaScript sont inchangés.
+       Sans JS, .etape reste visible : le formulaire fonctionne comme avant,
+       simplement en une seule page. C'est le fallback voulu. */
+    .jalons{display:flex;gap:6px;margin-bottom:26px;counter-reset:jalon}
+    .jalon{flex:1;display:flex;flex-direction:column;gap:8px;min-width:0}
+    .jalon .barre{height:4px;border-radius:2px;background:var(--gris);transition:background .3s}
+    .jalon .txt{
+        font-family:var(--titre);font-weight:700;font-size:11.5px;
+        text-transform:uppercase;letter-spacing:.06em;color:#AAA;
+        white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+        transition:color .3s;
+    }
+    .jalon[data-etat="fait"] .barre{background:var(--vert)}
+    .jalon[data-etat="fait"] .txt{color:var(--vert)}
+    .jalon[data-etat="courant"] .barre{background:var(--rouge)}
+    .jalon[data-etat="courant"] .txt{color:var(--rouge)}
+    @media(max-width:600px){.jalon .txt{display:none}}
+
+    .etape-nav{
+        display:flex;gap:12px;align-items:center;flex-wrap:wrap;
+        margin-top:26px;padding-top:22px;border-top:1px solid var(--gris);
+    }
+    .etape-nav .compte{
+        font-family:var(--titre);font-weight:700;font-size:12.5px;
+        color:#999;margin-left:auto;
+    }
+    .b-gris{background:var(--gris);color:var(--noir)}
+    .b-gris:hover{transform:translateY(-3px);background:#D8D8D8}
+    /* Avec JS, seule l'étape courante est affichée. */
+    .js-etapes .etape{display:none}
+    .js-etapes .etape[data-courant]{display:block}
 @endpush
 
 @section('content')
@@ -263,7 +299,25 @@
                 @endif
 
                 {{-- enctype obligatoire : le bloc 6 accepte des documents. --}}
-                <form method="POST" action="{{ route('devis.submit') }}" enctype="multipart/form-data" novalidate>
+                @php
+                    // Si le serveur a renvoyé des erreurs, on rouvre directement
+                    // l'étape fautive plutôt que de laisser le visiteur chercher.
+                    $champsParEtape = [
+                        1 => ['nom','entreprise','poste','email','tel'],
+                        2 => ['objectif','cible','zone','periode'],
+                        3 => ['services','budget'],
+                        4 => ['message','doc_brief','doc_logo','doc_charte','doc_cahier','provenance','consentement'],
+                    ];
+                    $etapeDepart = 1;
+                    foreach ($champsParEtape as $n => $champs) {
+                        foreach ($champs as $champ) {
+                            if ($errors->has($champ) || $errors->has($champ.'.*')) { $etapeDepart = $n; break 2; }
+                        }
+                    }
+                @endphp
+
+                <form method="POST" action="{{ route('devis.submit') }}" enctype="multipart/form-data" novalidate
+                      id="form-brief" data-etape-depart="{{ $etapeDepart }}">
                     @csrf
 
                     {{-- Honeypot anti-bot --}}
@@ -271,6 +325,18 @@
                         <label>Ne pas remplir <input type="text" name="website" tabindex="-1" autocomplete="off"></label>
                     </div>
 
+                    {{-- Jalons de progression. aria-hidden : l'information est
+                         déjà portée par le compteur textuel « Étape X sur 4 ». --}}
+                    <div class="jalons" id="jalons" aria-hidden="true">
+                        @foreach(['Vous','Votre projet','Vos besoins','Votre brief'] as $i => $titre)
+                            <div class="jalon" data-jalon="{{ $i + 1 }}">
+                                <span class="barre"></span>
+                                <span class="txt">{{ $titre }}</span>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    <div class="etape" data-etape="1">
                     {{-- ─────── 1 · Informations de contact ─────── --}}
                     <div class="bloc">
                         <div class="bloc-titre"><b>1</b> Informations sur le contact</div>
@@ -308,6 +374,9 @@
                         </div>
                     </div>
 
+                    </div>{{-- /étape 1 --}}
+
+                    <div class="etape" data-etape="2">
                     {{-- ─────── 2 · Le projet ─────── --}}
                     <div class="bloc">
                         <div class="bloc-titre"><b>2</b> Parlons de votre projet</div>
@@ -369,6 +438,9 @@
                         </fieldset>
                     </div>
 
+                    </div>{{-- /étape 2 --}}
+
+                    <div class="etape" data-etape="3">
                     {{-- ─────── 3 · Services ─────── --}}
                     <div class="bloc">
                         <div class="bloc-titre"><b>3</b> Les services recherchés</div>
@@ -405,6 +477,9 @@
                         </fieldset>
                     </div>
 
+                    </div>{{-- /étape 3 --}}
+
+                    <div class="etape" data-etape="4">
                     {{-- ─────── 5 · Description ─────── --}}
                     <div class="bloc">
                         <div class="bloc-titre"><b>5</b> Description</div>
@@ -475,6 +550,16 @@
                         <button type="submit" class="bouton b-rouge">Recevoir ma recommandation média</button>
                         <p>Vos données ne sont utilisées que pour vous répondre. Aucun démarchage tiers.</p>
                     </div>
+                    </div>{{-- /étape 4 --}}
+
+                    {{-- Navigation entre étapes. Injectée seulement si JS est
+                         actif : sans lui, les 4 étapes restent affichées et le
+                         bouton d'envoi ci-dessus suffit. --}}
+                    <div class="etape-nav" id="etape-nav" hidden>
+                        <button type="button" class="bouton b-gris" id="et-prec">Retour</button>
+                        <button type="button" class="bouton b-rouge" id="et-suiv">Continuer</button>
+                        <span class="compte" id="et-compte"></span>
+                    </div>
                 </form>
             @endif
         </div>
@@ -532,3 +617,84 @@
 </section>
 
 @endsection
+
+@push('page-js')
+<script>
+(function () {
+    const form = document.getElementById('form-brief');
+    if (!form) return; // page affichée après envoi : pas de formulaire
+
+    const etapes = [...form.querySelectorAll('.etape')];
+    const nav    = document.getElementById('etape-nav');
+    const prec   = document.getElementById('et-prec');
+    const suiv   = document.getElementById('et-suiv');
+    const compte = document.getElementById('et-compte');
+    const jalons = [...document.querySelectorAll('.jalon')];
+    const envoi  = form.querySelector('.form-submit');
+    if (etapes.length < 2 || !nav) return;
+
+    // Le découpage n'est activé QUE si le JS s'exécute : sans lui, les 4
+    // étapes restent visibles et le formulaire fonctionne d'une traite.
+    form.classList.add('js-etapes');
+    nav.hidden = false;
+
+    let courant = Math.min(Math.max(parseInt(form.dataset.etapeDepart || '1', 10), 1), etapes.length);
+
+    function afficher(n, deplacerFocus) {
+        courant = n;
+        etapes.forEach((e, i) => e.toggleAttribute('data-courant', i === n - 1));
+        jalons.forEach((j, i) => {
+            j.dataset.etat = i + 1 < n ? 'fait' : (i + 1 === n ? 'courant' : 'a-venir');
+        });
+        prec.hidden  = n === 1;
+        suiv.hidden  = n === etapes.length;
+        // Le bouton d'envoi n'apparaît qu'à la dernière étape.
+        if (envoi) envoi.style.display = n === etapes.length ? '' : 'none';
+        compte.textContent = 'Étape ' + n + ' sur ' + etapes.length;
+
+        if (deplacerFocus) {
+            const cible = etapes[n - 1].querySelector('input, select, textarea, button');
+            // Le titre de la carte reste le repère visuel ; on ramène la vue
+            // en haut du formulaire plutôt qu'au milieu d'un champ.
+            form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            if (cible) cible.focus({ preventScroll: true });
+        }
+    }
+
+    // Validation de l'étape courante : uniquement les champs requis qu'elle
+    // contient. La validation serveur reste seule autorité — ceci évite juste
+    // au visiteur d'avancer puis de devoir revenir.
+    function etapeValide(n) {
+        const champs = [...etapes[n - 1].querySelectorAll('[required]')];
+        let premierFautif = null;
+        champs.forEach(ch => {
+            const vide = ch.type === 'checkbox' ? !ch.checked : !ch.value.trim();
+            const mauvaisMail = ch.type === 'email' && ch.value.trim() && !/^\S+@\S+\.\S+$/.test(ch.value);
+            const ko = vide || mauvaisMail;
+            ch.closest('.form-field')?.classList.toggle('error', ko);
+            if (ko && !premierFautif) premierFautif = ch;
+        });
+        if (premierFautif) {
+            premierFautif.focus();
+            premierFautif.closest('.form-field')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return false;
+        }
+        return true;
+    }
+
+    suiv.addEventListener('click', () => { if (etapeValide(courant)) afficher(courant + 1, true); });
+    prec.addEventListener('click', () => afficher(courant - 1, true));
+
+    // Entrée dans un champ texte : passer à l'étape suivante plutôt que
+    // d'envoyer un formulaire incomplet.
+    form.addEventListener('keydown', e => {
+        if (e.key !== 'Enter') return;
+        const t = e.target;
+        if (t.tagName === 'TEXTAREA' || t.type === 'submit' || t.tagName === 'BUTTON') return;
+        if (courant < etapes.length) { e.preventDefault(); suiv.click(); }
+    });
+
+    afficher(courant, false);
+})();
+</script>
+@endpush
