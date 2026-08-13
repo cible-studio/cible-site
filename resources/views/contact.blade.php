@@ -7,7 +7,12 @@
     .contact-wrap{padding:clamp(60px,8vw,110px) var(--pad);background:var(--jaune);color:var(--noir);position:relative;overflow:hidden}
     .motif{position:absolute;inset:-10% -10%;background-image:var(--tuile);background-size:340px 340px;animation:motifDerive 60s linear infinite;pointer-events:none;z-index:0;opacity:.5}
     @keyframes motifDerive{from{background-position:0 0}to{background-position:340px 340px}}
-    .contact-inner{position:relative;z-index:2;display:grid;grid-template-columns:1fr 1.25fr;gap:clamp(30px,5vw,70px);align-items:start}
+    /* align-items:stretch (défaut) et non `start` : depuis le découpage en
+       étapes, l'étape 1 ne fait que 5 champs, donc la carte du formulaire
+       devenait plus courte que la colonne de gauche et laissait un grand
+       aplat jaune vide à sa droite. En s'étirant, elle occupe toute la
+       hauteur de la rangée, quelle que soit l'étape affichée. */
+    .contact-inner{position:relative;z-index:2;display:grid;grid-template-columns:1fr 1.25fr;gap:clamp(30px,5vw,70px)}
     @media(max-width:980px){.contact-inner{grid-template-columns:1fr}}
     .contact-inner .intro .t1{max-width:18ch}
     .contact-inner .intro p{margin-top:20px;max-width:46ch;font-size:clamp(16px,1.6vw,19px)}
@@ -62,7 +67,12 @@
     }
 
     /* ═══ formulaire mini-brief ═══ */
-    .form-card{background:#fff;border-radius:24px;padding:clamp(26px,3.5vw,40px);box-shadow:0 20px 50px -20px rgba(0,0,0,.15)}
+    /* La carte et le formulaire sont en colonne flex pour que la barre de
+       navigation puisse être plaquée en bas (margin-top:auto) : elle reste
+       ainsi au même endroit d'une étape à l'autre, au lieu de remonter avec
+       les étapes courtes. */
+    .form-card{background:#fff;border-radius:24px;padding:clamp(26px,3.5vw,40px);box-shadow:0 20px 50px -20px rgba(0,0,0,.15);display:flex;flex-direction:column}
+    .form-card > form{display:flex;flex-direction:column;flex:1}
     .form-card h2{font-family:var(--titre);font-weight:800;font-size:24px;margin-bottom:8px}
     .form-card .sub{font-size:14px;color:#666;margin-bottom:8px}
 
@@ -201,8 +211,11 @@
 
     .etape-nav{
         display:flex;gap:12px;align-items:center;flex-wrap:wrap;
-        margin-top:26px;padding-top:22px;border-top:1px solid var(--gris);
+        margin-top:auto;padding-top:22px;border-top:1px solid var(--gris);
     }
+    /* Marge de sécurité : sans JS, la barre est masquée et c'est le bloc
+       d'envoi qui doit garder de l'air au-dessus de lui. */
+    .js-etapes .form-submit{margin-bottom:26px}
     .etape-nav .compte{
         font-family:var(--titre);font-weight:700;font-size:12.5px;
         color:#999;margin-left:auto;
