@@ -1,81 +1,199 @@
+{{-- ═══════════════════════════════════════════════════════════════════
+     Mail de demande reçue via /contact
+
+     Contraintes propres à l'email, différentes du site :
+     - mise en page en <table> et non en flex/grid — Outlook s'appuie sur
+       un moteur Word qui ignore les dispositions modernes ;
+     - styles en ligne uniquement, aucune feuille externe ni classe ;
+     - pas de webfont fiable : Poppins/Nunito sont déclarées en tête de
+       pile et retombent sur Trebuchet/Arial, présentes partout ;
+     - le logo est une URL absolue. Les clients bloquent les images par
+       défaut, d'où le bandeau de 5 couleurs et le texte de repli : le mail
+       reste identifiable CIBLE même sans image affichée.
+════════════════════════════════════════════════════════════════════ --}}
+@php
+    // Palette officielle — cf. CLAUDE.md. Ne pas improviser de teinte ici :
+    // l'ancien template utilisait #0f172a et #e8a020, hors charte.
+    $rouge = '#E20613'; $jaune = '#FAB80B'; $vert = '#3AA835';
+    $bleu  = '#3F7FC0'; $violet = '#81358A';
+    $noir  = '#111111'; $gris = '#E6E6E6';
+    $titre = "'Poppins','Trebuchet MS',Arial,Helvetica,sans-serif";
+    $corps = "'Nunito','Segoe UI',Arial,Helvetica,sans-serif";
+@endphp
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Nouvelle demande — recommandation média</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Nouvelle demande — {{ $d['entreprise'] ?? 'CIBLE' }}</title>
 </head>
-<body style="font-family: Arial, Helvetica, sans-serif; background: #f7f7f5; padding: 30px; color: #0f172a;">
-    <div style="max-width: 640px; margin: 0 auto; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-        <div style="background: #0f172a; color: #fff; padding: 26px 32px; border-bottom: 3px solid #e8a020;">
-            <div style="font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: #e8a020; font-weight: 700;">CIBLE CI · Nouvelle demande de recommandation média</div>
-            <div style="font-size: 22px; margin-top: 6px; font-weight: 700;">{{ $d['entreprise'] ?? '—' }}</div>
-        </div>
+<body style="margin:0;padding:0;background:{{ $gris }};">
 
-        <div style="padding: 26px 32px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:{{ $gris }};padding:28px 12px;">
+<tr><td align="center">
 
-            {{-- ─── 1. Contact ─── --}}
-            <div style="font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #94a3b8; margin-bottom: 10px;">1 · Contact</div>
-            <table style="width:100%; border-collapse: collapse; font-size: 14px;">
-                <tr><td style="padding: 8px 0; color: #64748b; width: 150px;">Nom et prénom</td><td style="font-weight: 600;">{{ $d['nom'] ?? '—' }}</td></tr>
-                <tr><td style="padding: 8px 0; color: #64748b;">Fonction</td><td>{{ $d['poste'] ?: '—' }}</td></tr>
-                <tr><td style="padding: 8px 0; color: #64748b;">Entreprise</td><td style="font-weight: 600;">{{ $d['entreprise'] ?? '—' }}</td></tr>
-                <tr><td style="padding: 8px 0; color: #64748b;">Téléphone</td><td><a href="tel:{{ $d['tel'] ?? '' }}" style="color: #e8a020;">{{ $d['tel'] ?? '—' }}</a></td></tr>
-                <tr><td style="padding: 8px 0; color: #64748b;">Email</td><td><a href="mailto:{{ $d['email'] ?? '' }}" style="color: #e8a020;">{{ $d['email'] ?? '—' }}</a></td></tr>
-            </table>
+    <table role="presentation" width="640" cellpadding="0" cellspacing="0" border="0" style="width:640px;max-width:100%;background:#FFFFFF;border-radius:16px;overflow:hidden;">
 
-            {{-- ─── 2. Le projet ─── --}}
-            <div style="font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #94a3b8; margin: 26px 0 10px; padding-top: 18px; border-top: 1px dashed #e2e8f0;">2 · Le projet</div>
-            <table style="width:100%; border-collapse: collapse; font-size: 14px;">
-                <tr>
-                    <td style="padding: 8px 0; color: #64748b; width: 150px; vertical-align: top;">Objectifs</td>
-                    <td style="font-weight: 600;">{{ !empty($d['objectif']) ? implode(' · ', $d['objectif']) : '—' }}</td>
-                </tr>
-                <tr>
-                    <td style="padding: 8px 0; color: #64748b; vertical-align: top;">Audiences visées</td>
-                    <td>{{ !empty($d['cible']) ? implode(' · ', $d['cible']) : '—' }}</td>
-                </tr>
-                <tr>
-                    <td style="padding: 8px 0; color: #64748b; vertical-align: top;">Zones</td>
-                    <td>{{ !empty($d['zone']) ? implode(' · ', $d['zone']) : '—' }}</td>
-                </tr>
-                <tr>
-                    <td style="padding: 8px 0; color: #64748b;">Lancement souhaité</td>
-                    <td>{{ $d['periode'] ?: '—' }}</td>
-                </tr>
-            </table>
+        {{-- Bandeau 5 couleurs : signature de marque qui reste visible même
+             quand le client de messagerie bloque les images. --}}
+        <tr>
+            <td style="font-size:0;line-height:0;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                        <td width="20%" height="7" bgcolor="{{ $rouge }}"  style="background:{{ $rouge }};font-size:0;line-height:0;">&nbsp;</td>
+                        <td width="20%" height="7" bgcolor="{{ $jaune }}"  style="background:{{ $jaune }};font-size:0;line-height:0;">&nbsp;</td>
+                        <td width="20%" height="7" bgcolor="{{ $vert }}"   style="background:{{ $vert }};font-size:0;line-height:0;">&nbsp;</td>
+                        <td width="20%" height="7" bgcolor="{{ $bleu }}"   style="background:{{ $bleu }};font-size:0;line-height:0;">&nbsp;</td>
+                        <td width="20%" height="7" bgcolor="{{ $violet }}" style="background:{{ $violet }};font-size:0;line-height:0;">&nbsp;</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
 
-            {{-- ─── 3. Services ─── --}}
-            <div style="font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #94a3b8; margin: 26px 0 10px; padding-top: 18px; border-top: 1px dashed #e2e8f0;">3 · Services recherchés</div>
-            <div style="font-size: 14px; font-weight: 600; line-height: 1.7;">
-                {{ !empty($d['services']) ? implode(' · ', $d['services']) : '—' }}
-            </div>
-
-            {{-- ─── 4. Budget ─── --}}
-            <div style="font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #94a3b8; margin: 26px 0 10px; padding-top: 18px; border-top: 1px dashed #e2e8f0;">4 · Budget envisagé</div>
-            <div style="font-size: 16px; font-weight: 700; color: #0f172a;">{{ $d['budget'] ?: '—' }}</div>
-
-            {{-- ─── 5. Description ─── --}}
-            @if(!empty($d['message']))
-                <div style="margin-top: 26px; padding: 18px; background: #fbf8f1; border-left: 3px solid #e8a020; border-radius: 4px;">
-                    <div style="font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #e8a020; margin-bottom: 8px;">5 · Description du projet</div>
-                    <div style="font-size: 14.5px; line-height: 1.6; color: #1e293b; white-space: pre-wrap;">{{ $d['message'] }}</div>
+        {{-- En-tête noir : logo négatif + objet du message --}}
+        <tr>
+            <td bgcolor="{{ $noir }}" style="background:{{ $noir }};padding:28px 34px 26px;">
+                <img src="{{ asset('images/logon.png') }}" width="150" height="80" alt="CIBLE — Vous visez juste"
+                     style="display:block;border:0;outline:none;width:150px;height:auto;margin-bottom:18px;">
+                <div style="font-family:{{ $titre }};font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:{{ $jaune }};">
+                    Nouvelle demande de recommandation média
                 </div>
-            @endif
-
-            {{-- ─── 6. Provenance ─── --}}
-            @if(!empty($d['provenance']))
-                <div style="margin-top: 26px; padding-top: 18px; border-top: 1px dashed #e2e8f0; font-size: 14px;">
-                    <span style="color: #64748b;">Nous a connus via</span>
-                    <strong style="margin-left: 8px;">{{ $d['provenance'] }}</strong>
+                <div style="font-family:{{ $titre }};font-size:26px;font-weight:800;color:#FFFFFF;line-height:1.2;margin-top:8px;">
+                    {{ $d['entreprise'] ?? '—' }}
                 </div>
-            @endif
+                <div style="font-family:{{ $corps }};font-size:14px;color:rgba(255,255,255,.72);margin-top:6px;">
+                    {{ $d['nom'] ?? '—' }}@if(!empty($d['poste'])) · {{ $d['poste'] }}@endif
+                </div>
+            </td>
+        </tr>
 
-            <div style="margin-top: 28px; padding-top: 18px; border-top: 1px solid #e2e8f0; font-size: 12px; color: #94a3b8;">
+        {{-- Rappel d'action : le Reply-To pointe sur le visiteur --}}
+        <tr>
+            <td bgcolor="{{ $jaune }}" style="background:{{ $jaune }};padding:12px 34px;font-family:{{ $titre }};font-size:13px;font-weight:700;color:{{ $noir }};">
+                Répondre à ce message écrit directement au demandeur.
+            </td>
+        </tr>
+
+        <tr>
+            <td style="padding:30px 34px 10px;">
+
+                @php
+                    // Un seul rendu pour toutes les sections : titre rouge en
+                    // capitales souligné d'un filet, puis lignes libellé/valeur.
+                    $sectionTitre = function (string $t) use ($rouge, $titre) {
+                        return '<div style="font-family:'.$titre.';font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:'.$rouge.';padding-bottom:8px;border-bottom:2px solid '.$rouge.';margin-bottom:16px;">'.$t.'</div>';
+                    };
+                @endphp
+
+                {{-- ─── 1 · Contact ─── --}}
+                {!! $sectionTitre('1 · Contact') !!}
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="font-family:{{ $corps }};font-size:14px;">
+                    @foreach([
+                        ['Nom et prénom', $d['nom'] ?? '—', true],
+                        ['Fonction',      $d['poste'] ?: '—', false],
+                        ['Entreprise',    $d['entreprise'] ?? '—', true],
+                    ] as [$lbl, $val, $fort])
+                        <tr>
+                            <td width="150" style="padding:7px 0;color:#777777;vertical-align:top;">{{ $lbl }}</td>
+                            <td style="padding:7px 0;color:{{ $noir }};{{ $fort ? 'font-weight:700;' : '' }}">{{ $val }}</td>
+                        </tr>
+                    @endforeach
+                    <tr>
+                        <td width="150" style="padding:7px 0;color:#777777;">Téléphone</td>
+                        <td style="padding:7px 0;"><a href="tel:{{ $d['tel'] ?? '' }}" style="color:{{ $rouge }};font-weight:700;text-decoration:none;">{{ $d['tel'] ?? '—' }}</a></td>
+                    </tr>
+                    <tr>
+                        <td width="150" style="padding:7px 0;color:#777777;">Email</td>
+                        <td style="padding:7px 0;"><a href="mailto:{{ $d['email'] ?? '' }}" style="color:{{ $rouge }};font-weight:700;text-decoration:none;">{{ $d['email'] ?? '—' }}</a></td>
+                    </tr>
+                </table>
+
+                {{-- ─── 2 · Le projet ─── --}}
+                <div style="height:30px;line-height:30px;font-size:0;">&nbsp;</div>
+                {!! $sectionTitre('2 · Le projet') !!}
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="font-family:{{ $corps }};font-size:14px;">
+                    @foreach([
+                        ['Objectifs',        !empty($d['objectif']) ? implode(' · ', $d['objectif']) : '—'],
+                        ['Audiences visées', !empty($d['cible'])    ? implode(' · ', $d['cible'])    : '—'],
+                        ['Zones',            !empty($d['zone'])     ? implode(' · ', $d['zone'])     : '—'],
+                        ['Lancement',        $d['periode'] ?: '—'],
+                    ] as [$lbl, $val])
+                        <tr>
+                            <td width="150" style="padding:7px 0;color:#777777;vertical-align:top;">{{ $lbl }}</td>
+                            <td style="padding:7px 0;color:{{ $noir }};font-weight:600;line-height:1.5;">{{ $val }}</td>
+                        </tr>
+                    @endforeach
+                </table>
+
+                {{-- ─── 3 · Services ─── --}}
+                <div style="height:30px;line-height:30px;font-size:0;">&nbsp;</div>
+                {!! $sectionTitre('3 · Services recherchés') !!}
+                <div style="font-family:{{ $corps }};font-size:14px;font-weight:600;color:{{ $noir }};line-height:1.7;">
+                    {{ !empty($d['services']) ? implode(' · ', $d['services']) : '—' }}
+                </div>
+
+                {{-- ─── 4 · Budget ─── --}}
+                <div style="height:30px;line-height:30px;font-size:0;">&nbsp;</div>
+                {!! $sectionTitre('4 · Budget envisagé') !!}
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                        <td bgcolor="{{ $gris }}" style="background:{{ $gris }};border-radius:10px;padding:14px 20px;font-family:{{ $titre }};font-size:18px;font-weight:800;color:{{ $noir }};">
+                            {{ $d['budget'] ?: 'Non précisé' }}
+                        </td>
+                    </tr>
+                </table>
+
+                {{-- ─── 5 · Description ─── --}}
+                @if(!empty($d['message']))
+                    <div style="height:30px;line-height:30px;font-size:0;">&nbsp;</div>
+                    {!! $sectionTitre('5 · Description du projet') !!}
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                        <tr>
+                            <td style="border-left:4px solid {{ $jaune }};padding:4px 0 4px 18px;font-family:{{ $corps }};font-size:14.5px;line-height:1.65;color:#333333;white-space:pre-wrap;">{{ $d['message'] }}</td>
+                        </tr>
+                    </table>
+                @endif
+
+                {{-- ─── 6 · Provenance ─── --}}
+                @if(!empty($d['provenance']))
+                    <div style="height:30px;line-height:30px;font-size:0;">&nbsp;</div>
+                    {!! $sectionTitre('6 · Nous a connus via') !!}
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                        <tr>
+                            <td style="border:2px solid {{ $bleu }};border-radius:999px;padding:8px 18px;font-family:{{ $titre }};font-size:13px;font-weight:700;color:{{ $bleu }};">
+                                {{ $d['provenance'] }}
+                            </td>
+                        </tr>
+                    </table>
+                @endif
+
+                <div style="height:30px;line-height:30px;font-size:0;">&nbsp;</div>
+            </td>
+        </tr>
+
+        {{-- Pied : métadonnées de réception --}}
+        <tr>
+            <td style="padding:20px 34px 26px;border-top:1px solid {{ $gris }};font-family:{{ $corps }};font-size:12px;color:#999999;line-height:1.7;">
                 Les documents éventuellement déposés sont joints à ce message.<br>
-                Reçu le {{ $d['received_at'] ?? now()->format('d/m/Y H:i') }}<br>
-                IP : {{ $d['ip'] ?? '—' }}
-            </div>
-        </div>
+                Reçu le {{ $d['received_at'] ?? now()->format('d/m/Y H:i') }} · IP {{ $d['ip'] ?? '—' }}
+            </td>
+        </tr>
+
+        <tr>
+            <td bgcolor="{{ $noir }}" style="background:{{ $noir }};padding:18px 34px;font-family:{{ $titre }};font-size:12px;color:rgba(255,255,255,.62);">
+                CIBLE · Régie publicitaire &amp; studio créatif · Côte d'Ivoire<br>
+                <a href="{{ url('/') }}" style="color:{{ $jaune }};text-decoration:none;font-weight:700;">www.cible-ci.com</a>
+            </td>
+        </tr>
+
+    </table>
+
+    <div style="font-family:{{ $corps }};font-size:11px;color:#999999;margin-top:16px;">
+        Message automatique envoyé depuis le formulaire du site.
     </div>
+
+</td></tr>
+</table>
+
 </body>
 </html>
