@@ -81,6 +81,12 @@
       --tuile:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22200%22%20height%3D%22200%22%20viewBox%3D%220%200%20200%20200%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23F3C63F%22%20stroke-width%3D%223%22%20opacity%3D%22.55%22%3E%3Cpath%20d%3D%22M40%2050%20L120%2050%20M120%2050%20L100%2035%20M120%2050%20L100%2065%22%2F%3E%3Cpath%20d%3D%22M60%20120%20L150%20130%20M150%20130%20L130%20120%20M150%20130%20L135%20143%22%2F%3E%3Cpath%20d%3D%22M30%20170%20L110%20160%20M110%20160%20L95%20150%20M110%20160%20L98%20172%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
     }
     *{box-sizing:border-box;margin:0;padding:0}
+    /* L'attribut hidden pose display:none via la feuille du navigateur, donc
+       la MOINDRE règle d'auteur qui fixe un display le neutralise en silence
+       (.bouton{display:inline-flex}, .etape-nav{display:flex}…). Sans cette
+       ligne, un élément marqué hidden reste visible : c'est ce qui laissait
+       « Continuer » affiché à la dernière étape du formulaire. */
+    [hidden]{display:none!important}
     html{scroll-behavior:smooth}
     body{background:var(--blanc);color:var(--noir);font-family:var(--corps);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
     a{color:inherit;text-decoration:none}
