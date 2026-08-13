@@ -101,13 +101,22 @@
 
 @section('content')
 
-<section class="hero-ref">
+<section class="hero-ref a-decor">
+    <x-decor :formes="[
+        ['f-fleche', '--c:var(--jaune);--op:.18;top:14%;right:5%;width:120px;--r:-8deg;--dur:20s;--del:.4s'],
+        ['f-plume',  '--c:var(--violet);--op:.10;bottom:-8%;left:4%;width:110px;--r:16deg;--dur:27s;--del:.7s'],
+    ]" />
     <span class="sur">Nos réalisations</span>
     <h1 class="t1">Des campagnes visibles. Des expériences mémorables. Des marques renforcées.</h1>
     <p>Plus de trente ans à accompagner les entreprises, institutions et grandes marques dans la conception et le déploiement de campagnes qui associent visibilité, créativité, expérience de marque et impact terrain.</p>
 </section>
 
-<section class="intro-ref">
+<section class="intro-ref a-decor">
+    <x-decor :formes="[
+        ['f-plume',  '--c:var(--violet);--op:.13;top:-6%;left:6%;width:140px;--r:14deg;--dur:26s'],
+        ['f-plume',  '--c:var(--rouge);--op:.10;bottom:-10%;right:8%;width:120px;--r:-20deg;--dur:31s;--del:.4s'],
+        ['f-fleche', '--c:var(--vert);--op:.14;top:22%;right:4%;width:105px;--r:-12deg;--dur:22s;--del:.7s'],
+    ]" />
     <div class="entete rev">
         <span class="sur">Notre savoir-faire en action</span>
         <h2 class="t1">De l'affichage à l'expérience de marque.</h2>
@@ -164,7 +173,12 @@
 </section>
 
 {{-- ═══ NOTRE IMPACT ═══ --}}
-<section class="impact">
+<section class="impact a-decor">
+    <x-decor :formes="[
+        ['f-plume',  '--c:#fff;--op:.06;top:5%;left:4%;width:150px;--r:18deg;--dur:30s'],
+        ['f-plume',  '--c:#fff;--op:.05;bottom:3%;right:5%;width:120px;--r:-16deg;--dur:34s;--del:.4s'],
+        ['f-fleche', '--c:var(--jaune);--op:.14;top:34%;right:12%;width:110px;--r:8deg;--dur:24s;--del:.7s'],
+    ]" />
     <div class="entete rev">
         <span class="sur">Ce que nos campagnes cherchent à produire</span>
         <h2 class="t1">Chaque réalisation répond à un objectif de marque.</h2>
@@ -205,7 +219,11 @@
     </div>
 </section>
 
-<section class="clients-band">
+<section class="clients-band a-decor">
+    <x-decor :formes="[
+        ['f-fleche', '--c:var(--vert);--op:.12;top:6%;left:3%;width:115px;--r:-14deg;--dur:25s'],
+        ['f-plume',  '--c:var(--bleu);--op:.10;bottom:4%;right:4%;width:110px;--r:20deg;--dur:31s;--del:.5s'],
+    ]" />
     <div class="entete rev">
         <span class="sur">Ils nous ont fait confiance</span>
         <h2 class="t1">Des marques, institutions et organisations accompagnées à travers la Côte d'Ivoire.</h2>
@@ -238,7 +256,11 @@
     </div>
 </section>
 
-<section class="cta-ref">
+<section class="cta-ref a-decor">
+    <x-decor :formes="[
+        ['f-plume',  '--c:var(--violet);--op:.12;top:10%;left:7%;width:110px;--r:18deg;--dur:28s'],
+        ['f-fleche', '--c:var(--rouge);--op:.16;bottom:12%;right:8%;width:120px;--r:-10deg;--dur:21s;--del:.4s'],
+    ]" />
     <span class="sur">Et votre prochain projet ?</span>
     <h2 class="t1">Faisons de votre prochaine campagne une réalisation qui compte.</h2>
     <p>Partagez-nous votre objectif, votre audience et votre ambition. Nous imaginerons le dispositif de visibilité, d'activation et de communication le plus pertinent pour votre marque.</p>

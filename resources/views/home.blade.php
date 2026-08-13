@@ -5,15 +5,6 @@
 ])
 
 @push('page-css')
-    /* ───── flèches ambiantes ───── */
-    .fleche{position:absolute;pointer-events:none;z-index:0;opacity:0;animation:apparait .9s var(--del,0s) forwards, derive var(--dur,16s) var(--del,0s) ease-in-out infinite}
-    @keyframes apparait{to{opacity:var(--op,.9)}}
-    @keyframes derive{
-      0%,100%{transform:translate3d(0,0,0) rotate(var(--r,0deg)) scaleX(var(--sx,1))}
-      50%{transform:translate3d(var(--dx,18px),var(--dy,-24px),0) rotate(calc(var(--r,0deg) + 7deg)) scaleX(var(--sx,1))}
-    }
-    .couche{position:absolute;inset:0;z-index:0;pointer-events:none}
-
     /* ───── HERO ───── */
     .hero-wrap{position:relative}
     .hero{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(24px,4vw,56px);align-items:center;padding:clamp(36px,5.5vw,80px) var(--pad) 0;position:relative}

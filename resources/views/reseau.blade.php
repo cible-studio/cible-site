@@ -137,7 +137,12 @@
 
 @section('content')
 
-<section class="reseau-hero">
+<section class="reseau-hero a-decor">
+    <x-decor :formes="[
+        ['f-plume',  '--c:#fff;--op:.13;top:4%;left:38%;width:150px;--r:22deg;--dur:25s;--del:.2s'],
+        ['f-plume',  '--c:#fff;--op:.11;bottom:6%;right:4%;width:120px;--r:-12deg;--dur:29s;--del:.5s'],
+        ['f-fleche', '--c:#fff;--op:.16;top:16%;right:14%;width:110px;--r:8deg;--dur:21s;--del:.8s'],
+    ]" />
     <div>
         <span class="sur">Notre parc publicitaire</span>
         <h1 class="t1">Votre audience est quelque part. Notre réseau vous permet de l'atteindre.</h1>
@@ -154,7 +159,11 @@
 </section>
 
 {{-- ═══ NOTRE APPROCHE MÉDIA ═══ --}}
-<section class="approche-med">
+<section class="approche-med a-decor">
+    <x-decor :formes="[
+        ['f-fleche', '--c:var(--violet);--op:.12;top:6%;left:3%;width:120px;--r:-14deg;--dur:24s'],
+        ['f-plume',  '--c:var(--bleu);--op:.10;bottom:4%;right:4%;width:110px;--r:18deg;--dur:30s;--del:.5s'],
+    ]" />
     <div class="entete rev">
         <span class="sur">Plus qu'une carte</span>
         <h2 class="t1">Des emplacements sélectionnés selon vos audiences et vos objectifs.</h2>
@@ -258,7 +267,12 @@
 </section>
 
 {{-- ═══ MEDIA INTELLIGENCE ═══ --}}
-<section class="data-sec">
+<section class="data-sec a-decor">
+    <x-decor :formes="[
+        ['f-plume',  '--c:#fff;--op:.06;top:5%;left:4%;width:150px;--r:18deg;--dur:31s'],
+        ['f-plume',  '--c:#fff;--op:.05;bottom:3%;right:5%;width:120px;--r:-20deg;--dur:35s;--del:.4s'],
+        ['f-fleche', '--c:var(--jaune);--op:.14;top:32%;right:13%;width:110px;--r:6deg;--dur:23s;--del:.7s'],
+    ]" />
     <div class="entete rev">
         <span class="sur">Media Intelligence</span>
         <h2 class="t1">Un parc référencé, piloté et documenté.</h2>
@@ -301,7 +315,11 @@
 </section>
 
 {{-- ═══ CAS D'USAGE ═══ --}}
-<section class="usages">
+<section class="usages a-decor">
+    <x-decor :formes="[
+        ['f-fleche', '--c:var(--violet);--op:.12;top:7%;left:4%;width:115px;--r:-16deg;--dur:26s'],
+        ['f-plume',  '--c:var(--vert);--op:.12;bottom:5%;right:4%;width:110px;--r:20deg;--dur:32s;--del:.5s'],
+    ]" />
     <div class="entete rev">
         <span class="sur">Pour quels objectifs ?</span>
         <h2 class="t1">Un réseau adapté aux différents temps forts de votre marque.</h2>
@@ -323,7 +341,11 @@
 </section>
 
 {{-- ═══ CTA FINAL ═══ --}}
-<section class="cta-res">
+<section class="cta-res a-decor">
+    <x-decor :formes="[
+        ['f-plume',  '--c:var(--bleu);--op:.12;top:10%;left:7%;width:110px;--r:16deg;--dur:28s'],
+        ['f-fleche', '--c:var(--rouge);--op:.16;bottom:12%;right:8%;width:120px;--r:-10deg;--dur:22s;--del:.4s'],
+    ]" />
     <span class="sur">Votre plan média commence ici</span>
     <h2 class="t1">Identifions les emplacements qui donneront le plus de force à votre campagne.</h2>
     <p>Indiquez-nous vos objectifs, vos audiences, vos zones prioritaires, votre période et votre budget. Notre équipe vous préparera une sélection personnalisée de formats et d'emplacements.</p>

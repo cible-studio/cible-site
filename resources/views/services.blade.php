@@ -123,11 +123,24 @@
     .cta-serv .sur{color:var(--rouge)}
     .cta-serv .t1{max-width:24ch;margin:14px auto 0}
     .cta-serv p{margin-top:20px;max-width:58ch;margin-left:auto;margin-right:auto;color:#666}
+
+    /* Filigrane de pôle (2026-08-13) : une forme géante et très pâle dans
+       la couleur du pôle, ancrée en bord de section. Les 4 pôles se
+       ressemblaient trop — c'est ce qui donne le rythme visuel de la page
+       et permet de repérer d'un coup d'œil dans quel pôle on se trouve. */
+    .pole > .filigrane{width:clamp(260px,34vw,460px);--c:var(--c);--op:.055}
+    .pole:not(.rtl) > .filigrane{right:-6%;top:8%}
+    .pole.rtl > .filigrane{left:-6%;top:8%}
+    @media(max-width:900px){.pole > .filigrane{opacity:.035}}
 @endpush
 
 @section('content')
 
-<section class="hero-serv">
+<section class="hero-serv a-decor">
+    <x-decor :formes="[
+        ['f-fleche', '--c:var(--bleu);--op:.16;top:12%;right:5%;width:120px;--r:-8deg;--dur:20s;--del:.4s'],
+        ['f-plume',  '--c:var(--rouge);--op:.10;bottom:-8%;left:4%;width:110px;--r:16deg;--dur:26s;--del:.7s'],
+    ]" />
     <span class="sur">Nos expertises</span>
     <h1 class="t1">De la visibilité à l'expérience. <em>De l'expérience à l'impact.</em></h1>
     <p>CIBLE conçoit et déploie des campagnes qui rendent les marques visibles, présentes et mémorables. Affichage, communication mobile, digital, street marketing, création de contenus et Media Intelligence : nous connectons les annonceurs à leurs audiences, dans la rue comme en ligne.</p>
@@ -139,7 +152,11 @@
 </section>
 
 {{-- ═══════════════════ NOTRE APPROCHE ═══════════════════ --}}
-<section class="approche">
+<section class="approche a-decor">
+    <x-decor :formes="[
+        ['f-plume',  '--c:var(--violet);--op:.11;top:4%;left:3%;width:130px;--r:12deg;--dur:28s'],
+        ['f-fleche', '--c:var(--vert);--op:.13;bottom:6%;right:4%;width:110px;--r:-18deg;--dur:22s;--del:.5s'],
+    ]" />
     <div class="entete rev">
         <span class="sur">Notre approche</span>
         <h2 class="t1">Créer une rencontre entre votre marque et ses publics.</h2>
@@ -162,7 +179,8 @@
 </section>
 
 {{-- ═══════════════════ PÔLE 01 · RÉGIE ═══════════════════ --}}
-<section id="regie" class="pole" style="--c:var(--rouge)">
+<section id="regie" class="pole a-decor" style="--c:var(--rouge)">
+    <span class="filigrane dessin f-fleche" aria-hidden="true" style="transform:rotate(12deg)"></span>
     <div class="wrap">
         <div class="rev">
             <span class="pole-tag">Pôle 01 · Régie publicitaire &amp; visibilité extérieure</span>
@@ -222,7 +240,8 @@
 </section>
 
 {{-- ═══════════════════ PÔLE 02 · MOBILE ═══════════════════ --}}
-<section id="mobile" class="pole rtl" style="--c:var(--jaune);background:#FFFCF3">
+<section id="mobile" class="pole rtl a-decor" style="--c:var(--jaune);background:#FFFCF3">
+    <span class="filigrane dessin f-plume" aria-hidden="true" style="transform:rotate(-14deg)"></span>
     <div class="wrap">
         <div class="rev">
             <span class="pole-tag" style="color:#111">Pôle 02 · Communication mobile &amp; présence urbaine</span>
@@ -258,7 +277,8 @@
 </section>
 
 {{-- ═══════════════════ PÔLE 03 · BRAND EXPERIENCE ═══════════════════ --}}
-<section id="globale" class="pole" style="--c:var(--violet)">
+<section id="globale" class="pole a-decor" style="--c:var(--violet)">
+    <span class="filigrane dessin f-plume" aria-hidden="true" style="transform:rotate(12deg)"></span>
     <div class="wrap">
         <div class="rev">
             <span class="pole-tag">Pôle 03 · Brand experience &amp; communication intégrée</span>
@@ -305,7 +325,8 @@
 </section>
 
 {{-- ═══════════════════ PÔLE 04 · MEDIA INTELLIGENCE ═══════════════════ --}}
-<section id="media-intelligence" class="pole rtl" style="--c:var(--bleu);background:#F7FAFD">
+<section id="media-intelligence" class="pole rtl a-decor" style="--c:var(--bleu);background:#F7FAFD">
+    <span class="filigrane dessin f-fleche" aria-hidden="true" style="transform:rotate(12deg)"></span>
     <div class="wrap">
         <div class="rev">
             <span class="pole-tag">Pôle 04 · Media Intelligence</span>
@@ -371,7 +392,12 @@
 </section>
 
 {{-- ═══════════════════ WORKFLOW ═══════════════════ --}}
-<section class="workflow">
+<section class="workflow a-decor">
+    <x-decor :formes="[
+        ['f-plume',  '--c:#fff;--op:.06;top:5%;left:5%;width:150px;--r:20deg;--dur:30s'],
+        ['f-plume',  '--c:#fff;--op:.05;bottom:4%;right:6%;width:120px;--r:-18deg;--dur:34s;--del:.5s'],
+        ['f-fleche', '--c:var(--jaune);--op:.14;top:30%;right:12%;width:110px;--r:6deg;--dur:24s;--del:.8s'],
+    ]" />
     <div class="entete rev">
         <span class="sur">Notre méthode</span>
         <h2>De l'objectif <em>à l'impact.</em></h2>
@@ -399,7 +425,11 @@
 </section>
 
 {{-- ═══════════════════ POUR QUELS OBJECTIFS ═══════════════════ --}}
-<section class="objectifs">
+<section class="objectifs a-decor">
+    <x-decor :formes="[
+        ['f-fleche', '--c:var(--rouge);--op:.12;top:6%;left:4%;width:120px;--r:-12deg;--dur:25s'],
+        ['f-plume',  '--c:var(--jaune);--op:.14;bottom:5%;right:3%;width:115px;--r:22deg;--dur:31s;--del:.4s'],
+    ]" />
     <div class="entete rev">
         <span class="sur">Vos ambitions, nos dispositifs</span>
         <h2 class="t1">Une expertise adaptée à chaque objectif de marque.</h2>
@@ -421,7 +451,11 @@
 </section>
 
 {{-- ═══════════════════ CTA ═══════════════════ --}}
-<section class="cta-serv">
+<section class="cta-serv a-decor">
+    <x-decor :formes="[
+        ['f-plume',  '--c:var(--violet);--op:.12;top:10%;left:7%;width:110px;--r:18deg;--dur:27s'],
+        ['f-fleche', '--c:var(--rouge);--op:.16;bottom:12%;right:8%;width:120px;--r:-10deg;--dur:21s;--del:.4s'],
+    ]" />
     <span class="sur">Votre prochaine campagne commence ici</span>
     <h2 class="t1">Construisons une expérience de marque que votre audience remarquera et retiendra.</h2>
     <p>Partagez-nous vos objectifs, vos cibles, vos zones prioritaires et votre calendrier. Notre équipe vous proposera une stratégie de visibilité, d'activation et de déploiement adaptée à votre ambition.</p>

@@ -144,6 +144,32 @@
        à la même largeur tasse les titres longs sur 4 lignes serrées. */
     .entete p{max-width:62ch;margin-left:auto;margin-right:auto}
 
+    /* ═══ décors ambiants (2026-08-13) ═══
+       Remontés de l'accueil vers le layout : les 6 autres pages n'avaient
+       aucun accès aux formes flottantes, d'où leur aspect plus fade.
+       Consommés via le composant Blade « decor » (resources/views/
+       components/decor.blade.php). ⚠ Ne jamais écrire la balise du
+       composant en toutes lettres dans un fichier .blade.php, même à
+       l'intérieur d'un commentaire CSS ou JS : Blade compile les balises
+       de composant avant tout, et l'exemple deviendrait un appel réel —
+       ici cela produisait un `endif` orphelin et un 500 sur tout le site.
+       Purement décoratifs, donc pointer-events:none et aria-hidden.
+       Les animations sont neutralisées par la règle prefers-reduced-motion
+       globale plus bas. */
+    .couche{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+    .fleche{position:absolute;pointer-events:none;z-index:0;opacity:0;animation:apparait .9s var(--del,0s) forwards, derive var(--dur,16s) var(--del,0s) ease-in-out infinite}
+    @keyframes apparait{to{opacity:var(--op,.9)}}
+    @keyframes derive{
+      0%,100%{transform:translate3d(0,0,0) rotate(var(--r,0deg)) scaleX(var(--sx,1))}
+      50%{transform:translate3d(var(--dx,18px),var(--dy,-24px),0) rotate(calc(var(--r,0deg) + 7deg)) scaleX(var(--sx,1))}
+    }
+    /* Filigrane : une forme géante et très pâle qui ancre une section.
+       Ne dérive pas — elle sert de fond, pas d'animation. */
+    .filigrane{position:absolute;pointer-events:none;z-index:0;opacity:var(--op,.06)}
+    /* Toute section accueillant un décor doit borner ses enfants absolus. */
+    .a-decor{position:relative;overflow:hidden}
+    .a-decor > *:not(.couche):not(.filigrane){position:relative;z-index:2}
+
     /* ═══ nav ═══ */
     header.site{position:sticky;top:0;z-index:80;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border-bottom:1px solid #E4E4E4}
     .nav{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:12px var(--pad)}

@@ -482,7 +482,11 @@
 </section>
 
 {{-- ═══ RÉASSURANCE ═══ --}}
-<section class="reass">
+<section class="reass a-decor">
+    <x-decor :formes="[
+        ['f-plume',  '--c:var(--vert);--op:.11;top:6%;right:5%;width:120px;--r:18deg;--dur:27s'],
+        ['f-fleche', '--c:var(--jaune);--op:.14;bottom:8%;left:3%;width:110px;--r:-14deg;--dur:23s;--del:.5s'],
+    ]" />
     <div class="reass-wrap">
         <div class="rev">
             <span class="sur">Notre engagement</span>
@@ -503,7 +507,12 @@
 </section>
 
 {{-- ═══ POURQUOI CIBLE ═══ --}}
-<section class="pourquoi">
+<section class="pourquoi a-decor">
+    <x-decor :formes="[
+        ['f-plume',  '--c:#fff;--op:.06;top:6%;left:5%;width:145px;--r:20deg;--dur:32s'],
+        ['f-plume',  '--c:#fff;--op:.05;bottom:4%;right:6%;width:115px;--r:-18deg;--dur:36s;--del:.5s'],
+        ['f-fleche', '--c:var(--jaune);--op:.14;top:30%;right:11%;width:105px;--r:6deg;--dur:25s;--del:.8s'],
+    ]" />
     <div class="entete rev">
         <h2 class="t1">Pourquoi les annonceurs choisissent CIBLE&nbsp;?</h2>
     </div>

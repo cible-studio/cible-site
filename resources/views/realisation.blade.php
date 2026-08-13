@@ -47,7 +47,11 @@
 
 <div style="--c:{{ $projet['couleur'] }}">
 
-    <section class="proj-hero">
+    <section class="proj-hero a-decor">
+    <x-decor :formes="[
+        ['f-fleche', '--c:var(--c);--op:.14;top:8%;right:5%;width:115px;--r:-10deg;--dur:21s;--del:.5s'],
+        ['f-plume',  '--c:var(--c);--op:.09;bottom:-14%;left:3%;width:100px;--r:16deg;--dur:28s;--del:.8s'],
+    ]" />
         <nav class="proj-fil" aria-label="Fil d'Ariane">
             <a href="{{ route('references') }}">Nos réalisations</a> · <span>{{ $projet['nom'] }}</span>
         </nav>
@@ -97,7 +101,11 @@
 
 </div>
 
-<section class="proj-cta">
+<section class="proj-cta a-decor">
+    <x-decor :formes="[
+        ['f-plume',  '--c:#fff;--op:.07;top:8%;left:6%;width:140px;--r:18deg;--dur:30s'],
+        ['f-plume',  '--c:#fff;--op:.05;bottom:6%;right:7%;width:110px;--r:-20deg;--dur:34s;--del:.4s'],
+    ]" />
     <h2 class="t1">Faisons de votre prochaine campagne une réalisation qui compte.</h2>
     <p>Partagez-nous votre objectif, votre audience et votre ambition. Nous imaginerons le dispositif de visibilité, d'activation et de communication le plus pertinent pour votre marque.</p>
     <div style="margin-top:32px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
