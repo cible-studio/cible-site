@@ -49,8 +49,8 @@
         font-family:var(--titre);font-weight:800;font-size:14px;color:var(--c);
         display:inline-flex;align-items:center;gap:8px;
     }
-    .carte .lien svg{width:14px;fill:currentColor;transition:transform .22s}
-    .carte:hover .lien svg{transform:translateX(4px)}
+    .carte .lien i{width:15px;aspect-ratio:282.95/195.83;background-color:currentColor;transition:transform .22s}
+    .carte:hover .lien i{transform:translateX(4px)}
     .filtre-vide{text-align:center;color:#888;font-family:var(--titre);font-weight:600;padding:40px 0}
 
     /* Impact */
@@ -100,10 +100,6 @@
 @endpush
 
 @section('content')
-
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
-<symbol id="ref-fleche" viewBox="0 0 177 119"><path fill-rule="evenodd" transform="translate(177,0) scale(-1,1)" d="M0.1 94.8C0.1 75.5 0.4 70.9 1.3 72.5C3.0 75.4 12.6 84.6 19.0 89.5C31.2 98.8 49.7 108.5 63.9 113.1C70.3 115.2 71.2 115.2 75.1 114.0C83.4 111.2 88.1 103.7 86.6 95.6C85.6 90.3 78.7 83.9 71.9 81.7C64.6 79.5 50.8 72.6 51.6 71.7C52.7 70.6 70.3 70.9 76.2 72.1C89.4 74.8 98.3 77.6 108.0 82.3C122.7 89.3 131.3 95.4 142.8 107.0C148.3 112.5 153.3 117.0 153.8 117.0C154.4 117.0 155.2 117.5 155.5 118.0C155.9 118.7 129.8 119.0 78.1 119.0L0.0 119.0L0.1 94.8ZM166.5 118.0C166.8 117.5 167.7 117.0 168.4 117.0C170.4 117.0 173.8 112.8 175.4 108.5L176.9 104.5L176.9 111.8L177.0 119.0L171.4 119.0C168.0 119.0 166.1 118.6 166.5 118.0ZM175.2 97.6C174.3 94.2 172.1 91.3 165.3 84.3C145.1 63.7 120.7 49.7 94.0 43.2C79.7 39.8 75.1 39.0 69.5 39.0C64.1 39.0 61.9 37.9 64.2 36.3C66.9 34.6 74.9 33.1 84.5 32.4C96.1 31.7 99.8 30.2 103.7 25.2C109.8 17.1 105.4 4.1 95.5 1.1C93.6 0.5 107.3 0.1 134.8 0.1L177.0 0.0L177.0 51.0C177.0 79.0 176.9 102.0 176.7 102.0C176.5 102.0 175.9 100.0 175.2 97.6ZM0.0 30.2L0.0 0.0L38.2 0.1C59.5 0.2 74.1 0.6 71.0 1.0C54.1 3.3 33.8 13.9 20.9 27.4C15.4 33.1 7.0 44.8 7.0 46.6C7.0 47.2 6.4 48.3 5.6 48.9C4.8 49.6 3.8 51.6 3.4 53.3C3.1 55.1 2.1 57.4 1.4 58.5C0.2 60.2 0.0 56.1 0.0 30.2Z"/></symbol>
-</defs></svg>
 
 <section class="hero-ref">
     <span class="sur">Nos réalisations</span>
@@ -159,7 +155,7 @@
                     <p class="accroche">{{ $p['titre'] }}</p>
                     <p class="desc">{{ $p['texte'] }}</p>
                     <p class="services">{{ $p['services'] }}</p>
-                    <span class="lien">Voir le projet<svg viewBox="0 0 177 119"><use href="#ref-fleche"/></svg></span>
+                    <span class="lien">Voir le projet<i class="dessin f-fleche" aria-hidden="true"></i></span>
                 </a>
             </article>
         @endforeach

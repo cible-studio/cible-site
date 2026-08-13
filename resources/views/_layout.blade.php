@@ -89,6 +89,38 @@
     section{position:relative;overflow:hidden}
 
     .num{font-family:var(--titre);font-variant-numeric:tabular-nums}
+
+    /* ═══ formes de marque : flèche & plume (2026-08-13) ═══
+       Dessins CIBLE issus de l'identité perroquet, servis en SVG externes
+       et colorés par masque CSS : un seul fichier par forme couvre les 5
+       couleurs de la palette ET le blanc, pilotées par --c.
+       Pourquoi un masque plutôt que du SVG inline : la plume pèse 55 Ko à
+       elle seule, soit 4× le poids de tous les symboles qu'elle remplace.
+       En fichier externe elle est mise en cache une fois pour tout le site
+       au lieu d'alourdir chaque page — décisif en 3G.
+       Les URL passent par asset() : ce CSS étant inliné dans la page, une
+       URL relative casserait sur /references/{slug}. */
+    .dessin{
+        background-color:var(--c,var(--rouge));
+        -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
+        -webkit-mask-position:center;mask-position:center;
+        -webkit-mask-size:contain;mask-size:contain;
+    }
+    .f-fleche{
+        -webkit-mask-image:url('{{ asset('images/fleche.svg') }}');
+        mask-image:url('{{ asset('images/fleche.svg') }}');
+        aspect-ratio:282.95/195.83;
+    }
+    .f-plume{
+        -webkit-mask-image:url('{{ asset('images/plume.svg') }}');
+        mask-image:url('{{ asset('images/plume.svg') }}');
+        aspect-ratio:758.4/1031.77;
+    }
+    /* Navigateur sans masque CSS : on efface la décoration plutôt que de
+       laisser un rectangle de couleur pleine à l'écran. */
+    @supports not ((-webkit-mask-image:url(#a)) or (mask-image:url(#a))){
+        .dessin{display:none}
+    }
     /* Titres 2026-08-04ter — refonte échelle globale :
        - line-height 1.05 pour éviter la superposition Poppins 900
        - .t1 ramené de clamp(38,6.2,86) → clamp(32,4.8vw,64) :
@@ -121,7 +153,10 @@
     .liens a:nth-child(5){--c:var(--jaune)}
     .liens a:nth-child(6){--c:var(--bleu)}
     .bouton{display:inline-flex;align-items:center;gap:9px;font-family:var(--titre);font-weight:800;font-size:14px;padding:14px 26px;border-radius:999px;transition:transform .18s cubic-bezier(.2,.8,.3,1),background .18s,color .18s;cursor:pointer;border:0;text-decoration:none}
-    .bouton .fl{width:15px;transition:transform .22s;flex-shrink:0}
+    /* La flèche des boutons prend la couleur du texte du bouton (blanc sur
+       fond rouge, noir sur bouton ligne) — avant, le SVG inline restait
+       noir quel que soit le fond. */
+    .bouton .fl{width:15px;aspect-ratio:282.95/195.83;transition:transform .22s;flex-shrink:0;background-color:currentColor}
     .bouton:hover .fl{transform:translateX(4px)}
     .b-rouge{background:var(--rouge);color:var(--blanc)} .b-rouge:hover{transform:translateY(-3px);background:#B00510}
     .b-ligne{border:2px solid var(--noir);background:transparent;color:var(--noir)} .b-ligne:hover{background:var(--noir);color:var(--blanc);transform:translateY(-3px)}
@@ -234,11 +269,15 @@
             <div class="logo-foot">
                 <img src="{{ asset('images/logon.png') }}" alt="CIBLE — Vous visez juste">
             </div>
-            <p class="slogan">Régie publicitaire et studio créatif. + de 30 ans à rendre les marques visibles en Côte d'Ivoire.</p>
+            {{-- Coupure explicite après "créatif." et « + de 30 ans » rendu
+                 insécable : sans ça, la colonne étroite du footer séparait
+                 le « + » de son nombre en fin de ligne. --}}
+            <p class="slogan">Régie publicitaire et studio créatif.<br>+&nbsp;de&nbsp;30&nbsp;ans à rendre les marques visibles en Côte d'Ivoire.</p>
         </div>
         <div>
             <h5>Explorer</h5>
             <ul>
+                <li><a href="{{ route('home') }}">Accueil</a></li>
                 <li><a href="{{ route('qui') }}">Qui sommes-nous</a></li>
                 <li><a href="{{ route('services') }}">Nos services</a></li>
                 <li><a href="{{ route('references') }}">Réalisations</a></li>
