@@ -7,39 +7,50 @@
     .contact-wrap{padding:clamp(60px,8vw,110px) var(--pad);background:var(--jaune);color:var(--noir);position:relative;overflow:hidden}
     .motif{position:absolute;inset:-10% -10%;background-image:var(--tuile);background-size:340px 340px;animation:motifDerive 60s linear infinite;pointer-events:none;z-index:0;opacity:.5}
     @keyframes motifDerive{from{background-position:0 0}to{background-position:340px 340px}}
-    /* align-items:stretch (défaut) et non `start` : depuis le découpage en
-       étapes, l'étape 1 ne fait que 5 champs, donc la carte du formulaire
-       devenait plus courte que la colonne de gauche et laissait un grand
-       aplat jaune vide à sa droite. En s'étirant, elle occupe toute la
-       hauteur de la rangée, quelle que soit l'étape affichée. */
-    .contact-inner{position:relative;z-index:2;display:grid;grid-template-columns:1fr 1.25fr;gap:clamp(30px,5vw,70px)}
-    @media(max-width:980px){.contact-inner{grid-template-columns:1fr}}
-    .contact-inner .intro .t1{max-width:18ch}
-    .contact-inner .intro p{margin-top:20px;max-width:46ch;font-size:clamp(16px,1.6vw,19px)}
-    .contact-inner .intro .accroche{margin-top:14px;font-size:15.5px;font-weight:700;font-family:var(--titre)}
+    /* Colonne unique et centrée : cf. commentaire dans le balisage. */
+    .contact-intro{position:relative;z-index:2;max-width:820px;margin:0 auto;text-align:center}
+    .contact-intro .t1{margin-top:14px}
+    .contact-intro p{margin-top:20px;max-width:64ch;margin-left:auto;margin-right:auto;font-size:clamp(16px,1.6vw,19px)}
+    .contact-intro .accroche{margin-top:16px;font-size:16px;font-weight:700;font-family:var(--titre)}
 
-    /* Bénéfices — ce que vous obtenez */
-    .benefs{margin-top:32px;background:rgba(255,255,255,.55);border-radius:18px;padding:24px 26px}
-    .benefs h2{font-family:var(--titre);font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:#7A5B00;margin-bottom:14px}
-    .benefs ul{list-style:none;display:flex;flex-direction:column;gap:10px}
-    .benefs li{display:flex;gap:12px;align-items:flex-start;font-size:14.5px;line-height:1.5;font-weight:600}
+    /* Bénéfices en bandeau horizontal */
+    .benefs{
+        list-style:none;margin-top:34px;
+        display:flex;flex-wrap:wrap;justify-content:center;gap:10px;
+    }
+    .benefs li{
+        display:flex;gap:9px;align-items:center;
+        background:rgba(255,255,255,.62);border-radius:999px;
+        padding:10px 18px;
+        font-family:var(--titre);font-weight:700;font-size:13.5px;
+        line-height:1.35;text-align:left;
+    }
     .benefs li::before{content:"✓";color:var(--rouge);font-weight:900;flex-shrink:0}
+
+    /* Zone du formulaire — la carte remonte sur le bandeau jaune */
+    .form-zone{padding:0 var(--pad) clamp(50px,7vw,90px);background:linear-gradient(180deg,var(--jaune) 0 90px,#fff 90px)}
+    .form-zone .form-card{max-width:880px;margin:0 auto}
+
+    /* Coordonnées en 3 cartes égales */
+    .coord-zone{padding:0 var(--pad) clamp(56px,8vw,100px);background:#fff}
 
     /* Carte coordonnées 2026-08-04 — refonte propre :
        lignes avec icône colorée + label uppercase + valeur. */
     .coord{
-        margin-top:26px;background:var(--blanc);padding:8px;
+        max-width:1100px;margin:0 auto;background:var(--blanc);padding:8px;
         border-radius:20px;font-family:var(--titre);
-        display:flex;flex-direction:column;
+        display:grid;grid-template-columns:repeat(3,1fr);
         box-shadow:0 12px 32px -12px rgba(0,0,0,.15);
     }
+    @media(max-width:860px){.coord{grid-template-columns:1fr}}
     .coord-row{
         display:flex;align-items:center;gap:16px;
         padding:16px 18px;border-radius:14px;
         text-decoration:none;color:var(--noir);
         transition:background .18s;
     }
-    .coord-row + .coord-row{border-top:1px solid #F0F0F0}
+    .coord-row + .coord-row{border-left:1px solid #F0F0F0}
+    @media(max-width:860px){.coord-row + .coord-row{border-left:0;border-top:1px solid #F0F0F0}}
     .coord-row:hover{background:#FAFAFA}
     .coord-icon{
         width:44px;height:44px;border-radius:12px;
@@ -67,12 +78,10 @@
     }
 
     /* ═══ formulaire mini-brief ═══ */
-    /* La carte et le formulaire sont en colonne flex pour que la barre de
-       navigation puisse être plaquée en bas (margin-top:auto) : elle reste
-       ainsi au même endroit d'une étape à l'autre, au lieu de remonter avec
-       les étapes courtes. */
-    .form-card{background:#fff;border-radius:24px;padding:clamp(26px,3.5vw,40px);box-shadow:0 20px 50px -20px rgba(0,0,0,.15);display:flex;flex-direction:column}
-    .form-card > form{display:flex;flex-direction:column;flex:1}
+    /* En colonne unique, la carte prend la hauteur de son contenu : plus
+       besoin de l'étirer, donc plus de vide blanc. La barre de navigation
+       suit simplement le dernier bloc de l'étape. */
+    .form-card{background:#fff;border-radius:24px;padding:clamp(28px,3.5vw,44px);box-shadow:0 24px 60px -24px rgba(0,0,0,.28)}
     .form-card h2{font-family:var(--titre);font-weight:800;font-size:24px;margin-bottom:8px}
     .form-card .sub{font-size:14px;color:#666;margin-bottom:8px}
 
@@ -211,7 +220,7 @@
 
     .etape-nav{
         display:flex;gap:12px;align-items:center;flex-wrap:wrap;
-        margin-top:auto;padding-top:22px;border-top:1px solid var(--gris);
+        margin-top:26px;padding-top:22px;border-top:1px solid var(--gris);
     }
     /* Marge de sécurité : sans JS, la barre est masquée et c'est le bloc
        d'envoi qui doit garder de l'air au-dessus de lui. */
@@ -239,55 +248,36 @@
     $errChoix = fn (string $cle) => $errors->first($cle) ?: $errors->first($cle . '.*');
 @endphp
 
+{{-- Bandeau d'accroche. Refonte 2026-08-13 : la page était en deux colonnes
+     (intro+coordonnées à gauche, formulaire à droite). Depuis le découpage
+     en étapes, la hauteur du formulaire varie du simple au triple selon
+     l'étape, si bien qu'aucune des deux colonnes ne pouvait s'aligner sur
+     l'autre — on obtenait soit un aplat jaune vide, soit un vide blanc dans
+     la carte. Un formulaire par étapes demande une colonne unique et
+     centrée : rien à aligner, et l'attention reste sur l'étape en cours. --}}
 <section class="contact-wrap">
     <div class="motif" aria-hidden="true"></div>
-    <div class="contact-inner">
+    <div class="contact-intro rev">
+        <span class="sur">Parlons de votre projet</span>
+        <h1 class="t1">Donnons à votre marque la visibilité qu'elle mérite.</h1>
+        <p>Que vous souhaitiez lancer une campagne d'affichage, créer une expérience de marque, renforcer votre présence digitale ou construire une stratégie de communication complète, nos équipes vous accompagnent dans la conception du dispositif le plus adapté à vos objectifs.</p>
+        <p class="accroche">Nous analysons votre besoin avant de vous proposer une recommandation média personnalisée.</p>
 
-        {{-- Colonne gauche : intro + bénéfices + coordonnées --}}
-        <div class="intro rev">
-            <span class="sur">Parlons de votre projet</span>
-            <h1 class="t1" style="margin-top:14px">Donnons à votre marque la visibilité qu'elle mérite.</h1>
-            <p>Que vous souhaitiez lancer une campagne d'affichage, créer une expérience de marque, renforcer votre présence digitale ou construire une stratégie de communication complète, nos équipes vous accompagnent dans la conception du dispositif le plus adapté à vos objectifs.</p>
-            <p class="accroche">Nous analysons votre besoin avant de vous proposer une recommandation média personnalisée.</p>
+        {{-- Bénéfices en bandeau horizontal : compact, lisible d'un coup
+             d'œil, et sans hauteur à faire correspondre à quoi que ce soit. --}}
+        <ul class="benefs">
+            <li>Une recommandation adaptée à votre objectif</li>
+            <li>Les formats et emplacements les plus pertinents</li>
+            <li>Une proposition adaptée à votre budget</li>
+            <li>Un interlocuteur dédié</li>
+            <li>Une réponse sous 24 h ouvrées</li>
+        </ul>
+    </div>
+</section>
 
-            <div class="benefs">
-                <h2>Ce que vous obtenez</h2>
-                <ul>
-                    <li>Une recommandation adaptée à votre objectif de communication</li>
-                    <li>Une sélection des formats et des emplacements les plus pertinents</li>
-                    <li>Une proposition adaptée à votre budget</li>
-                    <li>Un interlocuteur dédié pour vous accompagner</li>
-                    <li>Une réponse sous 24 heures ouvrées</li>
-                </ul>
-            </div>
-
-            <div class="coord">
-                <a href="tel:+2250700780628" class="coord-row coord-tel">
-                    <span class="coord-icon coord-icon-tel">📞</span>
-                    <span class="coord-txt">
-                        <span class="coord-lbl">Téléphone</span>
-                        <span class="coord-val num">+225 07 00 78 06 28</span>
-                    </span>
-                </a>
-                <a href="mailto:commercial@cible-ci.com" class="coord-row">
-                    <span class="coord-icon coord-icon-mail">✉</span>
-                    <span class="coord-txt">
-                        <span class="coord-lbl">Email</span>
-                        <span class="coord-val">commercial@cible-ci.com</span>
-                    </span>
-                </a>
-                <div class="coord-row" style="cursor:default">
-                    <span class="coord-icon coord-icon-addr">📍</span>
-                    <span class="coord-txt">
-                        <span class="coord-lbl">Adresse</span>
-                        <span class="coord-val">Rue des Ambassadeurs</span>
-                        <span class="coord-val-sub">Riviera M'Badon · 10 BP 1029 Abidjan 10</span>
-                    </span>
-                </div>
-            </div>
-        </div>
-
-        {{-- Colonne droite : le mini-brief --}}
+{{-- Le formulaire remonte sur le bandeau jaune : la carte flotte, ce qui
+     crée de la profondeur et signale clairement où commence l'action. --}}
+<section class="form-zone">
         <div class="form-card rev">
             @if(session('devis_sent'))
                 <div class="success-msg">
@@ -561,6 +551,34 @@
                     </div>
                 </form>
             @endif
+        </div>
+</section>
+
+{{-- Coordonnées : sorties de la colonne pour devenir un bandeau de 3 cartes
+     égales, lisible sans dépendre de la hauteur du formulaire. --}}
+<section class="coord-zone">
+    <div class="coord">
+        <a href="tel:+2250700780628" class="coord-row coord-tel">
+            <span class="coord-icon coord-icon-tel">📞</span>
+            <span class="coord-txt">
+                <span class="coord-lbl">Téléphone</span>
+                <span class="coord-val num">+225 07 00 78 06 28</span>
+            </span>
+        </a>
+        <a href="mailto:commercial@cible-ci.com" class="coord-row">
+            <span class="coord-icon coord-icon-mail">✉</span>
+            <span class="coord-txt">
+                <span class="coord-lbl">Email</span>
+                <span class="coord-val">commercial@cible-ci.com</span>
+            </span>
+        </a>
+        <div class="coord-row" style="cursor:default">
+            <span class="coord-icon coord-icon-addr">📍</span>
+            <span class="coord-txt">
+                <span class="coord-lbl">Adresse</span>
+                <span class="coord-val">Rue des Ambassadeurs</span>
+                <span class="coord-val-sub">Riviera M'Badon · 10 BP 1029 Abidjan 10</span>
+            </span>
         </div>
     </div>
 </section>
