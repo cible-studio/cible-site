@@ -15,7 +15,7 @@
 
     /* Section d'introduction — notre modèle */
     .approche{padding:clamp(56px,8vw,100px) var(--pad);background:var(--gris)}
-    .approche .entete{max-width:720px;margin:0 auto 48px;text-align:center}
+    .approche .entete{max-width:860px;margin:0 auto 48px;text-align:center}
     .approche .sur{color:var(--violet)}
     .approche .t1{margin-top:12px}
     .approche .entete p{margin-top:20px;color:#444}
@@ -76,7 +76,7 @@
 
     /* Section phygitale — 4 temps du parcours */
     .phygital{padding:clamp(56px,8vw,100px) var(--pad)}
-    .phygital .entete{max-width:720px;margin:0 auto 52px;text-align:center}
+    .phygital .entete{max-width:860px;margin:0 auto 52px;text-align:center}
     .phygital .sur{color:var(--vert)}
     .phygital .t1{margin-top:12px}
     .phygital .entete p{margin-top:20px;color:#444}
@@ -91,7 +91,7 @@
     /* Workflow */
     .workflow{background:var(--noir);color:#fff;padding:clamp(60px,8vw,110px) var(--pad)}
     /* Centrage 2026-08-04 : cohérence avec les autres entêtes du site */
-    .workflow .entete{max-width:720px;margin:0 auto 60px;text-align:center}
+    .workflow .entete{max-width:860px;margin:0 auto 60px;text-align:center}
     .workflow .sur{color:var(--jaune)}
     .workflow h2{font-family:var(--titre);font-weight:900;font-size:clamp(28px,3.8vw,50px);line-height:1.05;letter-spacing:-.025em;color:#fff;margin-top:12px}
     .workflow h2 em{color:var(--jaune);font-style:normal}
@@ -109,7 +109,7 @@
 
     /* Section objectifs */
     .objectifs{padding:clamp(56px,8vw,100px) var(--pad);background:var(--gris)}
-    .objectifs .entete{max-width:680px;margin:0 auto 44px;text-align:center}
+    .objectifs .entete{max-width:860px;margin:0 auto 44px;text-align:center}
     .objectifs .sur{color:var(--rouge)}
     .objectifs .t1{margin-top:12px}
     .obj-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:1000px;margin:0 auto}

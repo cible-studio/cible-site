@@ -133,6 +133,17 @@
     .t2{font-family:var(--titre);font-weight:800;line-height:1.08;letter-spacing:-.02em;font-size:clamp(24px,3vw,38px)}
     .sur{font-family:var(--titre);font-weight:700;text-transform:uppercase;font-size:12px;letter-spacing:.2em}
 
+    /* ═══ tenue des titres (2026-08-13) ═══
+       text-wrap:balance répartit un titre qui boucle sur des lignes de
+       largeur équivalente, au lieu de laisser 3 lignes pleines puis un mot
+       orphelin. Propriété ignorée sans erreur par les navigateurs qui ne la
+       connaissent pas — aucune régression possible. */
+    h1,h2,h3,.t1,.t2{text-wrap:balance}
+    /* Dans un bloc d'en-tête centré, c'est le PARAGRAPHE qu'il faut borner
+       (confort de lecture ~62 signes), pas le titre : contraindre les deux
+       à la même largeur tasse les titres longs sur 4 lignes serrées. */
+    .entete p{max-width:62ch;margin-left:auto;margin-right:auto}
+
     /* ═══ nav ═══ */
     header.site{position:sticky;top:0;z-index:80;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border-bottom:1px solid #E4E4E4}
     .nav{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:12px var(--pad)}

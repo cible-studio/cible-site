@@ -19,7 +19,7 @@
 
     .distinctions{background:var(--gris);padding:clamp(56px,8vw,100px) var(--pad)}
     /* Centrage 2026-08-04 : trop d'espace vide à droite */
-    .distinctions .entete{max-width:640px;margin:0 auto 48px;text-align:center}
+    .distinctions .entete{max-width:860px;margin:0 auto 48px;text-align:center}
     .distinctions .sur{color:var(--vert)}
     .distinctions .t1{margin-top:12px}
     .dist-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(18px,3vw,44px)}
@@ -32,7 +32,7 @@
     .stats-qui{padding:clamp(56px,8vw,100px) var(--pad);background:var(--noir);color:#fff;text-align:center}
     /* Centrage 2026-08-04 (max-width élargi 22→40ch : 22 forçait 3
        lignes serrées avec superposition, 40ch tient sur 1-2 lignes propres) */
-    .stats-qui .entete{max-width:40ch;margin:0 auto 48px}
+    .stats-qui .entete{max-width:860px;margin:0 auto 48px}
     .stats-qui .sur{color:var(--jaune)}
     .stats-qui .t1{color:#fff;margin-top:12px}
     .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(20px,3vw,40px)}

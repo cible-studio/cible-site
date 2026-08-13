@@ -11,7 +11,7 @@
 
     /* Introduction */
     .intro-ref{padding:clamp(50px,7vw,90px) var(--pad);background:var(--gris)}
-    .intro-ref .entete{max-width:760px;margin:0 auto;text-align:center}
+    .intro-ref .entete{max-width:860px;margin:0 auto;text-align:center}
     .intro-ref .sur{color:var(--violet)}
     .intro-ref .t1{margin-top:12px}
     .intro-ref p{margin-top:20px;color:#444}
@@ -55,7 +55,7 @@
 
     /* Impact */
     .impact{padding:clamp(56px,8vw,100px) var(--pad);background:var(--noir);color:#fff}
-    .impact .entete{max-width:700px;margin:0 auto 48px;text-align:center}
+    .impact .entete{max-width:860px;margin:0 auto 48px;text-align:center}
     .impact .sur{color:var(--jaune)}
     .impact .t1{margin-top:12px;color:#fff}
     .impact-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
@@ -82,7 +82,7 @@
 
     .clients-band{padding:clamp(56px,8vw,100px) var(--pad);background:var(--gris)}
     /* Centrage 2026-08-04 */
-    .clients-band .entete{max-width:720px;margin:0 auto 44px;text-align:center}
+    .clients-band .entete{max-width:860px;margin:0 auto 44px;text-align:center}
     .clients-band .sur{color:var(--vert)}
     .clients-band .entete p{margin-top:18px;color:#444}
     .clients-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:16px;align-items:center}

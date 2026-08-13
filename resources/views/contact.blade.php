@@ -170,7 +170,7 @@
 
     /* ═══ pourquoi CIBLE ═══ */
     .pourquoi{padding:clamp(56px,8vw,100px) var(--pad);background:var(--noir);color:#fff}
-    .pourquoi .entete{max-width:700px;margin:0 auto 44px;text-align:center}
+    .pourquoi .entete{max-width:860px;margin:0 auto 44px;text-align:center}
     .pourquoi .t1{color:#fff}
     .pourquoi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:1100px;margin:0 auto}
     @media(max-width:900px){.pourquoi-grid{grid-template-columns:1fr 1fr}}

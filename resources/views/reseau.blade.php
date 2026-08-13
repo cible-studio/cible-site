@@ -14,7 +14,7 @@
 
     /* Approche média — 3 cartes */
     .approche-med{padding:clamp(56px,8vw,100px) var(--pad)}
-    .approche-med .entete{max-width:720px;margin:0 auto 48px;text-align:center}
+    .approche-med .entete{max-width:860px;margin:0 auto 48px;text-align:center}
     .approche-med .sur{color:var(--violet)}
     .approche-med .t1{margin-top:12px}
     .approche-med .entete p{margin-top:20px;color:#444}
@@ -25,7 +25,7 @@
     .app-card p{font-size:14.5px;color:#555;line-height:1.6}
 
     .carte-section{padding:clamp(56px,8vw,100px) var(--pad);background:var(--gris)}
-    .carte-section .entete{max-width:680px;margin:0 auto 44px;text-align:center}
+    .carte-section .entete{max-width:860px;margin:0 auto 44px;text-align:center}
     .carte-section .sur{color:var(--bleu)}
     .carte-section .t1{margin-top:12px}
     .carte-section .entete p{margin-top:18px;color:#444}
@@ -69,7 +69,7 @@
     }
 
     .communes{padding:clamp(56px,8vw,100px) var(--pad)}
-    .communes .entete{max-width:680px;margin:0 auto 44px;text-align:center}
+    .communes .entete{max-width:860px;margin:0 auto 44px;text-align:center}
     .communes .sur{color:var(--vert)}
     .communes .t1{margin-top:12px}
     .communes-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(20px,3vw,40px)}
@@ -83,7 +83,7 @@
 
     /* Formats du parc */
     .formats-sec{padding:clamp(56px,8vw,100px) var(--pad);background:var(--gris)}
-    .formats-sec .entete{max-width:680px;margin:0 auto 44px;text-align:center}
+    .formats-sec .entete{max-width:860px;margin:0 auto 44px;text-align:center}
     .formats-sec .sur{color:var(--jaune)}
     .formats-sec .t1{margin-top:12px}
     .formats-sec .entete p{margin-top:18px;color:#444}
@@ -96,7 +96,7 @@
 
     /* Media Intelligence (fond noir) */
     .data-sec{padding:clamp(56px,8vw,100px) var(--pad);background:var(--noir);color:#fff}
-    .data-sec .entete{max-width:720px;margin:0 auto 48px;text-align:center}
+    .data-sec .entete{max-width:860px;margin:0 auto 48px;text-align:center}
     .data-sec .sur{color:var(--jaune)}
     .data-sec .t1{margin-top:12px;color:#fff}
     .data-sec .entete p{margin-top:20px;color:rgba(255,255,255,.75)}
@@ -108,7 +108,7 @@
     .data-card p{font-size:13.5px;color:rgba(255,255,255,.72);line-height:1.6}
 
     .qualite{padding:clamp(56px,8vw,100px) var(--pad)}
-    .qualite .entete{max-width:720px;margin:0 auto 48px;text-align:center}
+    .qualite .entete{max-width:860px;margin:0 auto 48px;text-align:center}
     .qualite .sur{color:var(--rouge)}
     .qualite .t1{margin-top:12px}
     .q-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(16px,2vw,26px)}
@@ -120,7 +120,7 @@
 
     /* Cas d'usage */
     .usages{padding:clamp(56px,8vw,100px) var(--pad);background:var(--gris)}
-    .usages .entete{max-width:680px;margin:0 auto 44px;text-align:center}
+    .usages .entete{max-width:860px;margin:0 auto 44px;text-align:center}
     .usages .sur{color:var(--violet)}
     .usages .t1{margin-top:12px}
     .usages-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:1000px;margin:0 auto}
