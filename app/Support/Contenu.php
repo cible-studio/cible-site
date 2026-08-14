@@ -2,7 +2,6 @@
 
 namespace App\Support;
 
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -92,7 +91,7 @@ class Contenu
         );
 
         if ($json === false || $json === '') {
-            Log::error('cible.contenu.encodage_impossible', [
+            Journal::erreur('cible.contenu.encodage_impossible', [
                 'section' => $section, 'erreur' => json_last_error_msg(),
             ]);
 
@@ -108,7 +107,7 @@ class Contenu
         } catch (\Throwable $e) {
             // Volume absent ou non inscriptible : on trace et on refuse, mais
             // le site public continue de fonctionner sur les défauts.
-            Log::error('cible.contenu.ecriture_impossible', [
+            Journal::erreur('cible.contenu.ecriture_impossible', [
                 'section' => $section, 'error' => $e->getMessage(),
             ]);
 
@@ -200,7 +199,7 @@ class Contenu
         } catch (\Throwable $e) {
             // Un JSON corrompu ne doit pas casser le site : on ignore la
             // surcharge et on sert les défauts.
-            Log::warning('cible.contenu.surcharge_illisible', [
+            Journal::avertir('cible.contenu.surcharge_illisible', [
                 'section' => $section, 'error' => $e->getMessage(),
             ]);
 

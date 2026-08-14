@@ -3,7 +3,6 @@
 namespace App\Support;
 
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 
 /**
  * Cloudflare Turnstile — vérification anti-robot du formulaire /contact.
@@ -59,7 +58,7 @@ class Turnstile
             $ok = (bool) ($reponse->json('success') ?? false);
 
             if (!$ok) {
-                Log::warning('cible.turnstile.echec', [
+                Journal::avertir('cible.turnstile.echec', [
                     'codes' => $reponse->json('error-codes') ?? [],
                     'ip'    => $ip,
                 ]);
@@ -70,7 +69,7 @@ class Turnstile
             // Cloudflare injoignable : on laisse passer plutôt que de bloquer
             // un vrai prospect. L'analyse maison reste en place, et l'incident
             // est tracé pour ne pas passer inaperçu.
-            Log::error('cible.turnstile.indisponible', ['error' => $e->getMessage()]);
+            Journal::erreur('cible.turnstile.indisponible', ['error' => $e->getMessage()]);
 
             return true;
         }

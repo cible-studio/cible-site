@@ -4,7 +4,7 @@ namespace App\Support;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
+
 
 /**
  * Authentification de l'espace admin — un seul compte, aucune table.
@@ -53,7 +53,7 @@ class AdminAuth
             return $decode;
         }
 
-        Log::error('cible.admin.hash_invalide', [
+        Journal::erreur('cible.admin.hash_invalide', [
             'indice' => "CIBLE_ADMIN_HASH n'est pas un hash bcrypt exploitable. "
                       . "Si votre interface interprète les « \$ », utilisez la version "
                       . "encodée en base64 fournie par « php artisan cible:admin-hash ».",
@@ -106,7 +106,7 @@ class AdminAuth
 
     public static function journaliser(string $evenement, Request $request, array $extra = []): void
     {
-        Log::warning("cible.admin.$evenement", [
+        Journal::avertir("cible.admin.$evenement", [
             'ip' => $request->ip(),
             'ua' => substr((string) $request->userAgent(), 0, 160),
         ] + $extra);

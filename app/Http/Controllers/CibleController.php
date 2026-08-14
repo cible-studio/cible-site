@@ -313,7 +313,7 @@ class CibleController extends Controller
             // On affiche le message de succès habituel : signaler le rejet
             // apprendrait au robot quel signal l'a trahi, et lui permettrait
             // d'itérer jusqu'à passer.
-            Log::warning('cible.devis.robot_ecarte', [
+            Journal::avertir('cible.devis.robot_ecarte', [
                 'score'   => $verdict['score'],
                 'signaux' => $verdict['signaux'],
                 'ip'      => $request->ip(),
@@ -372,7 +372,7 @@ class CibleController extends Controller
                 'documents' => count($fichiers),
             ]);
         } catch (\Throwable $e) {
-            Log::error('cible.devis.mail_failed', [
+            Journal::erreur('cible.devis.mail_failed', [
                 'error' => $e->getMessage(),
                 // Les fichiers ne sont pas journalisés (volume + données client).
                 'data'  => Arr::except($data, array_keys(self::DOCUMENTS)),
