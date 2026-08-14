@@ -60,8 +60,8 @@
     </section>
 
     <div class="proj-visuel rev">
-        @if(file_exists(public_path($projet['image'])))
-            <img src="{{ asset($projet['image']) }}" alt="{{ $projet['nom'] }} — {{ $projet['cat'] }}">
+        @if(\App\Support\Contenu::imageExiste($projet['image']))
+            <img src="{{ \App\Support\Contenu::urlImage($projet['image']) }}" alt="{{ $projet['nom'] }} — {{ $projet['cat'] }}">
         @else
             <div class="slot slot--sombre">{{ $projet['nom'] }} · {{ $projet['cat'] }}<small>{{ $projet['image'] }}</small></div>
         @endif

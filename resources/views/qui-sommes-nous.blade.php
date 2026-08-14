@@ -111,10 +111,11 @@
         <h2 class="t1">Trente ans concentrés en quatre nombres.</h2>
     </div>
     <div class="stats-grid">
-        <div class="stat"><div class="v num" data-cible="30">0</div><div class="l">Ans d'expertise</div></div>
-        <div class="stat"><div class="v num"><span aria-hidden="true">+</span><span data-cible="400">0</span></div><div class="l">Panneaux en propre</div></div>
-        <div class="stat"><div class="v num" data-cible="31">0</div><div class="l">Communes couvertes</div></div>
-        <div class="stat"><div class="v num" data-cible="3">0</div><div class="l">Distinctions d'État</div></div>
+        @php $ch = \App\Support\Contenu::section('chiffres'); @endphp
+        <div class="stat"><div class="v num" data-cible="{{ $ch['annees'] }}">0</div><div class="l">Ans d'expertise</div></div>
+        <div class="stat"><div class="v num"><span aria-hidden="true">+</span><span data-cible="{{ $ch['panneaux'] }}">0</span></div><div class="l">Panneaux en propre</div></div>
+        <div class="stat"><div class="v num" data-cible="{{ $ch['communes'] }}">0</div><div class="l">Communes couvertes</div></div>
+        <div class="stat"><div class="v num" data-cible="{{ $ch['distinctions'] }}">0</div><div class="l">Distinctions d'État</div></div>
     </div>
 </section>
 

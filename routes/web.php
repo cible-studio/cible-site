@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CibleController;
+use App\Http\Middleware\AdminProtege;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -40,3 +42,44 @@ Route::post('/devis',           [CibleController::class, 'submitDevis'])
 Route::get('/api/reseau-map',   [CibleController::class, 'mapData'])
     ->middleware('throttle:60,1')
     ->name('api.reseau-map');
+
+// Visuels de réalisation téléversés depuis l'admin. Publics (ils s'affichent
+// sur le site) mais servis depuis le volume persistant, hors de public/.
+Route::get('/visuels/{nom}',    [CibleController::class, 'visuel'])->name('visuel');
+
+/*
+|--------------------------------------------------------------------------
+| Espace d'administration
+|--------------------------------------------------------------------------
+|
+| Répond 404 tant que CIBLE_ADMIN_EMAIL et CIBLE_ADMIN_HASH ne sont pas
+| renseignés : l'espace n'existe pas pour un visiteur, et rien ne signale à
+| un scanner qu'il y aurait quelque chose à attaquer.
+|
+| La connexion est fortement limitée en débit — c'est la seule porte du
+| site, donc la seule cible d'une attaque par force brute.
+|
+*/
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/connexion',  [AdminController::class, 'login'])->name('login');
+    Route::post('/connexion', [AdminController::class, 'authentifier'])
+        ->middleware('throttle:6,10')
+        ->name('authentifier');
+    Route::post('/deconnexion', [AdminController::class, 'deconnexion'])->name('deconnexion');
+
+    Route::middleware(AdminProtege::class)->group(function () {
+        Route::get('/', [AdminController::class, 'tableau'])->name('tableau');
+
+        Route::get('/coordonnees',  [AdminController::class, 'coordonnees'])->name('coordonnees');
+        Route::post('/coordonnees', [AdminController::class, 'enregistrerCoordonnees'])->name('coordonnees.enregistrer');
+
+        Route::get('/chiffres',  [AdminController::class, 'chiffres'])->name('chiffres');
+        Route::post('/chiffres', [AdminController::class, 'enregistrerChiffres'])->name('chiffres.enregistrer');
+
+        Route::get('/realisations',            [AdminController::class, 'realisations'])->name('realisations');
+        Route::get('/realisations/{slug}',     [AdminController::class, 'editerRealisation'])->name('realisation.editer');
+        Route::post('/realisations/{slug}',    [AdminController::class, 'enregistrerRealisation'])->name('realisation.enregistrer');
+
+        Route::post('/reinitialiser/{section}', [AdminController::class, 'reinitialiser'])->name('reinitialiser');
+    });
+});

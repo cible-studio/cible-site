@@ -583,26 +583,27 @@
      égales, lisible sans dépendre de la hauteur du formulaire. --}}
 <section class="coord-zone">
     <div class="coord">
-        <a href="tel:+2250700780628" class="coord-row coord-tel">
+        @php $co = \App\Support\Contenu::section('coordonnees'); @endphp
+        <a href="tel:{{ preg_replace('#\D#', '', $co['tel_mobile']) }}" class="coord-row coord-tel">
             <span class="coord-icon coord-icon-tel">📞</span>
             <span class="coord-txt">
                 <span class="coord-lbl">Téléphone</span>
-                <span class="coord-val num">+225 07 00 78 06 28</span>
+                <span class="coord-val num">{{ $co['tel_mobile'] }}</span>
             </span>
         </a>
-        <a href="mailto:commercial@cible-ci.com" class="coord-row">
+        <a href="mailto:{{ $co['email_commercial'] }}" class="coord-row">
             <span class="coord-icon coord-icon-mail">✉</span>
             <span class="coord-txt">
                 <span class="coord-lbl">Email</span>
-                <span class="coord-val">commercial@cible-ci.com</span>
+                <span class="coord-val">{{ $co['email_commercial'] }}</span>
             </span>
         </a>
         <div class="coord-row" style="cursor:default">
             <span class="coord-icon coord-icon-addr">📍</span>
             <span class="coord-txt">
                 <span class="coord-lbl">Adresse</span>
-                <span class="coord-val">Rue des Ambassadeurs</span>
-                <span class="coord-val-sub">Riviera M'Badon · 10 BP 1029 Abidjan 10</span>
+                <span class="coord-val">{{ $co['adresse_rue'] }}</span>
+                <span class="coord-val-sub">{{ $co['adresse_complement'] }}</span>
             </span>
         </div>
     </div>

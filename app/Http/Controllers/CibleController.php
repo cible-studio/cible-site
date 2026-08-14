@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Mail\CibleContactMail;
 use App\Support\AntiSpam;
+use App\Support\Contenu;
 use App\Support\Turnstile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 /**
@@ -75,68 +77,9 @@ class CibleController extends Controller
      */
     public static function projets(): array
     {
-        return [
-            'orange' => [
-                'nom'      => 'Orange',
-                'cat'      => 'Brand experience & activation terrain',
-                'titre'    => 'Faire vivre la marque au plus près de ses publics.',
-                'texte'    => "Conception et déploiement d'une expérience de marque destinée à renforcer la proximité avec les audiences, générer de l'interaction et amplifier la visibilité de l'opération.",
-                'services' => 'Concept créatif · Activation terrain · Production · Coordination opérationnelle',
-                'image'    => 'images/cible/campagne-1.jpg',
-                'couleur'  => 'var(--violet)',
-                'filtres'  => ['brand-experience', 'street-marketing'],
-            ],
-            'cofina' => [
-                'nom'      => 'Groupe Cofina',
-                'cat'      => 'Production audiovisuelle',
-                'titre'    => 'Traduire une vision institutionnelle en récit de marque.',
-                'texte'    => "Réalisation d'un film institutionnel conçu pour valoriser l'identité, la mission et l'impact du groupe auprès de ses parties prenantes.",
-                'services' => 'Conseil éditorial · Scénarisation · Tournage · Postproduction',
-                'image'    => 'images/cible/campagne-2.jpg',
-                'couleur'  => 'var(--vert)',
-                'filtres'  => ['production-audiovisuelle'],
-            ],
-            'snedai' => [
-                'nom'      => 'SNEDAI',
-                'cat'      => 'Stratégie de communication intégrée',
-                'titre'    => 'Construire une présence cohérente sur plusieurs points de contact.',
-                'texte'    => "Conception d'une stratégie associant communication institutionnelle, supports de visibilité et contenus afin de renforcer la lisibilité et la portée de la marque.",
-                'services' => 'Stratégie · Création · Déploiement multicanal · Suivi',
-                'image'    => 'images/cible/campagne-3.jpg',
-                'couleur'  => 'var(--bleu)',
-                'filtres'  => ['affichage-regie', 'digital-contenus'],
-            ],
-            'sgs-sicta' => [
-                'nom'      => 'SGS · SICTA',
-                'cat'      => 'Création digitale & réseaux sociaux',
-                'titre'    => "Prolonger l'expérience de marque en ligne.",
-                'texte'    => "Conception de contenus visuels et animation des prises de parole digitales afin de renforcer la présence, la cohérence et l'engagement de la marque sur les réseaux sociaux.",
-                'services' => 'Direction artistique · Création de contenus · Réseaux sociaux · Suivi éditorial',
-                'image'    => 'images/cible/campagne-4.jpg',
-                'couleur'  => 'var(--jaune)',
-                'filtres'  => ['digital-contenus'],
-            ],
-            'ifg' => [
-                'nom'      => 'IFG',
-                'cat'      => 'Stand expérientiel',
-                'titre'    => 'Transformer un espace en expérience de marque.',
-                'texte'    => "Conception et réalisation d'un stand pensé pour attirer les visiteurs, valoriser l'offre et favoriser les échanges avec les publics présents.",
-                'services' => "Concept · Design d'espace · Production · Installation",
-                'image'    => 'images/cible/campagne-5.jpg',
-                'couleur'  => 'var(--rouge)',
-                'filtres'  => ['brand-experience', 'design-evenementiel'],
-            ],
-            'sigfu' => [
-                'nom'      => 'SIGFU',
-                'cat'      => 'Design & architecture événementielle',
-                'titre'    => 'Donner une forme visible et cohérente à une identité institutionnelle.',
-                'texte'    => "Conception d'un dispositif architectural et visuel destiné à valoriser la présence de l'organisation et à renforcer la qualité de l'expérience proposée aux visiteurs.",
-                'services' => 'Direction artistique · Design · Architecture · Production',
-                'image'    => 'images/cible/campagne-6.jpg',
-                'couleur'  => 'var(--violet)',
-                'filtres'  => ['design-evenementiel'],
-            ],
-        ];
+        // Source unique : les défauts vivent dans config/contenu.php et
+        // l'espace admin les surcharge sur le volume persistant.
+        return Contenu::section('realisations');
     }
 
     protected function baseData(string $current): array
@@ -144,6 +87,28 @@ class CibleController extends Controller
         return [
             'current' => $current,
         ];
+    }
+
+    /**
+     * Sert un visuel de réalisation téléversé depuis l'admin — /visuels/{nom}
+     *
+     * Ces fichiers vivent sur le volume persistant, hors de public/ qui est
+     * reconstruit depuis git à chaque déploiement. Le nom est strictement
+     * contraint : sans cela, un « ../ » permettrait de remonter l'arborescence
+     * et de lire n'importe quel fichier lisible par le serveur.
+     */
+    public function visuel(string $nom)
+    {
+        abort_unless((bool) preg_match('#^[A-Za-z0-9._-]+$#', $nom) && !str_contains($nom, '..'), 404);
+
+        $disque = Storage::disk('contenu');
+
+        abort_unless($disque->exists("visuels/$nom"), 404);
+
+        return response($disque->get("visuels/$nom"), 200, [
+            'Content-Type'  => $disque->mimeType("visuels/$nom") ?: 'image/jpeg',
+            'Cache-Control' => 'public, max-age=86400',
+        ]);
     }
 
     /**

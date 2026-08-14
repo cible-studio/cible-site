@@ -153,8 +153,8 @@
             <article class="carte" style="--c:{{ $p['couleur'] }}" data-filtres="{{ implode(' ', $p['filtres']) }}">
                 <a href="{{ route('realisation', $slug) }}" style="display:flex;flex-direction:column;height:100%">
                     <div class="vign">
-                        @if(file_exists(public_path($p['image'])))
-                            <img class="photo" src="{{ asset($p['image']) }}" alt="{{ $p['nom'] }} — {{ $p['cat'] }}" loading="lazy">
+                        @if(\App\Support\Contenu::imageExiste($p['image']))
+                            <img class="photo" src="{{ \App\Support\Contenu::urlImage($p['image']) }}" alt="{{ $p['nom'] }} — {{ $p['cat'] }}" loading="lazy">
                         @else
                             <div class="slot slot--sombre">{{ $p['nom'] }} · {{ $p['cat'] }}<small>{{ $p['image'] }}</small></div>
                         @endif

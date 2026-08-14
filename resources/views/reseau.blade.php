@@ -151,8 +151,8 @@
              contredisait le volume global désormais annoncé en "+400".
              Les deux zones restent décrites dans la section Couverture. --}}
         <div class="stats">
-            <div><div class="v num"><span aria-hidden="true">+</span><span data-cible="400">0</span></div><div class="l">Panneaux exploités</div></div>
-            <div><div class="v num" data-cible="31">0</div><div class="l">Communes et villes<br>couvertes</div></div>
+            <div><div class="v num"><span aria-hidden="true">+</span><span data-cible="{{ \App\Support\Contenu::get('chiffres.panneaux') }}">0</span></div><div class="l">Panneaux exploités</div></div>
+            <div><div class="v num" data-cible="{{ \App\Support\Contenu::get('chiffres.communes') }}">0</div><div class="l">Communes et villes<br>couvertes</div></div>
         </div>
         <a class="bouton b-blanc" style="margin-top:36px" href="{{ route('contact') }}">Trouver mes emplacements</a>
     </div>

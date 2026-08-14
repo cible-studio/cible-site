@@ -55,8 +55,8 @@
       "slogan":"Vous visez juste",
       "description":"Régie publicitaire et studio créatif en Côte d'Ivoire. Affichage grand format, publicité mobile, communication 360°.",
       "url":"{{ url('/cible') }}",
-      "telephone":["+2250700780628","+2252722208008"],
-      "email":"commercial@cible-ci.com",
+      "telephone":["{{ preg_replace('#\D#', '', \App\Support\Contenu::get('coordonnees.tel_mobile')) }}","{{ preg_replace('#\D#', '', \App\Support\Contenu::get('coordonnees.tel_fixe')) }}"],
+      "email":"{{ \App\Support\Contenu::get('coordonnees.email_commercial') }}",
       "foundingDate":"1994",
       "address":{"@@type":"PostalAddress","streetAddress":"Rue des Ambassadeurs, Riviera M'Badon","postOfficeBoxNumber":"10 BP 1029","addressLocality":"Abidjan","addressCountry":"CI"},
       "areaServed":{"@@type":"Country","name":"Côte d'Ivoire"}
@@ -339,11 +339,12 @@
         <div>
             <h5>Contact</h5>
             <ul>
-                <li><a href="tel:+2250700780628" class="num">+225 07 00 78 06 28</a></li>
-                <li><a href="tel:+2252722208008" class="num">+225 27 22 20 80 08</a></li>
-                <li><a href="mailto:commercial@cible-ci.com">commercial@cible-ci.com</a></li>
-                <li><a href="mailto:secretariat@cible-ci.com">secretariat@cible-ci.com</a></li>
-                <li>Rue des Ambassadeurs<br>Riviera M'Badon<br>10 BP 1029 Abidjan 10</li>
+                @php $co = \App\Support\Contenu::section('coordonnees'); @endphp
+                <li><a href="tel:{{ preg_replace('#\D#', '', $co['tel_mobile']) }}" class="num">{{ $co['tel_mobile'] }}</a></li>
+                @if($co['tel_fixe'])<li><a href="tel:{{ preg_replace('#\D#', '', $co['tel_fixe']) }}" class="num">{{ $co['tel_fixe'] }}</a></li>@endif
+                <li><a href="mailto:{{ $co['email_commercial'] }}">{{ $co['email_commercial'] }}</a></li>
+                @if($co['email_secretariat'])<li><a href="mailto:{{ $co['email_secretariat'] }}">{{ $co['email_secretariat'] }}</a></li>@endif
+                <li>{{ $co['adresse_rue'] }}<br>{{ $co['adresse_complement'] }}</li>
             </ul>
         </div>
         <div>

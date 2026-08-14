@@ -38,6 +38,23 @@ return [
             'report' => false,
         ],
 
+        /*
+        | Contenu éditable depuis l'espace admin (surcharges JSON + images
+        | téléversées). À monter en VOLUME PERSISTANT dans Coolify sur
+        | /app/storage/app/contenu — sinon les modifications disparaissent
+        | au redéploiement suivant, le conteneur étant éphémère.
+        |
+        | `throw => true` est volontaire : on veut qu'une écriture impossible
+        | remonte une exception, attrapée par App\Support\Contenu, plutôt
+        | qu'un échec silencieux qui ferait croire à l'utilisateur que ses
+        | modifications sont enregistrées.
+        */
+        'contenu' => [
+            'driver' => 'local',
+            'root' => storage_path('app/contenu'),
+            'throw' => true,
+        ],
+
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),

@@ -430,7 +430,7 @@
             <div>
                 {{-- Le "+" est hors du span animé : anime() écrase le
                      textContent de sa cible, il l'effacerait sinon. --}}
-                <div class="grosnum num"><span aria-hidden="true">+</span><span data-cible="400">0</span></div>
+                <div class="grosnum num"><span aria-hidden="true">+</span><span data-cible="{{ \App\Support\Contenu::get('chiffres.panneaux') }}">0</span></div>
                 <span class="sur">Panneaux en exploitation</span>
                 <h3>Affichage grand format : le seul média qu'on ne peut pas fermer.</h3>
                 <p>L'affichage grand format reste le seul média que personne ne peut sauter, bloquer ou faire défiler.</p>
@@ -442,7 +442,7 @@
 
         <div class="pan" id="t-mouvement" role="tabpanel" aria-labelledby="o-mouvement" hidden>
             <div>
-                <div class="grosnum num" data-cible="31">0</div>
+                <div class="grosnum num" data-cible="{{ \App\Support\Contenu::get('chiffres.communes') }}">0</div>
                 <span class="sur">Communes atteintes</span>
                 <h3>Publicité mobile : la ville devient votre support.</h3>
                 <p>Camions, tricycles, motos, taxis, chevalets. Le message va chercher l'audience là où elle est immobile.</p>
@@ -536,7 +536,7 @@
             @php [$nom, $cat] = $court[$slug]; @endphp
             <article class="carte" style="--c:{{ $p['couleur'] }}">
                 <a href="{{ route('realisation', $slug) }}">
-                    <div class="vign"><img class="photo" src="{{ asset($p['image']) }}" alt="{{ $nom }} — {{ $cat }}"></div>
+                    <div class="vign"><img class="photo" src="{{ \App\Support\Contenu::urlImage($p['image']) }}" alt="{{ $nom }} — {{ $cat }}"></div>
                     <h4>{{ $nom }}</h4>
                     <span><i class="pastille"></i>{{ $cat }}</span>
                 </a>
@@ -560,8 +560,8 @@
                  contredisait le volume global désormais annoncé en "+400".
                  On ne communique plus qu'un chiffre de parc, arrondi. --}}
             <div class="stats">
-                <div><div class="v num"><span aria-hidden="true">+</span><span data-cible="400">0</span></div><div class="l">Panneaux en exploitation</div></div>
-                <div><div class="v num" data-cible="31">0</div><div class="l">Communes et villes<br>couvertes</div></div>
+                <div><div class="v num"><span aria-hidden="true">+</span><span data-cible="{{ \App\Support\Contenu::get('chiffres.panneaux') }}">0</span></div><div class="l">Panneaux en exploitation</div></div>
+                <div><div class="v num" data-cible="{{ \App\Support\Contenu::get('chiffres.communes') }}">0</div><div class="l">Communes et villes<br>couvertes</div></div>
             </div>
             <a class="bouton b-blanc" style="margin-top:34px" href="{{ route('reseau') }}">Explorer la carte du réseau<i class="fl dessin f-fleche" aria-hidden="true"></i></a>
         </div>
