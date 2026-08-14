@@ -324,18 +324,22 @@ Le GA n'est chargé côté frontend QUE si `CIBLE_GA_ID` est renseigné (opt-in)
 Structure attendue par la Leaflet map (`resources/views/reseau.blade.php`) :
 
 ```json
-{
-  "communes": [
-    {
-      "name": "Cocody",
-      "lat": 5.348,
-      "lng": -3.986,
-      "count": 28,
-      "notes": "…"
-    }
-  ]
-}
+[
+  {
+    "commune": "Abobo",
+    "city": "Abidjan",
+    "region": "Abidjan",
+    "lat": 5.4192,
+    "lng": -4.0332,
+    "total": 18
+  }
+]
 ```
+
+⚠ C'est un **tableau plat**, pas un objet `{"communes": […]}` : ce fichier
+décrivait une structure erronée (clés `name`/`count`/`notes`, jamais
+utilisées) jusqu'au 2026-08-14. Le champ `total` n'est pas rendu — cf. la
+décision de ne plus publier de répartition chiffrée par zone.
 
 Pour éditer : ouvrir directement le fichier avec `Edit` ou `Write`. Pas de BDD, pas de migration.
 
