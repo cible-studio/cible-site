@@ -13,16 +13,18 @@
     <meta name="description" content="{{ $seo_description ?? 'Régie publicitaire ivoirienne depuis 1994. Affichage grand format, publicité mobile, communication 360°. +400 panneaux dans 31 communes. Réponse sous 24 h ouvrées.' }}">
     <link rel="canonical" href="{{ url()->current() }}">
 
-    {{-- Icônes 2026-08-13 — fond détouré.
-         Les PNG d'origine portaient un carré blanc opaque, très visible sur
-         les onglets colorés des navigateurs. Les `icone-*` sont détourées :
-         le fond est transparent, l'œil du perroquet reste plein.
-         Deux déclinaisons : la version claire porte des éléments noirs
-         (illisibles sur un thème sombre), la version sombre les a en blanc.
-         Le navigateur choisit via `media` — les autres ignorent l'attribut
-         et prennent la première déclaration, donc la version claire.
+    {{-- Icônes 2026-08-14 — fond détouré.
+         Les sources ont un fond NOIR opaque (et non blanc, contrairement à
+         ce que laissait croire un aperçu d'image) : c'est ce fond, et non
+         le logo, qui donnait un pavé sombre dans l'onglet. Les `icone-*`
+         sont détourées par remplissage depuis les bords ; l'œil du
+         perroquet, enclos, conserve son cerne et sa pupille.
+         Deux déclinaisons : la claire porte la forme « C » en noir, la
+         sombre en blanc. Le navigateur choisit via `media` ; ceux qui
+         ignorent l'attribut prennent la première déclaration, donc la
+         version claire.
          ⚠ L'icône Apple reste sur fond OPAQUE : iOS ne gère pas la
-         transparence et composerait le trou en noir.
+         transparence et composerait le vide en noir.
          Le `?v=` est indispensable : les favicons sont mis en cache très
          agressivement et ne se rafraîchissent pas sans changement d'URL. --}}
     @php
