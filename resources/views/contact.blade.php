@@ -362,8 +362,8 @@
                         </div>
 
                         <div class="form-field @error('poste') error @enderror">
-                            <label for="f-poste">Fonction</label>
-                            <input id="f-poste" type="text" name="poste" value="{{ old('poste') }}" maxlength="100" placeholder="Ex. Directrice Marketing" autocomplete="organization-title">
+                            <label for="f-poste">Fonction <span class="req">*</span></label>
+                            <input id="f-poste" type="text" name="poste" value="{{ old('poste') }}" required maxlength="100" placeholder="Ex. Directrice Marketing" autocomplete="organization-title">
                             @error('poste') <span class="err-msg">{{ $message }}</span> @enderror
                         </div>
 

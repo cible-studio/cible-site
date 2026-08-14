@@ -262,7 +262,7 @@ class CibleController extends Controller
         $data = $request->validate([
             'nom'          => ['required', 'string', 'max:100'],
             'entreprise'   => ['required', 'string', 'max:150'],
-            'poste'        => ['nullable', 'string', 'max:100'],
+            'poste'        => ['required', 'string', 'max:100'],
             'email'        => ['required', 'email', 'max:150'],
             'tel'          => ['required', 'string', 'max:30'],
 

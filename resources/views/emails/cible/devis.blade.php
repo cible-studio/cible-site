@@ -7,13 +7,13 @@
      - styles en ligne uniquement, aucune feuille externe ni classe ;
      - pas de webfont fiable : Poppins/Nunito sont déclarées en tête de
        pile et retombent sur Trebuchet/Arial, présentes partout ;
-     - le logo est une URL absolue. Les clients bloquent les images par
-       défaut, d'où le bandeau de 5 couleurs et le texte de repli : le mail
-       reste identifiable CIBLE même sans image affichée.
+     - le logo est une URL absolue, en version FONCÉE (logol.png) puisque
+       le fond est clair. Les clients bloquent les images par défaut, d'où
+       le bandeau de 5 couleurs : le mail reste identifiable CIBLE même
+       sans image affichée.
 ════════════════════════════════════════════════════════════════════ --}}
 @php
-    // Palette officielle — cf. CLAUDE.md. Ne pas improviser de teinte ici :
-    // l'ancien template utilisait #0f172a et #e8a020, hors charte.
+    // Palette officielle — cf. CLAUDE.md. Ne pas improviser de teinte ici.
     $rouge = '#E20613'; $jaune = '#FAB80B'; $vert = '#3AA835';
     $bleu  = '#3F7FC0'; $violet = '#81358A';
     $noir  = '#111111'; $gris = '#E6E6E6';
@@ -27,12 +27,12 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Nouvelle demande — {{ $d['entreprise'] ?? 'CIBLE' }}</title>
 </head>
-<body style="margin:0;padding:0;background:{{ $gris }};">
+<body style="margin:0;padding:0;background:#F4F4F2;">
 
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:{{ $gris }};padding:28px 12px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#F4F4F2;padding:28px 12px;">
 <tr><td align="center">
 
-    <table role="presentation" width="640" cellpadding="0" cellspacing="0" border="0" style="width:640px;max-width:100%;background:#FFFFFF;border-radius:16px;overflow:hidden;">
+    <table role="presentation" width="640" cellpadding="0" cellspacing="0" border="0" style="width:640px;max-width:100%;background:#FFFFFF;border-radius:14px;overflow:hidden;border:1px solid {{ $gris }};">
 
         {{-- Bandeau 5 couleurs : signature de marque qui reste visible même
              quand le client de messagerie bloque les images. --}}
@@ -40,42 +40,38 @@
             <td style="font-size:0;line-height:0;">
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                     <tr>
-                        <td width="20%" height="7" bgcolor="{{ $rouge }}"  style="background:{{ $rouge }};font-size:0;line-height:0;">&nbsp;</td>
-                        <td width="20%" height="7" bgcolor="{{ $jaune }}"  style="background:{{ $jaune }};font-size:0;line-height:0;">&nbsp;</td>
-                        <td width="20%" height="7" bgcolor="{{ $vert }}"   style="background:{{ $vert }};font-size:0;line-height:0;">&nbsp;</td>
-                        <td width="20%" height="7" bgcolor="{{ $bleu }}"   style="background:{{ $bleu }};font-size:0;line-height:0;">&nbsp;</td>
-                        <td width="20%" height="7" bgcolor="{{ $violet }}" style="background:{{ $violet }};font-size:0;line-height:0;">&nbsp;</td>
+                        <td width="20%" height="6" bgcolor="{{ $rouge }}"  style="background:{{ $rouge }};font-size:0;line-height:0;">&nbsp;</td>
+                        <td width="20%" height="6" bgcolor="{{ $jaune }}"  style="background:{{ $jaune }};font-size:0;line-height:0;">&nbsp;</td>
+                        <td width="20%" height="6" bgcolor="{{ $vert }}"   style="background:{{ $vert }};font-size:0;line-height:0;">&nbsp;</td>
+                        <td width="20%" height="6" bgcolor="{{ $bleu }}"   style="background:{{ $bleu }};font-size:0;line-height:0;">&nbsp;</td>
+                        <td width="20%" height="6" bgcolor="{{ $violet }}" style="background:{{ $violet }};font-size:0;line-height:0;">&nbsp;</td>
                     </tr>
                 </table>
             </td>
         </tr>
 
-        {{-- En-tête noir : logo négatif + objet du message --}}
+        {{-- En-tête clair --}}
         <tr>
-            <td bgcolor="{{ $noir }}" style="background:{{ $noir }};padding:28px 34px 26px;">
-                <img src="{{ asset('images/logon.png') }}" width="150" height="80" alt="CIBLE — Vous visez juste"
-                     style="display:block;border:0;outline:none;width:150px;height:auto;margin-bottom:18px;">
-                <div style="font-family:{{ $titre }};font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:{{ $jaune }};">
+            <td style="padding:30px 34px 24px;">
+                <img src="{{ asset('images/logol.png') }}" width="140" height="75" alt="CIBLE — Vous visez juste"
+                     style="display:block;border:0;outline:none;width:140px;height:auto;margin-bottom:22px;">
+                <div style="font-family:{{ $titre }};font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:{{ $rouge }};">
                     Nouvelle demande de recommandation média
                 </div>
-                <div style="font-family:{{ $titre }};font-size:26px;font-weight:800;color:#FFFFFF;line-height:1.2;margin-top:8px;">
+                <div style="font-family:{{ $titre }};font-size:26px;font-weight:800;color:{{ $noir }};line-height:1.2;margin-top:8px;">
                     {{ $d['entreprise'] ?? '—' }}
                 </div>
-                <div style="font-family:{{ $corps }};font-size:14px;color:rgba(255,255,255,.72);margin-top:6px;">
+                <div style="font-family:{{ $corps }};font-size:14.5px;color:#666666;margin-top:6px;">
                     {{ $d['nom'] ?? '—' }}@if(!empty($d['poste'])) · {{ $d['poste'] }}@endif
+                </div>
+                <div style="font-family:{{ $corps }};font-size:13px;color:#888888;margin-top:14px;padding-top:14px;border-top:1px solid {{ $gris }};">
+                    Répondre à ce message écrit directement au demandeur.
                 </div>
             </td>
         </tr>
 
-        {{-- Rappel d'action : le Reply-To pointe sur le visiteur --}}
         <tr>
-            <td bgcolor="{{ $jaune }}" style="background:{{ $jaune }};padding:12px 34px;font-family:{{ $titre }};font-size:13px;font-weight:700;color:{{ $noir }};">
-                Répondre à ce message écrit directement au demandeur.
-            </td>
-        </tr>
-
-        <tr>
-            <td style="padding:30px 34px 10px;">
+            <td style="padding:6px 34px 10px;">
 
                 @php
                     // Un seul rendu pour toutes les sections : titre rouge en
@@ -137,7 +133,7 @@
                 {!! $sectionTitre('4 · Budget envisagé') !!}
                 <table role="presentation" cellpadding="0" cellspacing="0" border="0">
                     <tr>
-                        <td bgcolor="{{ $gris }}" style="background:{{ $gris }};border-radius:10px;padding:14px 20px;font-family:{{ $titre }};font-size:18px;font-weight:800;color:{{ $noir }};">
+                        <td bgcolor="#FAFAF8" style="background:#FAFAF8;border:1px solid {{ $gris }};border-radius:9px;padding:13px 20px;font-family:{{ $titre }};font-size:18px;font-weight:800;color:{{ $noir }};">
                             {{ $d['budget'] ?: 'Non précisé' }}
                         </td>
                     </tr>
@@ -171,24 +167,19 @@
             </td>
         </tr>
 
-        {{-- Pied : métadonnées de réception --}}
+        {{-- Pied clair --}}
         <tr>
-            <td style="padding:20px 34px 26px;border-top:1px solid {{ $gris }};font-family:{{ $corps }};font-size:12px;color:#999999;line-height:1.7;">
+            <td bgcolor="#FAFAF8" style="background:#FAFAF8;padding:20px 34px 24px;border-top:1px solid {{ $gris }};font-family:{{ $corps }};font-size:12px;color:#999999;line-height:1.7;">
                 Les documents éventuellement déposés sont joints à ce message.<br>
-                Reçu le {{ $d['received_at'] ?? now()->format('d/m/Y H:i') }} · IP {{ $d['ip'] ?? '—' }}
-            </td>
-        </tr>
-
-        <tr>
-            <td bgcolor="{{ $noir }}" style="background:{{ $noir }};padding:18px 34px;font-family:{{ $titre }};font-size:12px;color:rgba(255,255,255,.62);">
-                CIBLE · Régie publicitaire &amp; studio créatif · Côte d'Ivoire<br>
-                <a href="{{ url('/') }}" style="color:{{ $jaune }};text-decoration:none;font-weight:700;">www.cible-ci.com</a>
+                Reçu le {{ $d['received_at'] ?? now()->format('d/m/Y H:i') }} · IP {{ $d['ip'] ?? '—' }}<br>
+                <span style="color:#BBBBBB;">CIBLE · Régie publicitaire &amp; studio créatif · Côte d'Ivoire —
+                <a href="{{ url('/') }}" style="color:#999999;text-decoration:none;font-weight:700;">www.cible-ci.com</a></span>
             </td>
         </tr>
 
     </table>
 
-    <div style="font-family:{{ $corps }};font-size:11px;color:#999999;margin-top:16px;">
+    <div style="font-family:{{ $corps }};font-size:11px;color:#AAAAAA;margin-top:16px;">
         Message automatique envoyé depuis le formulaire du site.
     </div>
 
