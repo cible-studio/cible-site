@@ -16,6 +16,20 @@
         redémarrez l'application. Le site public continue de fonctionner normalement
         avec son contenu d'origine.
     </div>
+@else
+    {{-- Piège plus discret que le précédent : le dossier est inscriptible,
+         donc tout semble fonctionner, mais il vit dans la couche du conteneur
+         et repart à zéro au déploiement suivant. C'est ce qui a effacé le mot
+         de passe administrateur. On le dit avant que du travail soit perdu. --}}
+    @if($persistant === false)
+        <div class="alerte a-attention" style="margin-top:22px">
+            ⚠ <strong>Vos modifications ne survivront pas au prochain déploiement.</strong><br>
+            L'enregistrement fonctionne, mais le dossier de contenu n'est pas un volume
+            persistant : il est recréé à neuf à chaque mise en ligne. Dans Coolify,
+            onglet <em>Storages</em>, ajoutez un volume monté sur
+            <code>/app/storage/app/contenu</code>, puis redéployez.
+        </div>
+    @endif
 @endunless
 
 <h2 style="font-size:15px;font-weight:800;margin-top:30px;text-transform:uppercase;letter-spacing:.06em;color:#777">Les pages du site</h2>

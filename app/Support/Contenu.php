@@ -209,6 +209,44 @@ class Contenu
         }
     }
 
+    /**
+     * Le dossier de contenu est-il un volume monté, ou une simple couche du
+     * conteneur ?
+     *
+     * « Inscriptible » ne veut pas dire « conservé » : un dossier créé dans
+     * l'image est parfaitement inscriptible et disparaît pourtant à chaque
+     * déploiement. C'est exactement ce qui a effacé le mot de passe
+     * administrateur, et ce qui effacerait toutes les modifications de
+     * contenu — sans qu'aucun message ne l'annonce.
+     *
+     * Un volume monté est un système de fichiers distinct : son numéro de
+     * périphérique diffère de celui du code. Numéros identiques = pas de
+     * volume.
+     *
+     * @return bool|null null si l'information n'est pas disponible
+     */
+    public static function stockagePersistant(): ?bool
+    {
+        try {
+            $dossier = storage_path('app/contenu');
+
+            if (!is_dir($dossier)) {
+                return false;
+            }
+
+            $contenu = @stat($dossier);
+            $code    = @stat(base_path());
+
+            if ($contenu === false || $code === false) {
+                return null;
+            }
+
+            return $contenu['dev'] !== $code['dev'];
+        } catch (\Throwable) {
+            return null;
+        }
+    }
+
     /** Le stockage est-il réellement inscriptible ? Affiché dans l'admin. */
     public static function stockageDisponible(): bool
     {

@@ -66,6 +66,7 @@ class AdminController extends Controller
     {
         return view('admin.tableau', [
             'stockage'   => Contenu::stockageDisponible(),
+            'persistant' => Contenu::stockagePersistant(),
             'surchargees'=> collect(Contenu::sections())
                 ->mapWithKeys(fn ($s) => [$s => Contenu::estSurchargee($s)])
                 ->all(),
