@@ -40,23 +40,45 @@ class AdminAuth
      * rien à interpréter), et on refuse proprement un hash illisible au lieu
      * de laisser remonter l'exception.
      */
+    /**
+     * Un bcrypt exploitable fait exactement 60 caractères et est reconnu
+     * comme tel par PHP.
+     *
+     * Le test du seul préfixe « $2y$ » ne suffit pas : un hash tronqué le
+     * conserve, passe la vérification, puis fait lever Hash::check — donc
+     * une 500. Vérifié : un hash coupé, ou simplement suivi d'un espace,
+     * garde son préfixe mais n'est plus un bcrypt. Un espace parasite en
+     * fin de valeur est le cas le plus courant d'un copier-coller dans une
+     * interface de configuration.
+     */
+    private static function estBcrypt(string $h): bool
+    {
+        return strlen($h) === 60 && password_get_info($h)['algoName'] === 'bcrypt';
+    }
+
     private static function hashValide(): ?string
     {
-        $brut = (string) config('cible.admin.hash');
+        // trim : un espace ou un retour à la ligne collé par mégarde suffit
+        // à invalider le hash, autant l'absorber silencieusement.
+        $brut = trim((string) config('cible.admin.hash'));
 
-        if (str_starts_with($brut, '$2y$') || str_starts_with($brut, '$2a$')) {
+        if (self::estBcrypt($brut)) {
             return $brut;
         }
 
         $decode = base64_decode($brut, true);
-        if (is_string($decode) && (str_starts_with($decode, '$2y$') || str_starts_with($decode, '$2a$'))) {
-            return $decode;
+        if (is_string($decode) && self::estBcrypt(trim($decode))) {
+            return trim($decode);
         }
 
         Journal::erreur('cible.admin.hash_invalide', [
+            'longueur_recue' => strlen($brut),
+            'longueur_attendue' => '60 (bcrypt brut) ou 80 (base64)',
             'indice' => "CIBLE_ADMIN_HASH n'est pas un hash bcrypt exploitable. "
-                      . "Si votre interface interprète les « \$ », utilisez la version "
-                      . "encodée en base64 fournie par « php artisan cible:admin-hash ».",
+                      . "Causes fréquentes : les « \$ » avalés par l'interface, ou un "
+                      . "espace collé en fin de valeur. Utilisez la version encodée en "
+                      . "base64 de « php artisan cible:admin-hash », puis vérifiez avec "
+                      . "« php artisan cible:admin-hash --verifier ».",
         ]);
 
         return null;
