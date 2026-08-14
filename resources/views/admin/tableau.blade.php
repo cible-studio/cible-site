@@ -3,13 +3,14 @@
 @section('contenu')
 
 <style>
-    .chiffres{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px}
-    @media(max-width:760px){.chiffres{grid-template-columns:1fr}}
+    .chiffres{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:22px}
+    @media(max-width:980px){.chiffres{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:520px){.chiffres{grid-template-columns:1fr}}
     .chiffre{background:#fff;border:1px solid var(--gris);border-radius:14px;padding:20px 22px}
     .chiffre .v{font-size:30px;font-weight:800;line-height:1.1;letter-spacing:-.02em}
     .chiffre .l{font-size:12.5px;color:#777;margin-top:5px;font-weight:600}
-    .chiffre.ok .v{color:var(--vert)}
-    .chiffre.ko .v{color:var(--rouge);font-size:20px;padding-top:7px}
+    .chiffre .h{font-size:12px;color:#AAA;margin-top:2px}
+    .chiffre.vide .v{color:#CCC}
 
     .cartes{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:14px}
     @media(max-width:760px){.cartes{grid-template-columns:1fr}}
@@ -57,9 +58,19 @@
 @endunless
 
 @php
-    $pages    = \App\Support\Schema::pages();
-    $nbChamps = collect($pages)->sum(fn ($p, $c) => count(\App\Support\Schema::champs($c)));
-    $nbModif  = collect($surchargees)->filter()->count();
+    $pages = \App\Support\Schema::pages();
+
+    // Répartition par type plutôt qu'un total : « 195 champs » ne dit pas si
+    // l'on peut remplacer une photo, ce qui est justement la question qu'on
+    // se pose en arrivant ici.
+    $nbTextes = 0; $nbVisuels = 0;
+    foreach (array_keys($pages) as $c) {
+        foreach (\App\Support\Schema::champs($c) as $def) {
+            ($def['type'] ?? 'texte') === 'image' ? $nbVisuels++ : $nbTextes++;
+        }
+    }
+
+    $derniere = \App\Support\Contenu::derniereModificationGlobale();
 @endphp
 
 <div class="chiffres">
@@ -68,12 +79,22 @@
         <div class="l">Pages modifiables</div>
     </div>
     <div class="chiffre">
-        <div class="v">{{ $nbChamps }}</div>
-        <div class="l">Textes et visuels éditables</div>
+        <div class="v">{{ $nbTextes }}</div>
+        <div class="l">Textes modifiables</div>
     </div>
-    <div class="chiffre {{ $stockage && $persistant !== false ? 'ok' : 'ko' }}">
-        <div class="v">{{ $stockage && $persistant !== false ? 'OK' : 'À corriger' }}</div>
-        <div class="l">Enregistrement des modifications</div>
+    <div class="chiffre">
+        <div class="v">{{ $nbVisuels }}</div>
+        <div class="l">Visuels remplaçables</div>
+    </div>
+    {{-- L'état du stockage occupait cette place. Il n'apprenait rien quand
+         tout allait bien, et le bandeau ci-dessus le signale bien plus
+         franchement quand ça ne va pas. --}}
+    <div class="chiffre {{ $derniere ? '' : 'vide' }}">
+        <div class="v">{{ $derniere ? $derniere->format('d/m') : '—' }}</div>
+        <div class="l">{{ $derniere ? 'Dernière modification' : 'Aucune modification' }}</div>
+        @if($derniere)
+            <div class="h">à {{ $derniere->format('H\hi') }}</div>
+        @endif
     </div>
 </div>
 

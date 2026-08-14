@@ -210,6 +210,31 @@ class Contenu
     }
 
     /**
+     * Date de la dernière modification, toutes sections confondues.
+     *
+     * Répond à la question que se pose la personne qui revient sur l'admin
+     * après quelques semaines : « est-ce que quelqu'un a touché au site ? »
+     */
+    public static function derniereModificationGlobale(): ?\DateTimeImmutable
+    {
+        $dates = [];
+
+        foreach (self::sections() as $section) {
+            if ($date = self::derniereModification($section)) {
+                $dates[] = $date;
+            }
+        }
+
+        if ($dates === []) {
+            return null;
+        }
+
+        usort($dates, fn ($a, $b) => $b <=> $a);
+
+        return $dates[0];
+    }
+
+    /**
      * Le dossier de contenu est-il un volume monté, ou une simple couche du
      * conteneur ?
      *
