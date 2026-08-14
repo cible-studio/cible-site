@@ -50,22 +50,36 @@ class AdminHash extends Command
         // réimplémentation : c'est le seul contrôle qui prouve quelque chose.
         $motDePasse = $this->secret('Mot de passe à tester (saisie masquée)');
 
-        if (AdminAuth::tenter($email, (string) $motDePasse)) {
-            $this->newLine();
-            $this->info('✓ Hash valide et mot de passe correct : la connexion doit fonctionner.');
+        $d = AdminAuth::diagnostic($email, (string) $motDePasse);
+
+        $this->newLine();
+        $this->line('Hash exploitable   : ' . ($d['hash_exploitable'] ? '<fg=green>oui</>' : '<fg=red>NON</>'));
+        $this->line('Source du hash     : ' . $d['source']);
+        $this->line('Email correspond   : ' . ($d['email_ok'] ? '<fg=green>oui</>' : '<fg=red>NON</>'));
+        $this->line('Mot de passe       : ' . ($d['passe_ok'] ? '<fg=green>correct</>' : '<fg=red>INCORRECT</>'));
+        $this->newLine();
+
+        if ($d['hash_exploitable'] && $d['email_ok'] && $d['passe_ok']) {
+            $this->info('✓ La connexion doit fonctionner.');
 
             return self::SUCCESS;
         }
 
-        $this->newLine();
-        $this->error('✗ Échec.');
-        $this->line('Deux causes possibles :');
-        $this->line('  · le mot de passe saisi ne correspond pas ;');
-        $this->line('  · CIBLE_ADMIN_HASH est abîmé — « $ » avalés par l\'interface,');
-        $this->line('    valeur tronquée, ou espace parasite.');
-        $this->newLine();
-        $this->comment('Regénérez avec « php artisan cible:admin-hash » et collez la');
-        $this->comment('valeur base64, qui ne contient aucun caractère interprétable.');
+        // Chaque cause a sa correction : on la nomme au lieu de laisser
+        // deviner, c'est tout l'intérêt d'un diagnostic en ligne de commande.
+        if (!$d['hash_exploitable']) {
+            $this->error('→ CIBLE_ADMIN_HASH est inexploitable.');
+            $this->line('  « $ » avalés par l\'interface, valeur tronquée, ou guillemets inclus.');
+            $this->line('  Solution la plus sûre, qui contourne la variable :');
+            $this->line('      <fg=yellow>php artisan cible:admin-motdepasse</>');
+        } elseif (!$d['email_ok']) {
+            $this->error('→ L\'email saisi ne correspond pas à CIBLE_ADMIN_EMAIL.');
+            $this->line('  Attendu : ' . $email);
+        } else {
+            $this->error('→ Le hash est valide, mais ce mot de passe ne correspond pas.');
+            $this->line('  Pour en définir un nouveau :');
+            $this->line('      <fg=yellow>php artisan cible:admin-motdepasse</>');
+        }
 
         return self::FAILURE;
     }

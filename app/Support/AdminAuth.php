@@ -4,6 +4,7 @@ namespace App\Support;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 
 /**
@@ -24,7 +25,10 @@ class AdminAuth
 
     public static function configure(): bool
     {
-        return filled(config('cible.admin.email')) && filled(config('cible.admin.hash'));
+        // L'email vient toujours de l'environnement ; le hash peut venir de
+        // l'environnement OU du fichier posé sur le volume persistant.
+        return filled(config('cible.admin.email'))
+            && (filled(config('cible.admin.hash')) || self::hashDepuisFichier() !== null);
     }
 
     /**
@@ -56,6 +60,42 @@ class AdminAuth
         return strlen($h) === 60 && password_get_info($h)['algoName'] === 'bcrypt';
     }
 
+    /**
+     * Fichier de mot de passe sur le volume persistant.
+     *
+     * Voie de secours quand l'interface de configuration abîme la variable
+     * d'environnement — ce qui s'est produit à répétition ici. Le fichier
+     * vit hors de public/, n'est jamais servi par le serveur web, et n'est
+     * pas dans git. Écrit par « php artisan cible:admin-motdepasse ».
+     */
+    private const FICHIER_HASH = 'admin-hash.txt';
+
+    private static function hashDepuisFichier(): ?string
+    {
+        try {
+            if (!Storage::disk('contenu')->exists(self::FICHIER_HASH)) {
+                return null;
+            }
+
+            $h = trim(Storage::disk('contenu')->get(self::FICHIER_HASH));
+
+            return self::estBcrypt($h) ? $h : null;
+        } catch (\Throwable) {
+            return null;
+        }
+    }
+
+    public static function enregistrerHash(string $hash): bool
+    {
+        try {
+            Storage::disk('contenu')->put(self::FICHIER_HASH, $hash);
+
+            return true;
+        } catch (\Throwable) {
+            return false;
+        }
+    }
+
     private static function hashValide(): ?string
     {
         // trim : un espace ou un retour à la ligne collé par mégarde suffit
@@ -69,6 +109,11 @@ class AdminAuth
         $decode = base64_decode($brut, true);
         if (is_string($decode) && self::estBcrypt(trim($decode))) {
             return trim($decode);
+        }
+
+        // Repli sur le volume : la variable d'environnement est inexploitable.
+        if ($fichier = self::hashDepuisFichier()) {
+            return $fichier;
         }
 
         Journal::erreur('cible.admin.hash_invalide', [
@@ -104,6 +149,43 @@ class AdminAuth
         // Les deux vérifications sont exécutées quoi qu'il arrive, pour que
         // la durée ne dépende pas de l'endroit où ça a échoué.
         return $emailOk && $passeOk;
+    }
+
+    /**
+     * Détail des vérifications — réservé à la commande de diagnostic.
+     *
+     * L'écran de connexion ne renvoie qu'un message unique : dire lequel des
+     * deux éléments est faux confirmerait l'identifiant à un attaquant. En
+     * ligne de commande, l'accès au conteneur est déjà acquis — la
+     * distinction ne coûte donc rien et fait gagner un temps considérable.
+     *
+     * @return array{hash_exploitable:bool, source:string, email_ok:bool, passe_ok:bool}
+     */
+    public static function diagnostic(string $email, string $motDePasse): array
+    {
+        $brut = trim((string) config('cible.admin.hash'));
+        $hash = self::hashValide();
+
+        $source = 'aucune';
+        if ($hash !== null) {
+            if (self::estBcrypt($brut)) {
+                $source = 'variable d\'environnement (brute)';
+            } elseif (self::estBcrypt(trim((string) base64_decode($brut, true)))) {
+                $source = 'variable d\'environnement (base64)';
+            } else {
+                $source = 'fichier du volume persistant';
+            }
+        }
+
+        return [
+            'hash_exploitable' => $hash !== null,
+            'source'           => $source,
+            'email_ok'         => hash_equals(
+                mb_strtolower((string) config('cible.admin.email')),
+                mb_strtolower(trim($email))
+            ),
+            'passe_ok'         => $hash !== null && Hash::check($motDePasse, $hash),
+        ];
     }
 
     public static function connecter(Request $request): void
