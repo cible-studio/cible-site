@@ -227,6 +227,15 @@ class Contenu
      */
     public static function stockagePersistant(): ?bool
     {
+        // Hors production, la question ne se pose pas : le dossier vit sur le
+        // disque du développeur, il n'y a pas de conteneur à recréer. Sans ce
+        // garde-fou, l'admin local afficherait en permanence une alerte
+        // fausse — et une alerte qu'on apprend à ignorer ne protège plus rien
+        // le jour où elle est vraie.
+        if (!app()->isProduction()) {
+            return null;
+        }
+
         try {
             $dossier = storage_path('app/contenu');
 
@@ -242,6 +251,24 @@ class Contenu
             }
 
             return $contenu['dev'] !== $code['dev'];
+        } catch (\Throwable) {
+            return null;
+        }
+    }
+
+    /**
+     * Date de la dernière modification d'une section, ou null si elle n'a
+     * jamais été retouchée depuis l'admin.
+     */
+    public static function derniereModification(string $section): ?\DateTimeImmutable
+    {
+        try {
+            if (!Storage::disk('contenu')->exists("$section.json")) {
+                return null;
+            }
+
+            return (new \DateTimeImmutable())
+                ->setTimestamp(Storage::disk('contenu')->lastModified("$section.json"));
         } catch (\Throwable) {
             return null;
         }

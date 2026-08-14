@@ -2,6 +2,30 @@
 
 @section('contenu')
 
+<style>
+    .chiffres{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px}
+    @media(max-width:760px){.chiffres{grid-template-columns:1fr}}
+    .chiffre{background:#fff;border:1px solid var(--gris);border-radius:14px;padding:20px 22px}
+    .chiffre .v{font-size:30px;font-weight:800;line-height:1.1;letter-spacing:-.02em}
+    .chiffre .l{font-size:12.5px;color:#777;margin-top:5px;font-weight:600}
+    .chiffre.ok .v{color:var(--vert)}
+    .chiffre.ko .v{color:var(--rouge);font-size:20px;padding-top:7px}
+
+    .cartes{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:14px}
+    @media(max-width:760px){.cartes{grid-template-columns:1fr}}
+    .page-carte{
+        display:block;background:#fff;border:1px solid var(--gris);border-radius:14px;
+        padding:18px 20px;text-decoration:none;border-top:4px solid var(--c);
+    }
+    .page-carte:hover{border-color:#BBB;border-top-color:var(--c)}
+    .page-carte .nom{font-weight:800;font-size:16px}
+    .page-carte .desc{font-size:13px;color:#777;margin-top:5px;line-height:1.5}
+    .page-carte .pied{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:12.5px;color:#999}
+    .page-carte .badge{background:#dcfce7;color:#166534;border-radius:999px;padding:2px 9px;font-weight:700}
+    .titre-sec{font-size:13px;font-weight:800;margin-top:34px;text-transform:uppercase;
+        letter-spacing:.08em;color:#888}
+</style>
+
 <h1>Tableau de bord</h1>
 <p class="intro">Modifiez le contenu du site. Les changements sont visibles immédiatement, sans redéploiement ni intervention technique.</p>
 
@@ -32,28 +56,47 @@
     @endif
 @endunless
 
-<h2 style="font-size:15px;font-weight:800;margin-top:30px;text-transform:uppercase;letter-spacing:.06em;color:#777">Les pages du site</h2>
-<div class="liste" style="margin-top:14px">
-    @foreach(\App\Support\Schema::pages() as $cle => $page)
-        <a class="ligne" href="{{ route('admin.page', $cle) }}">
-            <span class="pastille" style="background:{{ $page['couleur'] }}"></span>
-            <span>
-                <span class="nom">{{ $page['titre'] }}</span>
-                <span class="cat" style="display:block">{{ $page['resume'] }}</span>
-            </span>
-            <span class="cat" style="margin-left:auto;white-space:nowrap">
+@php
+    $pages    = \App\Support\Schema::pages();
+    $nbChamps = collect($pages)->sum(fn ($p, $c) => count(\App\Support\Schema::champs($c)));
+    $nbModif  = collect($surchargees)->filter()->count();
+@endphp
+
+<div class="chiffres">
+    <div class="chiffre">
+        <div class="v">{{ count($pages) }}</div>
+        <div class="l">Pages modifiables</div>
+    </div>
+    <div class="chiffre">
+        <div class="v">{{ $nbChamps }}</div>
+        <div class="l">Textes et visuels éditables</div>
+    </div>
+    <div class="chiffre {{ $stockage && $persistant !== false ? 'ok' : 'ko' }}">
+        <div class="v">{{ $stockage && $persistant !== false ? 'OK' : 'À corriger' }}</div>
+        <div class="l">Enregistrement des modifications</div>
+    </div>
+</div>
+
+<div class="titre-sec">Les pages du site</div>
+<div class="cartes">
+    @foreach($pages as $cle => $page)
+        @php $date = \App\Support\Contenu::derniereModification($cle); @endphp
+        <a class="page-carte" href="{{ route('admin.page', $cle) }}" style="--c:{{ $page['couleur'] }}">
+            <span class="nom">{{ $page['titre'] }}</span>
+            <span class="desc" style="display:block">{{ $page['resume'] }}</span>
+            <span class="pied">
                 {{ count(\App\Support\Schema::champs($cle)) }} champs
-                @if($surchargees[$cle] ?? false)
-                    · <span style="color:var(--vert)">modifiée</span>
+                @if($date)
+                    <span class="badge">modifiée</span>
+                    <span>le {{ $date->format('d/m/Y à H\hi') }}</span>
                 @endif
             </span>
-            <span class="fleche">›</span>
         </a>
     @endforeach
 </div>
 
-<h2 style="font-size:15px;font-weight:800;margin-top:34px;text-transform:uppercase;letter-spacing:.06em;color:#777">Contenus transversaux</h2>
-<p class="intro" style="font-size:13.5px">Repris sur plusieurs pages à la fois.</p>
+<div class="titre-sec">Commun à tout le site</div>
+<p class="intro" style="font-size:13.5px;margin-top:4px">Repris sur plusieurs pages à la fois.</p>
 <div class="liste" style="margin-top:14px">
     @foreach([
         ['coordonnees',  'Coordonnées',   'Téléphones, emails et adresse. Pied de page, contact et données Google.', 'var(--rouge)'],
