@@ -41,7 +41,11 @@ RUN composer install --optimize-autoloader --no-dev --no-interaction
 # on garde au cas où on ajoute des scripts custom plus tard).
 RUN if [ -f package.json ] && [ -d resources/js ]; then npm ci && npm run build || true; fi
 
-RUN chmod -R 775 storage bootstrap/cache
+# Le dossier de contenu de l'admin est créé ici pour que le volume Coolify
+# monté sur /app/storage/app/contenu hérite d'un dossier existant et de ses
+# droits, plutôt que d'être créé à la volée au premier montage.
+RUN mkdir -p storage/app/contenu/visuels && \
+    chmod -R 775 storage bootstrap/cache
 
 EXPOSE 8000
 
