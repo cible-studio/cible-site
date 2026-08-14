@@ -157,6 +157,7 @@
     .consent{display:flex;gap:12px;align-items:flex-start;margin-top:24px;font-size:13.5px;line-height:1.55;color:#444}
     .consent input{margin-top:3px;width:18px;height:18px;accent-color:var(--rouge);flex-shrink:0}
     .consent.error{color:var(--rouge)}
+    .turnstile-zone{margin-top:22px}
     .form-submit{margin-top:22px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
     .form-submit p{font-size:12.5px;color:#666;flex:1;min-width:200px}
 
@@ -544,6 +545,21 @@
                         </span>
                     </label>
 
+                    {{-- Cloudflare Turnstile. Rendu uniquement si les clés
+                         sont configurées : sans elles, le formulaire reste
+                         strictement identique à aujourd'hui. Le widget est
+                         invisible pour un visiteur normal — il ne demande une
+                         interaction qu'en cas de doute. --}}
+                    @if(\App\Support\Turnstile::actif())
+                        <div class="turnstile-zone">
+                            <div class="cf-turnstile"
+                                 data-sitekey="{{ \App\Support\Turnstile::siteKey() }}"
+                                 data-language="fr"
+                                 data-theme="light"></div>
+                            @error('turnstile') <span class="err-msg" style="display:block;margin-top:10px">{{ $message }}</span> @enderror
+                        </div>
+                    @endif
+
                     <div class="form-submit">
                         <button type="submit" class="bouton b-rouge">Recevoir ma recommandation média</button>
                         <p>Vos données ne sont utilisées que pour vous répondre. Aucun démarchage tiers.</p>
@@ -643,6 +659,14 @@
 </section>
 
 @endsection
+
+@if(\App\Support\Turnstile::actif())
+    @push('head')
+        {{-- `defer` : le widget se rend après le HTML, il ne retarde pas
+             l'affichage du formulaire. --}}
+        <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    @endpush
+@endif
 
 @push('page-js')
 <script>

@@ -28,6 +28,10 @@ class SecurityHeaders
         $leaflet  = 'https://unpkg.com';
         $tuiles   = 'https://*.basemaps.cartocdn.com';
         $ga       = 'https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com';
+        // Turnstile : script + iframe du défi. Autorisé même quand les clés
+        // ne sont pas configurées — la CSP décrit ce qui est permis, pas ce
+        // qui est chargé, et cela évite un oubli le jour de l'activation.
+        $turnstile = 'https://challenges.cloudflare.com';
 
         $csp = implode('; ', [
             "default-src 'self'",
@@ -42,8 +46,10 @@ class SecurityHeaders
             // contenu affiché est intégralement échappé côté Blade.
             "style-src 'self' 'unsafe-inline' {$polices} {$leaflet}",
             "font-src 'self' data: {$polices}",
-            "script-src 'self' 'unsafe-inline' {$leaflet} {$ga}",
-            "connect-src 'self' {$ga} {$tuiles}",
+            "script-src 'self' 'unsafe-inline' {$leaflet} {$ga} {$turnstile}",
+            // Turnstile présente son défi dans une iframe.
+            "frame-src {$turnstile}",
+            "connect-src 'self' {$ga} {$tuiles} {$turnstile}",
             'upgrade-insecure-requests',
         ]);
 

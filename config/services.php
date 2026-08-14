@@ -47,4 +47,16 @@ return [
         'ga_id' => env('CIBLE_GA_ID'),
     ],
 
+    /*
+    | Cloudflare Turnstile — anti-robot du formulaire /contact.
+    | Tant que les deux clés sont vides, le widget n'est pas rendu et la
+    | vérification laisse passer : le site fonctionne à l'identique. La mise
+    | en service ne demande que ces deux variables dans Coolify, sans
+    | redéploiement de code. Clés à créer sur dash.cloudflare.com → Turnstile.
+    */
+    'turnstile' => [
+        'site_key'   => env('TURNSTILE_SITE_KEY'),
+        'secret_key' => env('TURNSTILE_SECRET_KEY'),
+    ],
+
 ];

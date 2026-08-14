@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\CibleContactMail;
 use App\Support\AntiSpam;
+use App\Support\Turnstile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
@@ -330,6 +331,14 @@ class CibleController extends Controller
             'website.max'          => 'Champ invalide.',
             'consentement.accepted'=> 'Merci d\'accepter d\'être recontacté pour que nous puissions traiter votre demande.',
         ]);
+
+        // Cloudflare Turnstile, si les clés sont renseignées. Placé avant
+        // l'analyse maison : inutile d'aller plus loin si le défi a échoué.
+        if (!Turnstile::verifier($request->input('cf-turnstile-response'), $request->ip())) {
+            return back()->withInput()->withErrors([
+                'turnstile' => 'La vérification anti-robot a échoué. Merci de réessayer.',
+            ]);
+        }
 
         // Analyse anti-robot : addition de signaux faibles plutôt qu'une
         // règle unique et cassante (cf. App\Support\AntiSpam).
