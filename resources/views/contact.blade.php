@@ -317,10 +317,19 @@
                       id="form-brief" data-etape-depart="{{ $etapeDepart }}">
                     @csrf
 
-                    {{-- Honeypot anti-bot --}}
+                    {{-- Pièges anti-robot. Deux champs aux noms plausibles :
+                         les robots soignés ignorent « website », rarement les
+                         deux. tabindex=-1 et autocomplete=off pour qu'aucun
+                         humain ni gestionnaire de mots de passe n'y touche. --}}
                     <div class="honeypot" aria-hidden="true" style="position:absolute;left:-9999px;visibility:hidden">
                         <label>Ne pas remplir <input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+                        <label>Ne pas remplir <input type="text" name="company_url" tabindex="-1" autocomplete="off"></label>
                     </div>
+
+                    {{-- Piège temporel : instant d'ouverture, chiffré côté
+                         serveur donc infalsifiable. Un envoi bouclé en moins
+                         de 4 secondes n'est pas humain. --}}
+                    <input type="hidden" name="_ts" value="{{ \App\Support\AntiSpam::jeton() }}">
 
                     {{-- Jalons de progression. aria-hidden : l'information est
                          déjà portée par le compteur textuel « Étape X sur 4 ». --}}

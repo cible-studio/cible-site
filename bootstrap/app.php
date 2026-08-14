@@ -29,6 +29,12 @@ return Application::configure(basePath: dirname(__DIR__))
         // dynamiquement sur le réseau Docker. Cela suppose que le conteneur
         // ne soit joignable QUE via le proxy — c'est le cas sous Coolify.
         $middleware->trustProxies(at: '*');
+
+        // En-têtes de sécurité sur toutes les réponses web (CSP,
+        // anti-clickjacking, anti-sniffing…). Cf. SecurityHeaders.
+        $middleware->web(append: [
+            \App\Http\Middleware\SecurityHeaders::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\CibleContactMail;
+use App\Support\AntiSpam;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
@@ -314,7 +315,12 @@ class CibleController extends Controller
 
             'message'      => ['nullable', 'string', 'max:4000'],
             'consentement' => ['accepted'],
-            'website'      => ['nullable', 'string', 'max:0'],  // honeypot
+            // Pots de miel : invisibles pour un humain, remplis par les robots
+            // qui parcourent le DOM. Deux champs aux noms plausibles valent
+            // mieux qu'un seul, les robots les plus soignés ignorant "website".
+            'website'      => ['nullable', 'string', 'max:0'],
+            'company_url'  => ['nullable', 'string', 'max:0'],
+            '_ts'          => ['nullable', 'string', 'max:600'],  // jeton d'ouverture chiffre
 
             'doc_brief'    => ['nullable', 'file', 'extensions:' . self::DOC_EXT, 'max:' . self::DOC_MAX_KO],
             'doc_logo'     => ['nullable', 'file', 'extensions:' . self::DOC_EXT, 'max:' . self::DOC_MAX_KO],
@@ -325,9 +331,31 @@ class CibleController extends Controller
             'consentement.accepted'=> 'Merci d\'accepter d\'être recontacté pour que nous puissions traiter votre demande.',
         ]);
 
-        if (!empty($request->input('website'))) {
-            Log::warning('cible.devis.honeypot_triggered', ['ip' => $request->ip()]);
+        // Analyse anti-robot : addition de signaux faibles plutôt qu'une
+        // règle unique et cassante (cf. App\Support\AntiSpam).
+        $verdict = AntiSpam::analyser($request, $data);
+
+        if ($verdict['score'] >= AntiSpam::SEUIL) {
+            // On affiche le message de succès habituel : signaler le rejet
+            // apprendrait au robot quel signal l'a trahi, et lui permettrait
+            // d'itérer jusqu'à passer.
+            Log::warning('cible.devis.robot_ecarte', [
+                'score'   => $verdict['score'],
+                'signaux' => $verdict['signaux'],
+                'ip'      => $request->ip(),
+                'nom'     => $data['nom'] ?? null,
+                'email'   => $data['email'] ?? null,
+            ]);
+
             return back()->with('devis_sent', true);
+        }
+
+        // Envoi accepté mais suspect : on trace pour pouvoir régler le seuil
+        // sur des cas réels plutôt qu'au jugé.
+        if ($verdict['score'] > 0) {
+            Log::info('cible.devis.signaux_mineurs', [
+                'score' => $verdict['score'], 'signaux' => $verdict['signaux'],
+            ]);
         }
 
         // Slugs → libellés lisibles pour le mail du commercial.

@@ -24,7 +24,10 @@ RUN echo "upload_max_filesize=10M" > /usr/local/etc/php/conf.d/uploads.ini && \
     echo "post_max_size=45M"       >> /usr/local/etc/php/conf.d/uploads.ini && \
     echo "max_file_uploads=10"     >> /usr/local/etc/php/conf.d/uploads.ini && \
     echo "memory_limit=256M"       >> /usr/local/etc/php/conf.d/uploads.ini && \
-    echo "max_execution_time=60"   >> /usr/local/etc/php/conf.d/uploads.ini
+    echo "max_execution_time=60"   >> /usr/local/etc/php/conf.d/uploads.ini && \
+    # La signature PHP dans les en-têtes n'apporte rien au visiteur et
+    # indique à un attaquant la version exacte à cibler.
+    echo "expose_php=Off"          >> /usr/local/etc/php/conf.d/uploads.ini
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 

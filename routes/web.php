@@ -23,8 +23,16 @@ Route::get('/references',       [CibleController::class, 'references'])->name('r
 // route statique reste donc prioritaire sur le paramètre.
 Route::get('/references/{slug}', [CibleController::class, 'realisation'])->name('realisation');
 Route::get('/contact',          [CibleController::class, 'contact'])->name('contact');
+// Deux limites cumulées :
+//   - `devis-ip`     : 5 envois / 10 min par visiteur, contre l'acharnement
+//                      d'une seule source ;
+//   - `devis-global` : 40 envois / heure toutes sources confondues, contre
+//                      une attaque distribuée qui contournerait la limite
+//                      par IP en changeant d'adresse à chaque envoi. Ce
+//                      plafond protège la boîte du commercial : au-delà,
+//                      c'est de toute façon une anomalie, pas des prospects.
 Route::post('/devis',           [CibleController::class, 'submitDevis'])
-    ->middleware('throttle:5,10')
+    ->middleware(['throttle:devis-ip', 'throttle:devis-global'])
     ->name('devis.submit');
 
 // Endpoint JSON de la carte réseau — lit un fichier statique
