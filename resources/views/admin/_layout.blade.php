@@ -30,7 +30,7 @@
 
     header.adm{background:var(--noir);color:#fff;padding:14px 24px;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
     header.adm img{height:34px;width:auto;display:block}
-    header.adm nav{display:flex;gap:16px;flex-wrap:wrap;font-weight:600;font-size:14px}
+    header.adm nav{display:flex;gap:14px;flex-wrap:wrap;font-weight:600;font-size:13.5px}
     header.adm nav a{opacity:.72;text-decoration:none;padding:4px 0;border-bottom:2px solid transparent}
     header.adm nav a:hover{opacity:1}
     header.adm nav a[aria-current="page"]{opacity:1;border-bottom-color:var(--jaune)}
@@ -88,10 +88,15 @@
 @if(!empty($connecte))
 <header class="adm">
     <img src="{{ asset('images/logon.png') }}" alt="CIBLE">
+    {{-- Navigation construite depuis le schéma : ajouter une page au schéma
+         la fait apparaître ici sans toucher au gabarit. --}}
     <nav>
-        <a href="{{ route('admin.tableau') }}"      @if(($onglet ?? '')==='tableau') aria-current="page" @endif>Tableau de bord</a>
-        <a href="{{ route('admin.coordonnees') }}"  @if(($onglet ?? '')==='coordonnees') aria-current="page" @endif>Coordonnées</a>
-        <a href="{{ route('admin.chiffres') }}"     @if(($onglet ?? '')==='chiffres') aria-current="page" @endif>Chiffres clés</a>
+        <a href="{{ route('admin.tableau') }}" @if(($onglet ?? '')==='tableau') aria-current="page" @endif>Tableau de bord</a>
+        @foreach(\App\Support\Schema::pages() as $c => $p)
+            <a href="{{ route('admin.page', $c) }}" @if(($onglet ?? '')===$c) aria-current="page" @endif>{{ \Illuminate\Support\Str::of($p['titre'])->replace('Page ', '')->ucfirst() }}</a>
+        @endforeach
+        <a href="{{ route('admin.coordonnees') }}" @if(($onglet ?? '')==='coordonnees') aria-current="page" @endif>Coordonnées</a>
+        <a href="{{ route('admin.chiffres') }}" @if(($onglet ?? '')==='chiffres') aria-current="page" @endif>Chiffres</a>
         <a href="{{ route('admin.realisations') }}" @if(($onglet ?? '')==='realisations') aria-current="page" @endif>Réalisations</a>
     </nav>
     <div class="fin">

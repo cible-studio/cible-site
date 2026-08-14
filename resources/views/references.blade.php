@@ -106,9 +106,9 @@
         ['f-fleche', '--c:var(--jaune);--op:.18;top:14%;right:5%;width:120px;--r:-8deg;--dur:20s;--del:.4s'],
         ['f-plume',  '--c:var(--violet);--op:.10;bottom:-8%;left:4%;width:110px;--r:16deg;--dur:27s;--del:.7s'],
     ]" />
-    <span class="sur">Nos réalisations</span>
-    <h1 class="t1">Des campagnes visibles. Des expériences mémorables. Des marques renforcées.</h1>
-    <p>Plus de trente ans à accompagner les entreprises, institutions et grandes marques dans la conception et le déploiement de campagnes qui associent visibilité, créativité, expérience de marque et impact terrain.</p>
+    <span class="sur">{{ \App\Support\Contenu::get('references.hero_surtitre') }}</span>
+    <h1 class="t1">{{ \App\Support\Contenu::get('references.hero_titre') }}</h1>
+    <p>{{ \App\Support\Contenu::get('references.hero_texte') }}</p>
 </section>
 
 <section class="intro-ref a-decor">
@@ -118,9 +118,9 @@
         ['f-fleche', '--c:var(--vert);--op:.14;top:22%;right:4%;width:105px;--r:-12deg;--dur:22s;--del:.7s'],
     ]" />
     <div class="entete rev">
-        <span class="sur">Notre savoir-faire en action</span>
-        <h2 class="t1">De l'affichage à l'expérience de marque.</h2>
-        <p>Nos réalisations couvrent l'ensemble de la chaîne de valeur : stratégie média, affichage, activation terrain, street marketing, production audiovisuelle, création digitale, architecture événementielle et pilotage de campagne. Chaque projet est conçu pour rapprocher la marque de ses audiences et atteindre un objectif concret.</p>
+        <span class="sur">{{ \App\Support\Contenu::get('references.intro_surtitre') }}</span>
+        <h2 class="t1">{{ \App\Support\Contenu::get('references.intro_titre') }}</h2>
+        <p>{{ \App\Support\Contenu::get('references.intro_texte') }}</p>
     </div>
 </section>
 
@@ -225,9 +225,9 @@
         ['f-plume',  '--c:var(--bleu);--op:.10;bottom:4%;right:4%;width:110px;--r:20deg;--dur:31s;--del:.5s'],
     ]" />
     <div class="entete rev">
-        <span class="sur">Ils nous ont fait confiance</span>
-        <h2 class="t1">Des marques, institutions et organisations accompagnées à travers la Côte d'Ivoire.</h2>
-        <p>De la visibilité extérieure aux expériences de marque, nous collaborons avec des acteurs issus de secteurs variés pour concevoir des campagnes adaptées à leurs enjeux.</p>
+        <span class="sur">{{ \App\Support\Contenu::get('references.cli_surtitre') }}</span>
+        <h2 class="t1">{{ \App\Support\Contenu::get('references.cli_titre') }}</h2>
+        <p>{{ \App\Support\Contenu::get('references.cli_texte') }}</p>
     </div>
     <div class="clients-grid rev">
         @foreach([
@@ -261,12 +261,12 @@
         ['f-plume',  '--c:var(--violet);--op:.12;top:10%;left:7%;width:110px;--r:18deg;--dur:28s'],
         ['f-fleche', '--c:var(--rouge);--op:.16;bottom:12%;right:8%;width:120px;--r:-10deg;--dur:21s;--del:.4s'],
     ]" />
-    <span class="sur">Et votre prochain projet ?</span>
-    <h2 class="t1">Faisons de votre prochaine campagne une réalisation qui compte.</h2>
-    <p>Partagez-nous votre objectif, votre audience et votre ambition. Nous imaginerons le dispositif de visibilité, d'activation et de communication le plus pertinent pour votre marque.</p>
+    <span class="sur">{{ \App\Support\Contenu::get('references.cta_surtitre') }}</span>
+    <h2 class="t1">{{ \App\Support\Contenu::get('references.cta_titre') }}</h2>
+    <p>{{ \App\Support\Contenu::get('references.cta_texte') }}</p>
     <div style="margin-top:32px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-        <a class="bouton b-rouge" href="{{ route('contact') }}">Parler de mon projet</a>
-        <a class="bouton b-ligne" href="{{ route('services') }}">Découvrir nos services</a>
+        <a class="bouton b-rouge" href="{{ route('contact') }}">{{ \App\Support\Contenu::get('references.cta_bouton1') }}</a>
+        <a class="bouton b-ligne" href="{{ route('services') }}">{{ \App\Support\Contenu::get('references.cta_bouton2') }}</a>
     </div>
 </section>
 

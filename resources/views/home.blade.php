@@ -142,7 +142,9 @@
         font-size:clamp(18px,2.1vw,24px);
         line-height:1.35;color:#fff;
     }
-    .marque-signature em{
+    /* em conservé pour l'historique, strong = emphase saisie dans l'admin */
+    .marque-signature em,
+    .marque-signature strong{
         color:var(--jaune);font-style:normal;
     }
 
@@ -305,21 +307,23 @@
     </div>
     <div class="hero">
         <div>
-            <span class="sur">Régie &amp; studio · Côte d'Ivoire · depuis 1994</span>
+            <span class="sur">{{ \App\Support\Contenu::get('accueil.hero_surtitre') }}</span>
             <h1>
-                <span class="l">Votre visibilité.</span>
-                <span class="l">Notre intelligence média.</span>
-                <span class="l">Vos résultats.</span>
+                <span class="l">{{ \App\Support\Contenu::get('accueil.hero_titre_1') }}</span>
+                <span class="l">{{ \App\Support\Contenu::get('accueil.hero_titre_2') }}</span>
+                <span class="l">{{ \App\Support\Contenu::get('accueil.hero_titre_3') }}</span>
             </h1>
-            <h2 class="sous-titre">Depuis plus de 30 ans, nous accompagnons les entreprises, les institutions et les marques avec des stratégies de visibilité qui combinent affichage, communication 360°, digital, activation terrain et intelligence média.</h2>
-            <p class="accroche">Votre marque mérite plus qu'une campagne. Elle mérite un impact durable&nbsp;: <strong>nous construisons votre visibilité.</strong></p>
+            <h2 class="sous-titre">{{ \App\Support\Contenu::get('accueil.hero_sous_titre') }}</h2>
+            {{-- riche() : escape tout puis ne réintroduit que <strong>, à partir
+                 des **astérisques** saisies dans l'admin. Cf. Contenu::riche(). --}}
+            <p class="accroche">{!! \App\Support\Contenu::riche('accueil.hero_accroche') !!}</p>
             <div class="actions">
-                <a class="bouton b-rouge" href="{{ route('contact') }}">Rendre ma marque visible<i class="fl dessin f-fleche" aria-hidden="true"></i></a>
-                <a class="bouton b-ligne" href="{{ route('references') }}">Voir nos réalisations</a>
+                <a class="bouton b-rouge" href="{{ route('contact') }}">{{ \App\Support\Contenu::get('accueil.hero_cta1') }}<i class="fl dessin f-fleche" aria-hidden="true"></i></a>
+                <a class="bouton b-ligne" href="{{ route('references') }}">{{ \App\Support\Contenu::get('accueil.hero_cta2') }}</a>
             </div>
         </div>
         <div class="hero-visuel">
-            <img class="photo" src="{{ asset('images/perroquet-cible.jpg') }}" alt="Perroquet écarlate — symbole de la marque CIBLE" style="object-position:52% 42%">
+            <img class="photo" src="{{ \App\Support\Contenu::urlImage(\App\Support\Contenu::get('accueil.hero_image')) }}" alt="Perroquet écarlate — symbole de la marque CIBLE" style="object-position:52% 42%">
         </div>
     </div>
 
@@ -333,19 +337,26 @@
     {{-- Piste dupliquée 2× : l'animation translateX(-50%) exige que la
          seconde moitié soit identique à la première pour boucler sans
          saut visible. Toute modification doit être faite dans les 2 blocs. --}}
+    @php
+        $ticker = \App\Support\Contenu::lignes('accueil.ticker');
+        // Les couleurs tournent en boucle : l'admin peut ajouter ou retirer
+        // une mention sans qu'aucune pastille se retrouve sans fond.
+        $tons = [
+            'background:var(--rouge)',
+            'background:var(--jaune);color:#111',
+            'background:var(--vert)',
+            'background:var(--violet)',
+            'background:var(--bleu)',
+            'background:var(--noir)',
+        ];
+    @endphp
     <div class="piste">
-        <b style="background:var(--rouge)" class="num">+ 500 campagnes</b>
-        <b style="background:var(--jaune);color:#111">Abidjan &amp; Intérieur du Pays</b>
-        <b style="background:var(--vert)" class="num">30 ans d'expertise</b>
-        <b style="background:var(--violet)" class="num">5 territoires de visibilité</b>
-        <b style="background:var(--bleu)">Online &amp; Offline</b>
-        <b style="background:var(--noir)">De la rue au digital</b>
-        <b style="background:var(--rouge)" class="num">+ 500 campagnes</b>
-        <b style="background:var(--jaune);color:#111">Abidjan &amp; Intérieur du Pays</b>
-        <b style="background:var(--vert)" class="num">30 ans d'expertise</b>
-        <b style="background:var(--violet)" class="num">5 territoires de visibilité</b>
-        <b style="background:var(--bleu)">Online &amp; Offline</b>
-        <b style="background:var(--noir)">De la rue au digital</b>
+        @for($passe = 0; $passe < 2; $passe++)
+            @foreach($ticker as $i => $mention)
+                {{-- .num = chiffres à chasse fixe : appliqué dès qu'il y a un chiffre --}}
+                <b style="{{ $tons[$i % count($tons)] }}"@if(preg_match('/\d/', $mention)) class="num"@endif>{{ $mention }}</b>
+            @endforeach
+        @endfor
     </div>
 </div>
 
@@ -356,7 +367,7 @@
 <section class="marque" id="marque">
     <div class="marque-img rev">
         <div class="marque-img-inner">
-            <img class="photo" src="{{ asset('images/perroquet-cible.jpg') }}" alt="Perroquet écarlate — identité visuelle CIBLE" style="object-position:62% 38%">
+            <img class="photo" src="{{ \App\Support\Contenu::urlImage(\App\Support\Contenu::get('accueil.marque_image')) }}" alt="Perroquet écarlate — identité visuelle CIBLE" style="object-position:62% 38%">
         </div>
     </div>
     <div class="marque-txt">
@@ -365,25 +376,25 @@
             <span class="fleche dessin f-fleche" style="--c:#fff;--op:.10;bottom:6%;left:6%;width:100px;--r:-14deg;--dur:22s;--del:.4s"></span>
         </div>
         <div class="rev">
-            <span class="sur">Opération plume rouge</span>
-            <h2 class="t1" style="margin-top:12px">Faire voir une marque est simple. La rendre incontournable est un métier.</h2>
-            <p class="intro-p">Trente ans à rendre visibles les marques dans le paysage ivoirien — de l'affiche à la campagne 360°.</p>
+            <span class="sur">{{ \App\Support\Contenu::get('accueil.marque_surtitre') }}</span>
+            <h2 class="t1" style="margin-top:12px">{{ \App\Support\Contenu::get('accueil.marque_titre') }}</h2>
+            <p class="intro-p">{{ \App\Support\Contenu::get('accueil.marque_intro') }}</p>
             <div class="recit">
                 <article>
-                    <h3 data-num="01">Notre origine — maîtres de la visibilité extérieure</h3>
-                    <p>Née dans l'affichage publicitaire, CIBLE s'est imposée en trente ans comme un pilier de la publicité extérieure en Côte d'Ivoire.</p>
+                    <h3 data-num="01">{{ \App\Support\Contenu::get('accueil.marque_1_titre') }}</h3>
+                    <p>{{ \App\Support\Contenu::get('accueil.marque_1_texte') }}</p>
                 </article>
                 <article>
-                    <h3 data-num="02">Notre évolution — la visibilité devient mesurable</h3>
-                    <p>Les usages ont changé, les attentes des annonceurs aussi. Le digital 360° prolonge notre réseau et le rend mesurable.</p>
+                    <h3 data-num="02">{{ \App\Support\Contenu::get('accueil.marque_2_titre') }}</h3>
+                    <p>{{ \App\Support\Contenu::get('accueil.marque_2_texte') }}</p>
                 </article>
                 <article>
-                    <h3 data-num="03">Notre force — le terrain et la donnée</h3>
-                    <p>Trente ans de connaissance du terrain ivoirien fusionnés avec une approche moderne.</p>
+                    <h3 data-num="03">{{ \App\Support\Contenu::get('accueil.marque_3_titre') }}</h3>
+                    <p>{{ \App\Support\Contenu::get('accueil.marque_3_texte') }}</p>
                 </article>
             </div>
             <div class="marque-signature">
-                Créer l'impact. <em>Construire la notoriété.</em>
+                {!! \App\Support\Contenu::riche('accueil.marque_signature') !!}
             </div>
         </div>
     </div>
@@ -395,9 +406,9 @@
         <span class="fleche dessin f-fleche" style="--c:var(--gris);--op:1;top:6%;right:6%;width:150px;--r:12deg;--dur:28s;--del:.2s"></span>
     </div>
     <div class="entete rev">
-        <span class="sur">Où votre marque apparaît</span>
-        <h2 class="t1">Cinq territoires de visibilité, une seule audience.</h2>
-        <p>Les cinq couleurs représentent les cinq espaces que traverse une journée abidjanaise.</p>
+        <span class="sur">{{ \App\Support\Contenu::get('accueil.terr_surtitre') }}</span>
+        <h2 class="t1">{{ \App\Support\Contenu::get('accueil.terr_titre') }}</h2>
+        <p>{{ \App\Support\Contenu::get('accueil.terr_intro') }}</p>
     </div>
 
     {{-- Consigne explicite : sans elle, rien ne disait au visiteur que les
@@ -405,18 +416,18 @@
          pointe vers eux et oscille doucement pour attirer l'œil. --}}
     <p class="onglets-aide">
         <span class="dessin f-fleche" aria-hidden="true"></span>
-        Cliquez sur un territoire pour le découvrir
+        {{ \App\Support\Contenu::get('accueil.terr_aide') }}
     </p>
 
     {{-- Les id (o-rue / t-rue…) sont conservés : ils pilotent les couleurs
          de scène en CSS et la table `teintes` du JS en bas de page. Seuls
          les libellés changent (doc textes 2026-08-10). --}}
     <div class="onglets" role="tablist" aria-label="Territoires de visibilité">
-        <button class="onglet" id="o-rue"       role="tab" aria-selected="true"  aria-controls="t-rue"><span class="forme"></span>L'Affichage Outdoor</button>
-        <button class="onglet" id="o-mouvement" role="tab" aria-selected="false" aria-controls="t-mouvement"><span class="forme"></span>La Publicité Mobile</button>
-        <button class="onglet" id="o-ecran"     role="tab" aria-selected="false" aria-controls="t-ecran"><span class="forme"></span>Le brand content</button>
-        <button class="onglet" id="o-digital"   role="tab" aria-selected="false" aria-controls="t-digital"><span class="forme"></span>Le digital</button>
-        <button class="onglet" id="o-terrain"   role="tab" aria-selected="false" aria-controls="t-terrain"><span class="forme"></span>Le terrain</button>
+        <button class="onglet" id="o-rue"       role="tab" aria-selected="true"  aria-controls="t-rue"><span class="forme"></span>{{ \App\Support\Contenu::get('accueil.terr1_onglet') }}</button>
+        <button class="onglet" id="o-mouvement" role="tab" aria-selected="false" aria-controls="t-mouvement"><span class="forme"></span>{{ \App\Support\Contenu::get('accueil.terr2_onglet') }}</button>
+        <button class="onglet" id="o-ecran"     role="tab" aria-selected="false" aria-controls="t-ecran"><span class="forme"></span>{{ \App\Support\Contenu::get('accueil.terr3_onglet') }}</button>
+        <button class="onglet" id="o-digital"   role="tab" aria-selected="false" aria-controls="t-digital"><span class="forme"></span>{{ \App\Support\Contenu::get('accueil.terr4_onglet') }}</button>
+        <button class="onglet" id="o-terrain"   role="tab" aria-selected="false" aria-controls="t-terrain"><span class="forme"></span>{{ \App\Support\Contenu::get('accueil.terr5_onglet') }}</button>
     </div>
 
     <div class="scene" id="scene" style="background:var(--rouge)">
@@ -431,61 +442,61 @@
                 {{-- Le "+" est hors du span animé : anime() écrase le
                      textContent de sa cible, il l'effacerait sinon. --}}
                 <div class="grosnum num"><span aria-hidden="true">+</span><span data-cible="{{ \App\Support\Contenu::get('chiffres.panneaux') }}">0</span></div>
-                <span class="sur">Panneaux en exploitation</span>
-                <h3>Affichage grand format : le seul média qu'on ne peut pas fermer.</h3>
-                <p>L'affichage grand format reste le seul média que personne ne peut sauter, bloquer ou faire défiler.</p>
-                <ul class="tags"><li>Classiques</li><li>Lumipub</li><li>Trivision</li><li>Panoramiques</li><li>Écrans digitaux</li><li>Affichage en magasin</li></ul>
-                <p class="preuve">Chaque campagne se termine par une pige photo horodatée depuis le terrain.</p>
+                <span class="sur">{{ \App\Support\Contenu::get('accueil.terr1_surtitre') }}</span>
+                <h3>{{ \App\Support\Contenu::get('accueil.terr1_titre') }}</h3>
+                <p>{{ \App\Support\Contenu::get('accueil.terr1_texte') }}</p>
+                <ul class="tags">@foreach(\App\Support\Contenu::lignes('accueil.terr1_tags') as $tag)<li>{{ $tag }}</li>@endforeach</ul>
+                <p class="preuve">{{ \App\Support\Contenu::get('accueil.terr1_preuve') }}</p>
             </div>
-            <div class="pan-visuel"><img class="photo" src="{{ asset('images/cible/pole-1-affichage.jpg') }}" alt="Panneau grand format CIBLE"></div>
+            <div class="pan-visuel"><img class="photo" src="{{ \App\Support\Contenu::urlImage(\App\Support\Contenu::get('accueil.terr1_image')) }}" alt="Panneau grand format CIBLE"></div>
         </div>
 
         <div class="pan" id="t-mouvement" role="tabpanel" aria-labelledby="o-mouvement" hidden>
             <div>
                 <div class="grosnum num" data-cible="{{ \App\Support\Contenu::get('chiffres.communes') }}">0</div>
-                <span class="sur">Communes atteintes</span>
-                <h3>Publicité mobile : la ville devient votre support.</h3>
-                <p>Camions, tricycles, motos, taxis, chevalets. Le message va chercher l'audience là où elle est immobile.</p>
-                <ul class="tags"><li>Camions publicitaires</li><li>Branding véhicules</li><li>Taxis &amp; motos</li><li>Chevalets</li><li>Régie mobile événementielle</li></ul>
-                <p class="preuve">Itinéraires et créneaux définis avec vous, tracés et rapportés après diffusion.</p>
+                <span class="sur">{{ \App\Support\Contenu::get('accueil.terr2_surtitre') }}</span>
+                <h3>{{ \App\Support\Contenu::get('accueil.terr2_titre') }}</h3>
+                <p>{{ \App\Support\Contenu::get('accueil.terr2_texte') }}</p>
+                <ul class="tags">@foreach(\App\Support\Contenu::lignes('accueil.terr2_tags') as $tag)<li>{{ $tag }}</li>@endforeach</ul>
+                <p class="preuve">{{ \App\Support\Contenu::get('accueil.terr2_preuve') }}</p>
             </div>
-            <div class="pan-visuel"><img class="photo" src="{{ asset('images/cible/mobile-camion.jpg') }}" alt="Camion publicitaire CIBLE"></div>
+            <div class="pan-visuel"><img class="photo" src="{{ \App\Support\Contenu::urlImage(\App\Support\Contenu::get('accueil.terr2_image')) }}" alt="Camion publicitaire CIBLE"></div>
         </div>
 
         <div class="pan" id="t-ecran" role="tabpanel" aria-labelledby="o-ecran" hidden>
             <div>
-                <div class="grosnum num" data-brut="Studio">Studio</div>
-                <span class="sur">Production interne</span>
-                <h3>Production audiovisuelle : l'image qui porte le message.</h3>
-                <p>Films institutionnels, spots TV et radio, motion design, contenus de marque.</p>
-                <ul class="tags"><li>Films institutionnels</li><li>Spots TV &amp; audio</li><li>Motion design</li><li>Identité visuelle</li><li>Contenu de marque</li></ul>
-                <p class="preuve">Film institutionnel réalisé pour le Groupe Cofina.</p>
+                <div class="grosnum num" data-brut="{{ \App\Support\Contenu::get('accueil.terr3_chiffre') }}">Studio</div>
+                <span class="sur">{{ \App\Support\Contenu::get('accueil.terr3_surtitre') }}</span>
+                <h3>{{ \App\Support\Contenu::get('accueil.terr3_titre') }}</h3>
+                <p>{{ \App\Support\Contenu::get('accueil.terr3_texte') }}</p>
+                <ul class="tags">@foreach(\App\Support\Contenu::lignes('accueil.terr3_tags') as $tag)<li>{{ $tag }}</li>@endforeach</ul>
+                <p class="preuve">{{ \App\Support\Contenu::get('accueil.terr3_preuve') }}</p>
             </div>
-            <div class="pan-visuel"><img class="photo" src="{{ asset('images/cible/campagne-3.jpg') }}" alt="Extrait de film institutionnel"></div>
+            <div class="pan-visuel"><img class="photo" src="{{ \App\Support\Contenu::urlImage(\App\Support\Contenu::get('accueil.terr3_image')) }}" alt="Extrait de film institutionnel"></div>
         </div>
 
         <div class="pan" id="t-digital" role="tabpanel" aria-labelledby="o-digital" hidden>
             <div>
-                <div class="grosnum num" data-brut="24/7">24/7</div>
-                <span class="sur">Présence continue</span>
-                <h3>Communication digitale : le prolongement naturel du panneau.</h3>
-                <p>Social media ads, SEO/SEA, activations interactives, drive-to-store.</p>
-                <ul class="tags"><li>Social media ads</li><li>SEO / SEA</li><li>Campagnes virales</li><li>Activations interactives</li><li>Drive-to-store</li></ul>
-                <p class="preuve">Conception graphique et gestion des réseaux pour SGS / SICTA.</p>
+                <div class="grosnum num" data-brut="{{ \App\Support\Contenu::get('accueil.terr4_chiffre') }}">24/7</div>
+                <span class="sur">{{ \App\Support\Contenu::get('accueil.terr4_surtitre') }}</span>
+                <h3>{{ \App\Support\Contenu::get('accueil.terr4_titre') }}</h3>
+                <p>{{ \App\Support\Contenu::get('accueil.terr4_texte') }}</p>
+                <ul class="tags">@foreach(\App\Support\Contenu::lignes('accueil.terr4_tags') as $tag)<li>{{ $tag }}</li>@endforeach</ul>
+                <p class="preuve">{{ \App\Support\Contenu::get('accueil.terr4_preuve') }}</p>
             </div>
-            <div class="pan-visuel"><img class="photo" src="{{ asset('images/cible/campagne-4.jpg') }}" alt="Campagne social media CIBLE"></div>
+            <div class="pan-visuel"><img class="photo" src="{{ \App\Support\Contenu::urlImage(\App\Support\Contenu::get('accueil.terr4_image')) }}" alt="Campagne social media CIBLE"></div>
         </div>
 
         <div class="pan" id="t-terrain" role="tabpanel" aria-labelledby="o-terrain" hidden>
             <div>
-                <div class="grosnum num" data-brut="Face à face">Face à face</div>
-                <span class="sur">Le dernier mètre</span>
-                <h3>Street marketing : là où la marque devient une rencontre.</h3>
-                <p>Street marketing, pop-up stores, roadshows, stands expérientiels.</p>
-                <ul class="tags"><li>Street marketing</li><li>Pop-up store</li><li>Roadshow</li><li>Stand expérientiel</li><li>Architecture événementielle</li></ul>
-                <p class="preuve">Brand experience pour Orange · stand expérientiel pour IFG.</p>
+                <div class="grosnum num" data-brut="{{ \App\Support\Contenu::get('accueil.terr5_chiffre') }}">Face à face</div>
+                <span class="sur">{{ \App\Support\Contenu::get('accueil.terr5_surtitre') }}</span>
+                <h3>{{ \App\Support\Contenu::get('accueil.terr5_titre') }}</h3>
+                <p>{{ \App\Support\Contenu::get('accueil.terr5_texte') }}</p>
+                <ul class="tags">@foreach(\App\Support\Contenu::lignes('accueil.terr5_tags') as $tag)<li>{{ $tag }}</li>@endforeach</ul>
+                <p class="preuve">{{ \App\Support\Contenu::get('accueil.terr5_preuve') }}</p>
             </div>
-            <div class="pan-visuel"><img class="photo" src="{{ asset('images/cible/campagne-5.jpg') }}" alt="Activation street marketing CIBLE"></div>
+            <div class="pan-visuel"><img class="photo" src="{{ \App\Support\Contenu::urlImage(\App\Support\Contenu::get('accueil.terr5_image')) }}" alt="Activation street marketing CIBLE"></div>
         </div>
     </div>
 </section>
@@ -498,8 +509,8 @@
     <span class="dessin f-plume" aria-hidden="true" style="--c:var(--violet);opacity:.10;width:150px;top:-30px;left:4%;transform:rotate(18deg)"></span>
     <span class="dessin f-plume" aria-hidden="true" style="--c:var(--rouge);opacity:.09;width:110px;bottom:-24px;right:8%;transform:rotate(-24deg)"></span>
     <span class="dessin f-fleche" aria-hidden="true" style="--c:var(--bleu);opacity:.12;width:120px;top:22%;right:3%;transform:rotate(-8deg)"></span>
-    <p>Nous concevons des stratégies de visibilité qui transforment chaque point de contact avec votre audience en opportunité de croissance.</p>
-    <p class="fort">Notre mission : faire de votre visibilité un véritable levier de performance commerciale.</p>
+    <p>{{ \App\Support\Contenu::get('accueil.mission_texte') }}</p>
+    <p class="fort">{{ \App\Support\Contenu::get('accueil.mission_fort') }}</p>
 </section>
 
 {{-- ═══ RÉALISATIONS ═══ --}}
@@ -509,10 +520,10 @@
     </div>
     <div class="travaux-tete rev">
         <div>
-            <span class="sur">Réalisations</span>
-            <h2 class="t1" style="margin-top:12px">Des campagnes qui parlent d'elles-mêmes.</h2>
+            <span class="sur">{{ \App\Support\Contenu::get('accueil.travaux_surtitre') }}</span>
+            <h2 class="t1" style="margin-top:12px">{{ \App\Support\Contenu::get('accueil.travaux_titre') }}</h2>
         </div>
-        <a class="bouton b-ligne" href="{{ route('references') }}">Voir toutes les réalisations<i class="fl dessin f-fleche" aria-hidden="true"></i></a>
+        <a class="bouton b-ligne" href="{{ route('references') }}">{{ \App\Support\Contenu::get('accueil.travaux_cta') }}<i class="fl dessin f-fleche" aria-hidden="true"></i></a>
     </div>
     {{-- Cartes alimentées par CibleController::projets() — source unique
          partagée avec /references et les pages détail, pour qu'un libellé
@@ -553,9 +564,9 @@
     </div>
     <div class="reseau-grille">
         <div class="rev">
-            <span class="sur" style="opacity:.85">La preuve</span>
-            <h2 class="t1" style="margin-top:14px">L'un des plus grands patrimoines d'affichage à Abidjan et en Côte d'Ivoire.</h2>
-            <p>Une agence loue l'espace d'un tiers. Nous exploitons le nôtre : +400 panneaux dans 31 communes, de Bouaké à San-Pédro.</p>
+            <span class="sur" style="opacity:.85">{{ \App\Support\Contenu::get('accueil.reseau_surtitre') }}</span>
+            <h2 class="t1" style="margin-top:14px">{{ \App\Support\Contenu::get('accueil.reseau_titre') }}</h2>
+            <p>{{ \App\Support\Contenu::get('accueil.reseau_texte') }}</p>
             {{-- Répartition 180/184 retirée 2026-08-10 : leur somme (364)
                  contredisait le volume global désormais annoncé en "+400".
                  On ne communique plus qu'un chiffre de parc, arrondi. --}}
@@ -563,10 +574,10 @@
                 <div><div class="v num"><span aria-hidden="true">+</span><span data-cible="{{ \App\Support\Contenu::get('chiffres.panneaux') }}">0</span></div><div class="l">Panneaux en exploitation</div></div>
                 <div><div class="v num" data-cible="{{ \App\Support\Contenu::get('chiffres.communes') }}">0</div><div class="l">Communes et villes<br>couvertes</div></div>
             </div>
-            <a class="bouton b-blanc" style="margin-top:34px" href="{{ route('reseau') }}">Explorer la carte du réseau<i class="fl dessin f-fleche" aria-hidden="true"></i></a>
+            <a class="bouton b-blanc" style="margin-top:34px" href="{{ route('reseau') }}">{{ \App\Support\Contenu::get('accueil.reseau_cta') }}<i class="fl dessin f-fleche" aria-hidden="true"></i></a>
         </div>
         <div class="rev">
-            <div class="carte-slot"><img class="photo" src="{{ asset('images/cible/hero-plateau-night.jpg') }}" alt="Réseau CIBLE — Abidjan by night"></div>
+            <div class="carte-slot"><img class="photo" src="{{ \App\Support\Contenu::urlImage(\App\Support\Contenu::get('accueil.reseau_image')) }}" alt="Réseau CIBLE — Abidjan by night"></div>
             <p class="note">Réseau détaillé et carte interactive sur la page <a href="{{ route('reseau') }}" style="text-decoration:underline">Notre réseau</a>.</p>
         </div>
     </div>
@@ -587,9 +598,9 @@
 <section class="contact-home" id="contact">
     <div class="motif" aria-hidden="true"></div>
     <div class="contact-inner rev">
-        <h2 class="t1">Entrons en contact.</h2>
-        <p>Décrivez votre besoin en deux minutes. Notre équipe commerciale vous rappelle dans la journée ouvrée.</p>
-        <a class="bouton b-rouge" style="margin-top:28px" href="{{ route('contact') }}">Recevoir une recommandation média<i class="fl dessin f-fleche" aria-hidden="true"></i></a>
+        <h2 class="t1">{{ \App\Support\Contenu::get('accueil.contact_titre') }}</h2>
+        <p>{{ \App\Support\Contenu::get('accueil.contact_texte') }}</p>
+        <a class="bouton b-rouge" style="margin-top:28px" href="{{ route('contact') }}">{{ \App\Support\Contenu::get('accueil.contact_cta') }}<i class="fl dessin f-fleche" aria-hidden="true"></i></a>
         <div class="coord">
             <a href="tel:+2250700780628" class="num">+225 07 00 78 06 28</a>
             <a href="mailto:commercial@cible-ci.com">commercial@cible-ci.com</a>

@@ -80,6 +80,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/realisations/{slug}',     [AdminController::class, 'editerRealisation'])->name('realisation.editer');
         Route::post('/realisations/{slug}',    [AdminController::class, 'enregistrerRealisation'])->name('realisation.enregistrer');
 
+        // Écrans générés à partir de config/admin-schema.php : une seule
+        // paire de routes couvre toutes les pages du site.
+        Route::get('/page/{cle}',  [AdminController::class, 'page'])->name('page');
+        Route::post('/page/{cle}', [AdminController::class, 'enregistrerPage'])->name('page.enregistrer');
+
         Route::post('/reinitialiser/{section}', [AdminController::class, 'reinitialiser'])->name('reinitialiser');
     });
 });

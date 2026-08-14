@@ -144,9 +144,9 @@
         ['f-fleche', '--c:#fff;--op:.16;top:16%;right:14%;width:110px;--r:8deg;--dur:21s;--del:.8s'],
     ]" />
     <div>
-        <span class="sur">Notre parc publicitaire</span>
-        <h1 class="t1">Votre audience est quelque part. Notre réseau vous permet de l'atteindre.</h1>
-        <p>CIBLE exploite un parc de +400 panneaux répartis à Abidjan et dans les principales villes de Côte d'Ivoire. Notre connaissance du terrain nous permet de recommander les zones, les axes et les formats les plus adaptés à vos objectifs de visibilité.</p>
+        <span class="sur">{{ \App\Support\Contenu::get('reseau.hero_surtitre') }}</span>
+        <h1 class="t1">{{ \App\Support\Contenu::get('reseau.hero_titre') }}</h1>
+        <p>{{ \App\Support\Contenu::get('reseau.hero_texte') }}</p>
         {{-- Répartition 180 / 184 retirée 2026-08-10 : leur somme (364)
              contredisait le volume global désormais annoncé en "+400".
              Les deux zones restent décrites dans la section Couverture. --}}
@@ -154,7 +154,7 @@
             <div><div class="v num"><span aria-hidden="true">+</span><span data-cible="{{ \App\Support\Contenu::get('chiffres.panneaux') }}">0</span></div><div class="l">Panneaux exploités</div></div>
             <div><div class="v num" data-cible="{{ \App\Support\Contenu::get('chiffres.communes') }}">0</div><div class="l">Communes et villes<br>couvertes</div></div>
         </div>
-        <a class="bouton b-blanc" style="margin-top:36px" href="{{ route('contact') }}">Trouver mes emplacements</a>
+        <a class="bouton b-blanc" style="margin-top:36px" href="{{ route('contact') }}">{{ \App\Support\Contenu::get('reseau.hero_cta') }}</a>
     </div>
 </section>
 
@@ -165,9 +165,9 @@
         ['f-plume',  '--c:var(--bleu);--op:.10;bottom:4%;right:4%;width:110px;--r:18deg;--dur:30s;--del:.5s'],
     ]" />
     <div class="entete rev">
-        <span class="sur">Plus qu'une carte</span>
-        <h2 class="t1">Des emplacements sélectionnés selon vos audiences et vos objectifs.</h2>
-        <p>Une campagne extérieure performante ne repose pas uniquement sur le nombre de panneaux. Elle dépend de la pertinence des zones, de la visibilité du support, du sens de circulation, du format, de la durée d'exposition et de la cohérence avec les habitudes de votre cible.</p>
+        <span class="sur">{{ \App\Support\Contenu::get('reseau.app_surtitre') }}</span>
+        <h2 class="t1">{{ \App\Support\Contenu::get('reseau.app_titre') }}</h2>
+        <p>{{ \App\Support\Contenu::get('reseau.app_texte') }}</p>
     </div>
     <div class="app-grid">
         <div class="app-card rev" style="--c:var(--rouge)">
@@ -208,38 +208,25 @@
 {{-- ═══ COUVERTURE TERRITORIALE ═══ --}}
 <section class="communes">
     <div class="entete rev">
-        <span class="sur">Couverture territoriale</span>
-        <h2 class="t1">De la capitale économique aux principaux bassins de consommation.</h2>
+        <span class="sur">{{ \App\Support\Contenu::get('reseau.comm_surtitre') }}</span>
+        <h2 class="t1">{{ \App\Support\Contenu::get('reseau.comm_titre') }}</h2>
     </div>
     <div class="communes-grid">
         <div class="zone rev" style="--c:var(--rouge)">
-            <h3>Grand Abidjan</h3>
-            <div class="zone-sub">Principaux axes, communes et zones commerciales du Grand Abidjan.</div>
+            <h3>{{ \App\Support\Contenu::get('reseau.comm_abidjan_titre') }}</h3>
+            <div class="zone-sub">{{ \App\Support\Contenu::get('reseau.comm_abidjan_sous') }}</div>
             <ul class="zone-list">
-                <li>Plateau</li><li>Cocody</li>
-                <li>Yopougon</li><li>Abobo</li>
-                <li>Marcory</li><li>Treichville</li>
-                <li>Koumassi</li><li>Port-Bouët</li>
-                <li>Attécoubé</li><li>Adjamé</li>
-                <li>Bingerville</li><li>Songon</li>
-                <li>Anyama</li>
+                @foreach(\App\Support\Contenu::lignes('reseau.comm_abidjan_liste') as $commune)<li>{{ $commune }}</li>@endforeach
             </ul>
-            <p class="zone-note">Ainsi que les principales zones de la Riviera et d'Angré.</p>
+            <p class="zone-note">{{ \App\Support\Contenu::get('reseau.comm_abidjan_note') }}</p>
         </div>
         <div class="zone rev" style="--c:var(--vert)">
-            <h3>Intérieur du pays</h3>
-            <div class="zone-sub">17 villes stratégiques de Côte d'Ivoire.</div>
+            <h3>{{ \App\Support\Contenu::get('reseau.comm_int_titre') }}</h3>
+            <div class="zone-sub">{{ \App\Support\Contenu::get('reseau.comm_int_sous') }}</div>
             <ul class="zone-list">
-                <li>Bouaké</li><li>San-Pédro</li>
-                <li>Yamoussoukro</li><li>Korhogo</li>
-                <li>Man</li><li>Daloa</li>
-                <li>Gagnoa</li><li>Divo</li>
-                <li>Bondoukou</li><li>Odienné</li>
-                <li>Séguéla</li><li>Ferkessédougou</li>
-                <li>Dabou</li><li>Grand-Bassam</li>
-                <li>Aboisso</li><li>Soubré</li>
+                @foreach(\App\Support\Contenu::lignes('reseau.comm_int_liste') as $commune)<li>{{ $commune }}</li>@endforeach
             </ul>
-            <p class="zone-note">Et autres zones selon disponibilité.</p>
+            <p class="zone-note">{{ \App\Support\Contenu::get('reseau.comm_int_note') }}</p>
         </div>
     </div>
 </section>
@@ -346,11 +333,11 @@
         ['f-plume',  '--c:var(--bleu);--op:.12;top:10%;left:7%;width:110px;--r:16deg;--dur:28s'],
         ['f-fleche', '--c:var(--rouge);--op:.16;bottom:12%;right:8%;width:120px;--r:-10deg;--dur:22s;--del:.4s'],
     ]" />
-    <span class="sur">Votre plan média commence ici</span>
-    <h2 class="t1">Identifions les emplacements qui donneront le plus de force à votre campagne.</h2>
-    <p>Indiquez-nous vos objectifs, vos audiences, vos zones prioritaires, votre période et votre budget. Notre équipe vous préparera une sélection personnalisée de formats et d'emplacements.</p>
+    <span class="sur">{{ \App\Support\Contenu::get('reseau.cta_surtitre') }}</span>
+    <h2 class="t1">{{ \App\Support\Contenu::get('reseau.cta_titre') }}</h2>
+    <p>{{ \App\Support\Contenu::get('reseau.cta_texte') }}</p>
     <div style="margin-top:32px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-        <a class="bouton b-rouge" href="{{ route('contact') }}">Recevoir une recommandation média</a>
+        <a class="bouton b-rouge" href="{{ route('contact') }}">{{ \App\Support\Contenu::get('reseau.cta_bouton') }}</a>
     </div>
 </section>
 

@@ -406,7 +406,38 @@ Git :
 - **Superposition Poppins 900** sur mobile — testé et corrigé 2026-08-04, ne pas ré-augmenter les tailles
 - **Panora n'existe pas ici** → aucune référence
 - **Contact studio** : `studio@cible-ci.com` (l'utilisateur)
-- **Aucun compte client, aucun login, aucune BDD relationnelle** — c'est une vitrine pure
+- **Aucun compte client, aucune BDD relationnelle** — c'est une vitrine pure.
+  Seule exception : l'espace d'administration `/admin`, compte unique en
+  variables d'environnement (pas de table `users`). Il répond 404 tant que
+  `CIBLE_ADMIN_EMAIL` / `CIBLE_ADMIN_HASH` ne sont pas renseignés.
+- **Contenu éditable** : `config/admin-schema.php` décrit tous les champs
+  modifiables sans développeur (6 pages, ~195 champs). Chaîne complète :
+
+  ```
+  défaut versionné (config/admin-schema.php)
+      ↓ surchargé par
+  storage/app/contenu/<page>.json  (volume persistant Coolify)
+      ↓ lu par
+  Contenu::get('page.champ')  dans la vue Blade
+  ```
+
+  Le volume n'est **jamais** la source de vérité : volume perdu ou vidé, le
+  site réaffiche les défauts de git au lieu d'une page blanche. C'est ce qui
+  rend l'admin acceptable sur un conteneur éphémère.
+
+  Pour rendre un nouveau contenu éditable : ajouter une ligne dans le schéma,
+  puis appeler `Contenu::get()` dans la vue. Formulaire, validation et
+  enregistrement sont générés — ne rien écrire dans `AdminController`.
+
+  ⚠ La valeur `defaut` du schéma doit correspondre **au mot près** au texte
+  affiché : c'est elle qui s'affiche quand rien n'est surchargé.
+  ⚠ Champs `liste` : une entrée par ligne, lus avec `Contenu::lignes()`.
+  ⚠ Champs `image` : `Contenu::urlImage()` / `imageExiste()` — un visuel
+  téléversé vit sur le volume (`visuel:nom.jpg`), pas dans `public/`, qui est
+  reconstruit depuis git à chaque déploiement.
+  ⚠ Emphase : le site n'accepte pas de HTML saisi en admin. Le texte entre
+  `**doubles astérisques**` devient un `<strong>` via `Contenu::riche()`,
+  affiché avec `{!! !!}`. Tout le reste est échappé.
 - **Mail SMTP** : Laravel 11+ lit `MAIL_SCHEME`, jamais `MAIL_ENCRYPTION`.
   Avec Gmail/Workspace, le mot de passe du compte est refusé (`535-5.7.8`) :
   il faut un mot de passe d'application à 16 caractères, donc la validation

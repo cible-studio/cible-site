@@ -26,8 +26,37 @@ class Contenu
     /** Cache par requête : évite de relire le disque à chaque appel de vue. */
     private static array $cache = [];
 
-    /** Sections administrables. La clé sert aussi de nom de fichier. */
-    public const SECTIONS = ['coordonnees', 'chiffres', 'realisations'];
+    /** Sections hors schéma (structures particulières). */
+    public const SECTIONS_FIXES = ['coordonnees', 'chiffres', 'realisations'];
+
+    /** Toutes les sections administrables : les fixes plus les pages du schéma. */
+    public static function sections(): array
+    {
+        return array_merge(self::SECTIONS_FIXES, array_keys(Schema::pages()));
+    }
+
+    /** @deprecated conservé pour les appels existants */
+    public const SECTIONS = self::SECTIONS_FIXES;
+
+    /**
+     * Valeurs par défaut d'une section.
+     *
+     * Les pages décrites par le schéma portent leur défaut au plus près du
+     * champ, dans config/admin-schema.php : une seule source, impossible à
+     * désynchroniser. Les sections à structure particulière (réalisations,
+     * coordonnées, chiffres) restent dans config/contenu.php.
+     */
+    private static function defauts(string $section): array
+    {
+        if (Schema::page($section) !== null) {
+            return array_map(
+                fn ($def) => $def['defaut'] ?? '',
+                Schema::champs($section)
+            );
+        }
+
+        return config("contenu.$section", []);
+    }
 
     /**
      * Retourne une section complète, surcharges appliquées.
@@ -38,7 +67,7 @@ class Contenu
             return self::$cache[$section];
         }
 
-        $defaut = config("contenu.$section", []);
+        $defaut = self::defauts($section);
         $surcharge = self::lireSurcharge($section);
 
         // Fusion à un niveau : une entrée surchargée remplace la valeur par
@@ -70,13 +99,55 @@ class Contenu
     }
 
     /**
+     * Champ de type « liste » : une entrée par ligne, saisie dans un simple
+     * bloc de texte côté admin.
+     *
+     * Les lignes vides sont ignorées et les espaces de bord retirés — un
+     * copier-coller depuis Word ou un retour à la ligne en trop ne doit pas
+     * produire une puce vide sur le site.
+     */
+    public static function lignes(string $chemin): array
+    {
+        $valeur = (string) self::get($chemin, '');
+
+        $lignes = preg_split('/\R/u', $valeur) ?: [];
+        $lignes = array_map('trim', $lignes);
+
+        return array_values(array_filter($lignes, fn ($l) => $l !== ''));
+    }
+
+    /**
+     * Valeur avec mise en avant : le texte entre **doubles astérisques**
+     * ressort dans la couleur d'accent de la section.
+     *
+     * Plusieurs phrases du site portent une emphase au milieu du texte —
+     * l'accroche rouge du bandeau, la signature jaune, les titres de pôle.
+     * Laisser saisir du HTML dans l'admin ouvrirait une injection ; retirer
+     * l'emphase abîmerait la charte. On escape donc tout, puis on ne
+     * réintroduit qu'une seule balise, à partir d'une notation qu'un
+     * non-développeur retient en une phrase.
+     *
+     * S'utilise avec {!! !!} dans les vues — l'échappement est fait ici.
+     */
+    public static function riche(string $chemin, mixed $defaut = null): string
+    {
+        $valeur = (string) self::get($chemin, $defaut ?? '');
+
+        $html = e($valeur);
+
+        // Sur du texte déjà échappé, seuls les astérisques subsistent : le
+        // motif ne peut pas déborder sur une balise.
+        return preg_replace('/\*\*(.+?)\*\*/su', '<strong>$1</strong>', $html);
+    }
+
+    /**
      * Enregistre une section. Écrit la surcharge complète, pas un delta :
      * une relecture reste ainsi lisible et diffable à la main en cas de
      * besoin d'intervention directe sur le volume.
      */
     public static function enregistrer(string $section, array $valeurs): bool
     {
-        if (!in_array($section, self::SECTIONS, true)) {
+        if (!in_array($section, self::sections(), true)) {
             return false;
         }
 

@@ -74,28 +74,28 @@
         ['f-fleche', '--c:var(--jaune);--op:.18;top:18%;right:6%;width:100px;--r:-10deg;--dur:19s;--del:.8s'],
         ['f-plume',  '--c:var(--vert);--op:.10;bottom:-6%;right:18%;width:90px;--r:-22deg;--dur:27s;--del:1s'],
     ]" />
-    <span class="sur">Depuis 1994</span>
-    <h1 class="t1">Plus de trente ans à rendre les marques visibles, fortes et mémorables.</h1>
-    <p>Née dans l'affichage publicitaire, CIBLE est devenue un acteur majeur de la communication en Côte d'Ivoire. Nous conjuguons aujourd'hui expertise terrain, créativité et intelligence média pour transformer la visibilité des marques en impact durable.</p>
+    <span class="sur">{{ \App\Support\Contenu::get('qui.hero_surtitre') }}</span>
+    <h1 class="t1">{{ \App\Support\Contenu::get('qui.hero_titre') }}</h1>
+    <p>{{ \App\Support\Contenu::get('qui.hero_texte') }}</p>
 </section>
 
 <section class="recit">
     <div class="recit-grid">
         <article class="rev" style="--c:var(--rouge)">
-            <h3 data-num="01">Notre origine — l'expertise de la visibilité</h3>
-            <p>CIBLE est née en 1994 avec une conviction forte : une marque ne peut grandir que si elle est vue. Grâce à notre maîtrise de l'affichage publicitaire et à notre connaissance du territoire ivoirien, nous avons progressivement construit un réseau puissant et une expertise reconnue de la communication extérieure et du digital.</p>
+            <h3 data-num="01">{{ \App\Support\Contenu::get('qui.recit_1_titre') }}</h3>
+            <p>{{ \App\Support\Contenu::get('qui.recit_1_texte') }}</p>
         </article>
         <article class="rev" style="--c:var(--jaune)">
-            <h3 data-num="02">Notre évolution — de l'affichage à la communication intégrée</h3>
-            <p>Les audiences, les usages et les attentes des annonceurs ont évolué. CIBLE aussi. À notre expertise historique de l'affichage, nous avons ajouté la stratégie, la création, le digital, la production audiovisuelle, la communication mobile et les activations terrain afin d'accompagner les marques sur l'ensemble de leurs points de contact.</p>
+            <h3 data-num="02">{{ \App\Support\Contenu::get('qui.recit_2_titre') }}</h3>
+            <p>{{ \App\Support\Contenu::get('qui.recit_2_texte') }}</p>
         </article>
         <article class="rev" style="--c:var(--vert)">
-            <h3 data-num="03">Notre force — le terrain, la créativité et la donnée</h3>
-            <p>Trente ans de connaissance du terrain ivoirien fusionnés avec une approche moderne. La seule régie à posséder son réseau et l'outil qui le pilote.</p>
+            <h3 data-num="03">{{ \App\Support\Contenu::get('qui.recit_3_titre') }}</h3>
+            <p>{{ \App\Support\Contenu::get('qui.recit_3_texte') }}</p>
         </article>
         <article class="rev" style="--c:var(--violet)">
-            <h3 data-num="04">Notre engagement — apporter des preuves, pas seulement des promesses</h3>
-            <p>Chaque campagne fait l'objet d'un suivi rigoureux : planification des poses, contrôle des emplacements, photos horodatées et géolocalisées, suivi de diffusion et reporting. Nos clients disposent ainsi d'une visibilité claire sur le déploiement réel de leurs campagnes.</p>
+            <h3 data-num="04">{{ \App\Support\Contenu::get('qui.recit_4_titre') }}</h3>
+            <p>{{ \App\Support\Contenu::get('qui.recit_4_texte') }}</p>
         </article>
     </div>
 </section>
@@ -107,8 +107,8 @@
         ['f-fleche', '--c:var(--jaune);--op:.14;top:34%;right:14%;width:110px;--r:8deg;--dur:23s;--del:.7s'],
     ]" />
     <div class="entete">
-        <span class="sur">En chiffres</span>
-        <h2 class="t1">Trente ans concentrés en quatre nombres.</h2>
+        <span class="sur">{{ \App\Support\Contenu::get('qui.stats_surtitre') }}</span>
+        <h2 class="t1">{{ \App\Support\Contenu::get('qui.stats_titre') }}</h2>
     </div>
     <div class="stats-grid">
         @php $ch = \App\Support\Contenu::section('chiffres'); @endphp
@@ -125,8 +125,8 @@
         ['f-plume',  '--c:var(--bleu);--op:.10;bottom:4%;right:4%;width:110px;--r:20deg;--dur:30s;--del:.5s'],
     ]" />
     <div class="entete rev">
-        <span class="sur">Reconnaissances officielles</span>
-        <h2 class="t1">Trois distinctions de l'État ivoirien.</h2>
+        <span class="sur">{{ \App\Support\Contenu::get('qui.dist_surtitre') }}</span>
+        <h2 class="t1">{{ \App\Support\Contenu::get('qui.dist_titre') }}</h2>
     </div>
     <div class="dist-grid">
         <div class="dist rev" style="--c:var(--jaune)">
@@ -152,10 +152,10 @@
         ['f-fleche', '--c:var(--rouge);--op:.16;top:12%;left:8%;width:110px;--r:-16deg;--dur:22s'],
         ['f-plume',  '--c:var(--violet);--op:.12;bottom:6%;right:9%;width:100px;--r:24deg;--dur:29s;--del:.4s'],
     ]" />
-    <h2 class="t2">Construisons ensemble la prochaine campagne qui fera grandir votre marque.</h2>
+    <h2 class="t2">{{ \App\Support\Contenu::get('qui.cta_titre') }}</h2>
     <div style="margin-top:28px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-        <a class="bouton b-rouge" href="{{ route('contact') }}">Parler de mon projet</a>
-        <a class="bouton b-ligne" href="{{ route('references') }}">Découvrir nos réalisations</a>
+        <a class="bouton b-rouge" href="{{ route('contact') }}">{{ \App\Support\Contenu::get('qui.cta_bouton1') }}</a>
+        <a class="bouton b-ligne" href="{{ route('references') }}">{{ \App\Support\Contenu::get('qui.cta_bouton2') }}</a>
     </div>
 </section>
 

@@ -29,7 +29,9 @@
     .pole{padding:clamp(60px,8vw,110px) var(--pad);border-top:8px solid var(--c);position:relative;overflow:hidden}
     .pole-tag{display:inline-block;background:var(--c);color:#fff;padding:6px 14px;border-radius:999px;font-family:var(--titre);font-weight:800;font-size:11px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:16px}
     .pole h2{font-family:var(--titre);font-weight:900;font-size:clamp(28px,3.6vw,44px);line-height:1.08;letter-spacing:-.025em}
-    .pole h2 em{color:var(--c);font-style:normal}
+    /* em conservé pour l'historique, strong = emphase saisie dans l'admin */
+    .pole h2 em,
+    .pole h2 strong{color:var(--c);font-style:normal}
     .pole > .wrap{display:grid;grid-template-columns:1fr 1fr;gap:clamp(30px,5vw,80px);align-items:start;max-width:1300px;margin:0 auto}
     .pole.rtl > .wrap{direction:rtl}
     .pole.rtl > .wrap > *{direction:ltr}
@@ -141,13 +143,13 @@
         ['f-fleche', '--c:var(--bleu);--op:.16;top:12%;right:5%;width:120px;--r:-8deg;--dur:20s;--del:.4s'],
         ['f-plume',  '--c:var(--rouge);--op:.10;bottom:-8%;left:4%;width:110px;--r:16deg;--dur:26s;--del:.7s'],
     ]" />
-    <span class="sur">Nos expertises</span>
-    <h1 class="t1">De la visibilité à l'expérience. <em>De l'expérience à l'impact.</em></h1>
-    <p>CIBLE conçoit et déploie des campagnes qui rendent les marques visibles, présentes et mémorables. Affichage, communication mobile, digital, street marketing, création de contenus et Media Intelligence : nous connectons les annonceurs à leurs audiences, dans la rue comme en ligne.</p>
-    <p class="accroche">Un seul partenaire pour imaginer votre stratégie, activer les bons points de contact, déployer votre campagne et en suivre l'exécution.</p>
+    <span class="sur">{{ \App\Support\Contenu::get('services.hero_surtitre') }}</span>
+    <h1 class="t1">{{ \App\Support\Contenu::get('services.hero_titre_1') }} <em>{{ \App\Support\Contenu::get('services.hero_titre_2') }}</em></h1>
+    <p>{{ \App\Support\Contenu::get('services.hero_texte') }}</p>
+    <p class="accroche">{{ \App\Support\Contenu::get('services.hero_accroche') }}</p>
     <div class="actions">
-        <a class="bouton b-rouge" href="{{ route('contact') }}">Construire ma campagne</a>
-        <a class="bouton b-ligne" href="{{ route('references') }}">Découvrir nos réalisations</a>
+        <a class="bouton b-rouge" href="{{ route('contact') }}">{{ \App\Support\Contenu::get('services.hero_cta1') }}</a>
+        <a class="bouton b-ligne" href="{{ route('references') }}">{{ \App\Support\Contenu::get('services.hero_cta2') }}</a>
     </div>
 </section>
 
@@ -158,22 +160,22 @@
         ['f-fleche', '--c:var(--vert);--op:.13;bottom:6%;right:4%;width:110px;--r:-18deg;--dur:22s;--del:.5s'],
     ]" />
     <div class="entete rev">
-        <span class="sur">Notre approche</span>
-        <h2 class="t1">Créer une rencontre entre votre marque et ses publics.</h2>
-        <p>Une campagne performante ne consiste pas seulement à diffuser un message. Elle doit apparaître au bon endroit, au bon moment, dans le bon format et susciter une réaction. Nous combinons patrimoine média, connaissance du terrain, créativité, activation et données pour construire des expériences de marque capables de générer visibilité, engagement et impact.</p>
+        <span class="sur">{{ \App\Support\Contenu::get('services.approche_surtitre') }}</span>
+        <h2 class="t1">{{ \App\Support\Contenu::get('services.approche_titre') }}</h2>
+        <p>{{ \App\Support\Contenu::get('services.approche_texte') }}</p>
     </div>
     <div class="preuves-grid">
         <div class="preuve-card rev" style="--c:var(--rouge)">
-            <h3>Être vu</h3>
-            <p>Positionner votre marque sur des emplacements, des supports et des canaux adaptés à vos audiences.</p>
+            <h3>{{ \App\Support\Contenu::get('services.approche_1_titre') }}</h3>
+            <p>{{ \App\Support\Contenu::get('services.approche_1_texte') }}</p>
         </div>
         <div class="preuve-card rev" style="--c:var(--jaune)">
-            <h3>Être vécu</h3>
-            <p>Transformer une prise de parole en interaction grâce au street marketing, aux activations et aux expériences digitales.</p>
+            <h3>{{ \App\Support\Contenu::get('services.approche_2_titre') }}</h3>
+            <p>{{ \App\Support\Contenu::get('services.approche_2_texte') }}</p>
         </div>
         <div class="preuve-card rev" style="--c:var(--bleu)">
-            <h3>Être mesuré</h3>
-            <p>Suivre le déploiement de la campagne, documenter son exécution et exploiter les données disponibles pour améliorer les prochaines actions.</p>
+            <h3>{{ \App\Support\Contenu::get('services.approche_3_titre') }}</h3>
+            <p>{{ \App\Support\Contenu::get('services.approche_3_texte') }}</p>
         </div>
     </div>
 </section>
@@ -183,15 +185,12 @@
     <span class="filigrane dessin f-fleche" aria-hidden="true" style="transform:rotate(12deg)"></span>
     <div class="wrap">
         <div class="rev">
-            <span class="pole-tag">Pôle 01 · Régie publicitaire &amp; visibilité extérieure</span>
-            <h2>La puissance d'un <em>réseau national</em> au service de votre visibilité.</h2>
-            <p class="body">
-                Le plus grand maillage territorial. Avec <strong>+400 panneaux en exploitation</strong>
-                à Abidjan et à l'intérieur du pays, CIBLE accompagne les annonceurs dans la sélection
-                des emplacements, des formats et des zones les plus pertinents au regard de leurs
-                objectifs, de leurs audiences et de leur budget.
-            </p>
-            <p class="accroche">Notre rôle ne se limite pas à mettre un espace à disposition : nous construisons des plans de visibilité cohérents avec les déplacements, les habitudes et les zones de concentration de vos cibles.</p>
+            <span class="pole-tag">{{ \App\Support\Contenu::get('services.p1_tag') }}</span>
+            {{-- riche() : escape tout puis ne réintroduit que <strong>, à partir
+                 des **astérisques** saisies dans l'admin. Cf. Contenu::riche(). --}}
+            <h2>{!! \App\Support\Contenu::riche('services.p1_titre') !!}</h2>
+            <p class="body">{!! \App\Support\Contenu::riche('services.p1_texte') !!}</p>
+            <p class="accroche">{{ \App\Support\Contenu::get('services.p1_accroche') }}</p>
 
             <h3 class="block-h3">Formats disponibles</h3>
             <p style="color:#666;font-size:14.5px;margin-top:6px">Du mobilier urbain de proximité aux dispositifs panoramiques, nous adaptons le format à votre message, à votre audience et à votre ambition de visibilité.</p>
@@ -217,22 +216,19 @@
         </div>
         <div class="visu-col rev">
             <div class="visu">
-                @php $img = 'images/cible/regie-lumipub.jpg'; @endphp
-                @if(file_exists(public_path($img)))
-                    <img src="{{ asset($img) }}" alt="Panneau publicitaire CIBLE — pôle régie" loading="lazy">
+                @php $img = \App\Support\Contenu::get('services.p1_image'); @endphp
+                @if(\App\Support\Contenu::imageExiste($img))
+                    <img src="{{ \App\Support\Contenu::urlImage($img) }}" alt="Panneau publicitaire CIBLE — pôle régie" loading="lazy">
                 @else
-                    <div class="slot">Panneau publicitaire CIBLE<small>images/cible/regie-lumipub.jpg</small></div>
+                    <div class="slot">Panneau publicitaire CIBLE<small>{{ $img }}</small></div>
                 @endif
             </div>
             <div class="dispositifs-mini">
                 <h4>Nos dispositifs d'affichage</h4>
                 <ul>
-                    <li>Panneaux classiques</li>
-                    <li>Lumipub (caissons éclairés)</li>
-                    <li>Trivision (3 visuels en rotation)</li>
-                    <li>Panoramiques grand format</li>
-                    <li>Écrans digitaux</li>
-                    <li>Écrans en magasins</li>
+                    @foreach(\App\Support\Contenu::lignes('services.p1_dispositifs') as $d)
+                        <li>{{ $d }}</li>
+                    @endforeach
                 </ul>
             </div>
         </div>
@@ -244,15 +240,10 @@
     <span class="filigrane dessin f-plume" aria-hidden="true" style="transform:rotate(-14deg)"></span>
     <div class="wrap">
         <div class="rev">
-            <span class="pole-tag" style="color:#111">Pôle 02 · Communication mobile &amp; présence urbaine</span>
-            <h2>Votre message ne reste pas immobile. <em>Il va à la rencontre de son audience.</em></h2>
-            <p class="body">
-                La communication mobile transforme les rues, les axes de circulation, les marchés,
-                les quartiers et les événements en espaces d'expression pour votre marque. Nous
-                concevons des dispositifs capables d'aller vers les publics, de multiplier les points
-                de contact et d'amplifier la couverture d'une campagne.
-            </p>
-            <p class="accroche">Une solution particulièrement adaptée aux lancements, opérations promotionnelles, ouvertures de points de vente, campagnes de proximité et prises de parole événementielles.</p>
+            <span class="pole-tag" style="color:#111">{{ \App\Support\Contenu::get('services.p2_tag') }}</span>
+            <h2>{!! \App\Support\Contenu::riche('services.p2_titre') !!}</h2>
+            <p class="body">{{ \App\Support\Contenu::get('services.p2_texte') }}</p>
+            <p class="accroche">{{ \App\Support\Contenu::get('services.p2_accroche') }}</p>
 
             <div class="dispositifs-list">
                 <div><span>🚛</span><div><strong>Camions publicitaires</strong><p>Des surfaces d'affichage mobiles à fort impact pour accompagner un lancement, annoncer une opération ou occuper plusieurs zones au cours d'une même campagne.</p></div></div>
@@ -265,11 +256,11 @@
         </div>
         <div class="visu-col rev">
             <div class="visu">
-                @php $img = 'images/cible/mobile-camion.jpg'; @endphp
-                @if(file_exists(public_path($img)))
-                    <img src="{{ asset($img) }}" alt="Camion publicitaire CIBLE — écran LED mobile" loading="lazy">
+                @php $img = \App\Support\Contenu::get('services.p2_image'); @endphp
+                @if(\App\Support\Contenu::imageExiste($img))
+                    <img src="{{ \App\Support\Contenu::urlImage($img) }}" alt="Camion publicitaire CIBLE — écran LED mobile" loading="lazy">
                 @else
-                    <div class="slot">Camion publicitaire CIBLE<small>images/cible/mobile-camion.jpg</small></div>
+                    <div class="slot">Camion publicitaire CIBLE<small>{{ $img }}</small></div>
                 @endif
             </div>
         </div>
@@ -281,14 +272,9 @@
     <span class="filigrane dessin f-plume" aria-hidden="true" style="transform:rotate(12deg)"></span>
     <div class="wrap">
         <div class="rev">
-            <span class="pole-tag">Pôle 03 · Brand experience &amp; communication intégrée</span>
-            <h2>Faire voir votre marque. <em>Mais surtout, la faire vivre.</em></h2>
-            <p class="body">
-                Nous créons des expériences capables de rapprocher les marques de leurs publics.
-                Dans la rue, sur un événement, en point de vente ou en ligne, chaque activation
-                est pensée pour susciter l'attention, provoquer l'interaction et laisser une
-                empreinte durable.
-            </p>
+            <span class="pole-tag">{{ \App\Support\Contenu::get('services.p3_tag') }}</span>
+            <h2>{!! \App\Support\Contenu::riche('services.p3_titre') !!}</h2>
+            <p class="body">{{ \App\Support\Contenu::get('services.p3_texte') }}</p>
 
             {{-- 8 offres. Le document source numérote deux fois "OFFRE.4" et
                  saute "OFFRE.7" : l'ordre retenu ici suit celui du document,
@@ -313,11 +299,11 @@
         </div>
         <div class="visu-col rev">
             <div class="visu">
-                @php $img = 'images/cible/campagne-5.jpg'; @endphp
-                @if(file_exists(public_path($img)))
-                    <img src="{{ asset($img) }}" alt="Activation de marque CIBLE — stand expérientiel" loading="lazy">
+                @php $img = \App\Support\Contenu::get('services.p3_image'); @endphp
+                @if(\App\Support\Contenu::imageExiste($img))
+                    <img src="{{ \App\Support\Contenu::urlImage($img) }}" alt="Activation de marque CIBLE — stand expérientiel" loading="lazy">
                 @else
-                    <div class="slot slot--sombre">Activation de marque CIBLE<small>images/cible/campagne-5.jpg</small></div>
+                    <div class="slot slot--sombre">Activation de marque CIBLE<small>{{ $img }}</small></div>
                 @endif
             </div>
         </div>
@@ -329,15 +315,10 @@
     <span class="filigrane dessin f-fleche" aria-hidden="true" style="transform:rotate(12deg)"></span>
     <div class="wrap">
         <div class="rev">
-            <span class="pole-tag">Pôle 04 · Media Intelligence</span>
-            <h2>Une visibilité <em>pilotée par la donnée</em> et renforcée par la preuve.</h2>
-            <p class="body">
-                La Media Intelligence permet de passer d'une logique de diffusion à une logique
-                de pilotage. Nos outils centralisent les informations liées aux emplacements, aux
-                poses, aux périodes de diffusion et au suivi terrain afin d'apporter davantage de
-                transparence, de contrôle et de précision aux annonceurs.
-            </p>
-            <p class="accroche">L'objectif : mieux préparer les campagnes, mieux suivre leur exécution et capitaliser sur les données disponibles pour améliorer les décisions média.</p>
+            <span class="pole-tag">{{ \App\Support\Contenu::get('services.p4_tag') }}</span>
+            <h2>{!! \App\Support\Contenu::riche('services.p4_titre') !!}</h2>
+            <p class="body">{{ \App\Support\Contenu::get('services.p4_texte') }}</p>
+            <p class="accroche">{{ \App\Support\Contenu::get('services.p4_accroche') }}</p>
 
             <div class="offer-list">
                 @foreach([
@@ -357,11 +338,11 @@
         </div>
         <div class="visu-col rev">
             <div class="visu">
-                @php $img = 'images/cible/pole-1-affichage.jpg'; @endphp
-                @if(file_exists(public_path($img)))
-                    <img src="{{ asset($img) }}" alt="Suivi terrain d'un panneau CIBLE" loading="lazy">
+                @php $img = \App\Support\Contenu::get('services.p4_image'); @endphp
+                @if(\App\Support\Contenu::imageExiste($img))
+                    <img src="{{ \App\Support\Contenu::urlImage($img) }}" alt="Suivi terrain d'un panneau CIBLE" loading="lazy">
                 @else
-                    <div class="slot">Suivi terrain CIBLE<small>images/cible/pole-1-affichage.jpg</small></div>
+                    <div class="slot">Suivi terrain CIBLE<small>{{ $img }}</small></div>
                 @endif
             </div>
         </div>
@@ -371,9 +352,9 @@
 {{-- ═══════════════════ CAMPAGNES PHYGITALES ═══════════════════ --}}
 <section class="phygital">
     <div class="entete rev">
-        <span class="sur">De la rue au digital</span>
-        <h2 class="t1">Une même expérience de marque, sur tous les points de contact.</h2>
-        <p>Les audiences ne vivent plus dans un seul espace. Elles circulent, consultent, interagissent, partagent et achètent. Nous concevons des campagnes phygitales qui relient l'affichage, le terrain, les réseaux sociaux, les contenus et les points de vente pour créer un parcours de marque cohérent.</p>
+        <span class="sur">{{ \App\Support\Contenu::get('services.phy_surtitre') }}</span>
+        <h2 class="t1">{{ \App\Support\Contenu::get('services.phy_titre') }}</h2>
+        <p>{{ \App\Support\Contenu::get('services.phy_texte') }}</p>
     </div>
     <div class="phy-grid rev">
         @foreach([
@@ -399,9 +380,9 @@
         ['f-fleche', '--c:var(--jaune);--op:.14;top:30%;right:12%;width:110px;--r:6deg;--dur:24s;--del:.8s'],
     ]" />
     <div class="entete rev">
-        <span class="sur">Notre méthode</span>
-        <h2>De l'objectif <em>à l'impact.</em></h2>
-        <p>Une méthode intégrée, un interlocuteur unique et une traçabilité complète à chaque étape de votre campagne.</p>
+        <span class="sur">{{ \App\Support\Contenu::get('services.work_surtitre') }}</span>
+        <h2>{{ \App\Support\Contenu::get('services.work_titre_1') }} <em>{{ \App\Support\Contenu::get('services.work_titre_2') }}</em></h2>
+        <p>{{ \App\Support\Contenu::get('services.work_intro') }}</p>
     </div>
 
     <div class="workflow-grid">
@@ -431,21 +412,17 @@
         ['f-plume',  '--c:var(--jaune);--op:.14;bottom:5%;right:3%;width:115px;--r:22deg;--dur:31s;--del:.4s'],
     ]" />
     <div class="entete rev">
-        <span class="sur">Vos ambitions, nos dispositifs</span>
-        <h2 class="t1">Une expertise adaptée à chaque objectif de marque.</h2>
+        <span class="sur">{{ \App\Support\Contenu::get('services.obj_surtitre') }}</span>
+        <h2 class="t1">{{ \App\Support\Contenu::get('services.obj_titre') }}</h2>
     </div>
     <div class="obj-grid rev">
-        @foreach([
-            ['Accroître la notoriété d\'une marque',                'var(--rouge)'],
-            ['Lancer un produit ou un service',                     'var(--jaune)'],
-            ['Générer du trafic vers un point de vente',            'var(--vert)'],
-            ['Toucher une audience dans une zone précise',          'var(--bleu)'],
-            ['Créer une interaction directe avec les consommateurs','var(--violet)'],
-            ['Amplifier une campagne en ligne et sur le terrain',   'var(--rouge)'],
-            ['Valoriser une institution ou une entreprise',         'var(--jaune)'],
-            ['Déployer une campagne nationale',                     'var(--vert)'],
-        ] as [$label, $c])
-            <div class="obj-item" style="--c:{{ $c }}"><i></i>{{ $label }}</div>
+        @php
+                // Cycle de 5 tons : reproduit la séquence d'origine et
+                // supporte n'importe quel nombre de lignes saisi dans l'admin.
+                $tons = ['var(--rouge)','var(--jaune)','var(--vert)','var(--bleu)','var(--violet)'];
+            @endphp
+        @foreach(\App\Support\Contenu::lignes('services.obj_liste') as $i => $label)
+            <div class="obj-item" style="--c:{{ $tons[$i % 5] }}"><i></i>{{ $label }}</div>
         @endforeach
     </div>
 </section>
@@ -456,12 +433,12 @@
         ['f-plume',  '--c:var(--violet);--op:.12;top:10%;left:7%;width:110px;--r:18deg;--dur:27s'],
         ['f-fleche', '--c:var(--rouge);--op:.16;bottom:12%;right:8%;width:120px;--r:-10deg;--dur:21s;--del:.4s'],
     ]" />
-    <span class="sur">Votre prochaine campagne commence ici</span>
-    <h2 class="t1">Construisons une expérience de marque que votre audience remarquera et retiendra.</h2>
-    <p>Partagez-nous vos objectifs, vos cibles, vos zones prioritaires et votre calendrier. Notre équipe vous proposera une stratégie de visibilité, d'activation et de déploiement adaptée à votre ambition.</p>
+    <span class="sur">{{ \App\Support\Contenu::get('services.cta_surtitre') }}</span>
+    <h2 class="t1">{{ \App\Support\Contenu::get('services.cta_titre') }}</h2>
+    <p>{{ \App\Support\Contenu::get('services.cta_texte') }}</p>
     <div style="margin-top:32px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-        <a class="bouton b-rouge" href="{{ route('contact') }}">Parler de mon projet</a>
-        <a class="bouton b-ligne" href="{{ route('references') }}">Découvrir nos réalisations</a>
+        <a class="bouton b-rouge" href="{{ route('contact') }}">{{ \App\Support\Contenu::get('services.cta_bouton1') }}</a>
+        <a class="bouton b-ligne" href="{{ route('references') }}">{{ \App\Support\Contenu::get('services.cta_bouton2') }}</a>
     </div>
 </section>
 

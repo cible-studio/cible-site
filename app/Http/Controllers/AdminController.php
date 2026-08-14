@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Support\AdminAuth;
 use App\Support\Contenu;
+use App\Support\Schema;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -65,7 +66,7 @@ class AdminController extends Controller
     {
         return view('admin.tableau', [
             'stockage'   => Contenu::stockageDisponible(),
-            'surchargees'=> collect(Contenu::SECTIONS)
+            'surchargees'=> collect(Contenu::sections())
                 ->mapWithKeys(fn ($s) => [$s => Contenu::estSurchargee($s)])
                 ->all(),
         ]);
@@ -178,11 +179,66 @@ class AdminController extends Controller
         return $this->persister('realisations', $projets, $request, route('admin.realisations'));
     }
 
+    /* ═══════════════════ Pages pilotées par le schéma ═══════════════════ */
+
+    public function page(string $cle)
+    {
+        abort_unless(Schema::page($cle) !== null, 404);
+
+        return view('admin.page', [
+            'cle'     => $cle,
+            'schema'  => Schema::page($cle),
+            'valeurs' => Contenu::section($cle),
+        ]);
+    }
+
+    public function enregistrerPage(Request $request, string $cle)
+    {
+        abort_unless(Schema::page($cle) !== null, 404);
+
+        // Règles déduites du schéma : ajouter un champ ne demande donc
+        // aucune modification ici.
+        $data = $request->validate(Schema::regles($cle));
+
+        $valeurs = Contenu::section($cle);
+
+        foreach ($data as $champ => $valeur) {
+            $valeurs[$champ] = $valeur;
+        }
+
+        // Les images arrivent en fichier : on ne remplace que celles qui ont
+        // effectivement été redéposées, les autres gardent leur visuel.
+        foreach (Schema::images($cle) as $champ => $def) {
+            if (!$request->hasFile($champ)) {
+                continue;
+            }
+
+            $request->validate([
+                $champ => ['image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+            ], [
+                $champ . '.image' => 'Le visuel doit être une image.',
+                $champ . '.max'   => 'Le visuel ne doit pas dépasser 5 Mo.',
+            ]);
+
+            $chemin = $this->stockerVisuel($request->file($champ), $cle . '-' . $champ);
+
+            if ($chemin === null) {
+                return back()->withInput()->withErrors([
+                    $champ => "Le visuel n'a pas pu être enregistré. Vérifiez le stockage persistant.",
+                ]);
+            }
+
+            $valeurs[$champ] = $chemin;
+        }
+
+        return $this->persister($cle, $valeurs, $request);
+    }
+
     /* ═══════════════════ Réinitialisation ═══════════════════ */
 
     public function reinitialiser(Request $request, string $section)
     {
-        abort_unless(in_array($section, Contenu::SECTIONS, true), 404);
+        abort_unless(in_array($section, Contenu::sections(), true), 404);
 
         Contenu::reinitialiser($section);
         AdminAuth::journaliser('reinitialisation', $request, ['section' => $section]);

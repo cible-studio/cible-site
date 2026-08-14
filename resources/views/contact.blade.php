@@ -259,19 +259,17 @@
 <section class="contact-wrap">
     <div class="motif" aria-hidden="true"></div>
     <div class="contact-intro rev">
-        <span class="sur">Parlons de votre projet</span>
-        <h1 class="t1">Donnons à votre marque la visibilité qu'elle mérite.</h1>
-        <p>Que vous souhaitiez lancer une campagne d'affichage, créer une expérience de marque, renforcer votre présence digitale ou construire une stratégie de communication complète, nos équipes vous accompagnent dans la conception du dispositif le plus adapté à vos objectifs.</p>
-        <p class="accroche">Nous analysons votre besoin avant de vous proposer une recommandation média personnalisée.</p>
+        <span class="sur">{{ \App\Support\Contenu::get('contact.hero_surtitre') }}</span>
+        <h1 class="t1">{{ \App\Support\Contenu::get('contact.hero_titre') }}</h1>
+        <p>{{ \App\Support\Contenu::get('contact.hero_texte') }}</p>
+        <p class="accroche">{{ \App\Support\Contenu::get('contact.hero_accroche') }}</p>
 
         {{-- Bénéfices en bandeau horizontal : compact, lisible d'un coup
              d'œil, et sans hauteur à faire correspondre à quoi que ce soit. --}}
         <ul class="benefs">
-            <li>Une recommandation adaptée à votre objectif</li>
-            <li>Les formats et emplacements les plus pertinents</li>
-            <li>Une proposition adaptée à votre budget</li>
-            <li>Un interlocuteur dédié</li>
-            <li>Une réponse sous 24 h ouvrées</li>
+            @foreach(\App\Support\Contenu::lignes('contact.benefices') as $b)
+                <li>{{ $b }}</li>
+            @endforeach
         </ul>
     </div>
 </section>
@@ -283,11 +281,11 @@
             @if(session('devis_sent'))
                 <div class="success-msg">
                     <h3>✓ Votre demande a bien été reçue !</h3>
-                    <p>Merci pour votre confiance. Un membre de notre équipe analysera votre projet et vous contactera dans les 24 heures ouvrées afin d'échanger sur vos objectifs et de vous proposer la solution la plus adaptée.</p>
+                    <p>{{ \App\Support\Contenu::get('contact.form_succes') }}</p>
                 </div>
             @else
-                <h2>Recevoir une recommandation média</h2>
-                <p class="sub">Décrivez votre projet. Nos équipes reviendront vers vous avec une proposition personnalisée et les solutions les plus adaptées à vos objectifs.</p>
+                <h2>{{ \App\Support\Contenu::get('contact.form_titre') }}</h2>
+                <p class="sub">{{ \App\Support\Contenu::get('contact.form_sous') }}</p>
 
                 @if(session('devis_error'))
                     <div class="error-msg">⚠ {{ session('devis_error') }}</div>
@@ -561,7 +559,7 @@
                     @endif
 
                     <div class="form-submit">
-                        <button type="submit" class="bouton b-rouge">Recevoir ma recommandation média</button>
+                        <button type="submit" class="bouton b-rouge">{{ \App\Support\Contenu::get('contact.form_bouton') }}</button>
                         <p>Vos données ne sont utilisées que pour vous répondre. Aucun démarchage tiers.</p>
                     </div>
                     </div>{{-- /étape 4 --}}
@@ -617,18 +615,18 @@
     ]" />
     <div class="reass-wrap">
         <div class="rev">
-            <span class="sur">Notre engagement</span>
-            <h2 class="t1">Chaque demande est étudiée avec attention.</h2>
-            <p class="body">Nous ne transmettons pas de devis standardisés. Nous analysons vos objectifs, vos audiences, votre zone d'intervention et votre budget afin de vous proposer une stratégie de visibilité réellement adaptée.</p>
+            <span class="sur">{{ \App\Support\Contenu::get('contact.reass_surtitre') }}</span>
+            <h2 class="t1">{{ \App\Support\Contenu::get('contact.reass_titre') }}</h2>
+            <p class="body">{{ \App\Support\Contenu::get('contact.reass_texte') }}</p>
         </div>
         <ul class="reass-list rev">
-            @foreach([
-                ['Réponse sous 24 heures ouvrées',                            'var(--rouge)'],
-                ['Aucun engagement avant validation de votre projet',         'var(--jaune)'],
-                ['Échanges confidentiels',                                    'var(--vert)'],
-                ["Un interlocuteur unique jusqu'au lancement de votre campagne", 'var(--bleu)'],
-            ] as [$label, $c])
-                <li style="--c:{{ $c }}"><i></i>{{ $label }}</li>
+            @php
+                // Cycle de 5 tons : reproduit la séquence d'origine et
+                // supporte n'importe quel nombre de lignes saisi dans l'admin.
+                $tons = ['var(--rouge)','var(--jaune)','var(--vert)','var(--bleu)','var(--violet)'];
+            @endphp
+            @foreach(\App\Support\Contenu::lignes('contact.reass_liste') as $i => $label)
+                <li style="--c:{{ $tons[$i % 5] }}"><i></i>{{ $label }}</li>
             @endforeach
         </ul>
     </div>
@@ -642,19 +640,16 @@
         ['f-fleche', '--c:var(--jaune);--op:.14;top:30%;right:11%;width:105px;--r:6deg;--dur:25s;--del:.8s'],
     ]" />
     <div class="entete rev">
-        <h2 class="t1">Pourquoi les annonceurs choisissent CIBLE&nbsp;?</h2>
+        <h2 class="t1">{{ \App\Support\Contenu::get('contact.pourquoi_titre') }}</h2>
     </div>
     <div class="pourquoi-grid rev">
-        @foreach([
-            ['+400 panneaux répartis sur le territoire ivoirien',                                    'var(--rouge)'],
-            ['31 communes et villes couvertes',                                                      'var(--jaune)'],
-            ["Plus de 30 ans d'expertise",                                                            'var(--vert)'],
-            ['Une offre intégrée : affichage, digital, street marketing, audiovisuel et brand experience', 'var(--bleu)'],
-            ['Un pilotage des campagnes par la Media Intelligence',                                   'var(--violet)'],
-            ['Des preuves terrain avec photos horodatées et géolocalisées',                           'var(--rouge)'],
-            ['Un interlocuteur unique de la stratégie au reporting',                                  'var(--jaune)'],
-        ] as [$label, $c])
-            <div class="pq-item" style="--c:{{ $c }}"><i></i>{{ $label }}</div>
+        @php
+                // Cycle de 5 tons : reproduit la séquence d'origine et
+                // supporte n'importe quel nombre de lignes saisi dans l'admin.
+                $tons = ['var(--rouge)','var(--jaune)','var(--vert)','var(--bleu)','var(--violet)'];
+            @endphp
+        @foreach(\App\Support\Contenu::lignes('contact.pourquoi_liste') as $i => $label)
+            <div class="pq-item" style="--c:{{ $tons[$i % 5] }}"><i></i>{{ $label }}</div>
         @endforeach
     </div>
 </section>
