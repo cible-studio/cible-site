@@ -36,14 +36,23 @@ class AdminHash extends Command
             return self::FAILURE;
         }
 
+        $hash = Hash::make($motDePasse);
+
         $this->newLine();
         $this->info('À coller dans les variables d\'environnement (Coolify) :');
         $this->newLine();
         $this->line('CIBLE_ADMIN_EMAIL=votre@email.com');
-        $this->line('CIBLE_ADMIN_HASH=' . Hash::make($motDePasse));
+        $this->line('CIBLE_ADMIN_HASH=' . base64_encode($hash));
         $this->newLine();
-        $this->comment('Le hash contient des $ : pensez aux guillemets si votre');
-        $this->comment('interface les interprète.');
+
+        // Le hash bcrypt brut contient des « $ » que beaucoup d'interfaces
+        // interprètent comme des variables shell et avalent silencieusement.
+        // La version base64 n'en contient aucun : c'est la forme à privilégier.
+        $this->comment('Cette valeur est encodée en base64 : elle ne contient aucun « $ »,');
+        $this->comment("donc rien que votre interface puisse interpréter de travers.");
+        $this->newLine();
+        $this->line('<fg=gray>Équivalent brut (si vous préférez, avec des guillemets) :</>');
+        $this->line('<fg=gray>' . $hash . '</>');
 
         return self::SUCCESS;
     }

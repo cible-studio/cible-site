@@ -27,20 +27,57 @@ class AdminAuth
         return filled(config('cible.admin.email')) && filled(config('cible.admin.hash'));
     }
 
+    /**
+     * Hash bcrypt exploitable, ou null.
+     *
+     * Beaucoup d'interfaces de configuration — Coolify en fait partie —
+     * interprètent les `$` d'un hash bcrypt (`$2y$12$…`) comme des variables
+     * shell et les avalent. Le hash arrive alors tronqué, et Hash::check ne
+     * renvoie pas false : il LÈVE une RuntimeException, donc une erreur 500
+     * à la connexion. C'est exactement ce qui s'est produit en production.
+     *
+     * Deux parades : on accepte le hash encodé en base64 (aucun `$`, donc
+     * rien à interpréter), et on refuse proprement un hash illisible au lieu
+     * de laisser remonter l'exception.
+     */
+    private static function hashValide(): ?string
+    {
+        $brut = (string) config('cible.admin.hash');
+
+        if (str_starts_with($brut, '$2y$') || str_starts_with($brut, '$2a$')) {
+            return $brut;
+        }
+
+        $decode = base64_decode($brut, true);
+        if (is_string($decode) && (str_starts_with($decode, '$2y$') || str_starts_with($decode, '$2a$'))) {
+            return $decode;
+        }
+
+        Log::error('cible.admin.hash_invalide', [
+            'indice' => "CIBLE_ADMIN_HASH n'est pas un hash bcrypt exploitable. "
+                      . "Si votre interface interprète les « \$ », utilisez la version "
+                      . "encodée en base64 fournie par « php artisan cible:admin-hash ».",
+        ]);
+
+        return null;
+    }
+
     public static function tenter(string $email, string $motDePasse): bool
     {
         if (!self::configure()) {
             return false;
         }
 
+        $hash = self::hashValide();
+
         // hash_equals : comparaison à temps constant, pour ne pas laisser
         // fuir l'identifiant valide par la durée de la réponse.
         $emailOk = hash_equals(
-            mb_strtolower(config('cible.admin.email')),
+            mb_strtolower((string) config('cible.admin.email')),
             mb_strtolower(trim($email))
         );
 
-        $passeOk = Hash::check($motDePasse, config('cible.admin.hash'));
+        $passeOk = $hash !== null && Hash::check($motDePasse, $hash);
 
         // Les deux vérifications sont exécutées quoi qu'il arrive, pour que
         // la durée ne dépende pas de l'endroit où ça a échoué.
