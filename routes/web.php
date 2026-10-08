@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CibleController;
+use App\Http\Controllers\V2Controller;
 use App\Http\Middleware\AdminProtege;
 use Illuminate\Support\Facades\Route;
 
@@ -46,6 +47,28 @@ Route::get('/api/reseau-map',   [CibleController::class, 'mapData'])
 // Visuels de réalisation téléversés depuis l'admin. Publics (ils s'affichent
 // sur le site) mais servis depuis le volume persistant, hors de public/.
 Route::get('/visuels/{nom}',    [CibleController::class, 'visuel'])->name('visuel');
+
+/*
+|--------------------------------------------------------------------------
+| Maquette de refonte — /v2
+|--------------------------------------------------------------------------
+|
+| Branche `refonte-v2`. La V1 continue d'être servie à la racine, intacte,
+| pendant toute la refonte : ces routes sont purement additives et ne
+| touchent à aucune route existante.
+|
+| V2Controller refuse de répondre en production tant que CIBLE_V2_OUVERT
+| n'est pas activé — un chantier n'a pas à être atteignable depuis le site
+| public avant validation.
+|
+*/
+Route::prefix('v2')->name('v2.')->group(function () {
+    Route::get('/',           [V2Controller::class, 'accueil'])->name('accueil');
+    Route::get('/expertises', [V2Controller::class, 'expertises'])->name('expertises');
+    Route::get('/reseau',     [V2Controller::class, 'reseau'])->name('reseau');
+    Route::get('/travaux',    [V2Controller::class, 'travaux'])->name('travaux');
+    Route::get('/contact',    [V2Controller::class, 'contact'])->name('contact');
+});
 
 /*
 |--------------------------------------------------------------------------
