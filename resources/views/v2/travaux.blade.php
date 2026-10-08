@@ -16,12 +16,19 @@
 .oeuvre--large .oeuvre__ph{aspect-ratio:21/9}
 @media(max-width:860px){.oeuvre--large .oeuvre__ph{aspect-ratio:4/3}}
 .oeuvre__tete{display:flex;align-items:baseline;gap:14px;margin-top:20px}
-.oeuvre__nom{font-family:var(--titre);font-weight:900;font-size:clamp(21px,2.4vw,32px);letter-spacing:-.025em}
-.oeuvre__cat{
-  font-family:var(--titre);font-weight:800;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;
-  color:var(--c);margin-left:auto;text-align:right;max-width:52%;line-height:1.5;
+.oeuvre__client{
+  font-family:var(--titre);font-weight:800;font-size:11px;
+  letter-spacing:.17em;text-transform:uppercase;color:var(--c);
 }
-.oeuvre__t{margin-top:11px;font-size:17px;color:var(--texte);line-height:1.45;max-width:48ch}
+.oeuvre__nom{
+  margin-top:10px;font-family:var(--titre);font-weight:900;
+  font-size:clamp(23px,2.7vw,38px);line-height:1.08;letter-spacing:-.028em;
+  text-transform:uppercase;max-width:22ch;
+}
+.oeuvre__cat{
+  font-family:var(--titre);font-weight:700;font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--texte-3);margin-left:auto;text-align:right;max-width:52%;line-height:1.5;
+}
 .oeuvre__txt{margin-top:11px;font-size:15px;color:var(--texte-2);line-height:1.6;max-width:62ch}
 .oeuvre__serv{
   margin-top:14px;font-family:var(--titre);font-weight:700;font-size:12.5px;
@@ -108,11 +115,15 @@
                         <img src="{{ \App\Support\Contenu::urlImage($p['image'] ?? 'images/cible/campagne-1.jpg') }}"
                              alt="Campagne {{ $p['nom'] ?? $slug }}" loading="lazy">
                     </div>
+                    {{-- Client en capitales puis titre court, à la manière de la
+                         galerie McCann. Le titre descriptif d'origine et le
+                         paragraphe suivent : sur la page dédiée aux travaux, le
+                         visiteur a choisi de lire. --}}
                     <div class="oeuvre__tete">
-                        <h2 class="oeuvre__nom">{{ $p['nom'] ?? $slug }}</h2>
+                        <span class="oeuvre__client">{{ $p['nom'] ?? $slug }}</span>
                         <span class="oeuvre__cat">{{ $p['cat'] ?? '' }}</span>
                     </div>
-                    <p class="oeuvre__t">{{ $p['titre'] ?? '' }}</p>
+                    <h2 class="oeuvre__nom">{{ $p['titre_court'] ?? ($p['titre'] ?? '') }}</h2>
                     <p class="oeuvre__txt">{{ $p['texte'] ?? '' }}</p>
                     @if(!empty($p['services']))
                         <p class="oeuvre__serv">{{ $p['services'] }}</p>

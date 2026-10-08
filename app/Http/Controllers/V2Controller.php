@@ -62,13 +62,53 @@ class V2Controller extends Controller
     }
 
     /**
+     * Titres courts des réalisations — PROPOSITION À CORRIGER.
+     *
+     * Les titres de la V1 sont descriptifs et interchangeables entre les
+     * six clients (« Faire vivre la marque au plus près de ses publics »,
+     * « Traduire une vision institutionnelle en récit de marque »). Une
+     * galerie de travaux demande des titres qui donnent envie d'ouvrir,
+     * comme le fait la référence citée par le client : « FOR PAPA »,
+     * « INCLUSIVE BY DESIGN ».
+     *
+     * ⚠ Ceux-ci sont dérivés STRICTEMENT des textes déjà présents dans
+     * config/contenu.php : aucune ville, aucun chiffre, aucune durée, aucun
+     * dispositif n'a été ajouté, faute de connaître le terrain. Ils sont donc
+     * justes mais encore abstraits. Un titre nourri d'un fait réel les
+     * battra tous — c'est le sens de la demande faite au client.
+     *
+     * Ils vivent ici, et non dans config/contenu.php, pour deux raisons :
+     * la V1 est en production et son champ `titre` ne doit pas changer, et
+     * un emplacement unique et commenté est plus simple à corriger. Au
+     * basculement, ils rejoindront le schéma pour devenir éditables depuis
+     * l'admin.
+     */
+    public const TITRES_COURTS = [
+        'orange'    => 'Aller chercher les gens',
+        'cofina'    => "Ce qu'une institution a à dire",
+        'snedai'    => 'Même voix, partout',
+        'sgs-sicta' => 'Tenir la parole en ligne',
+        'ifg'       => "Un stand qu'on n'évite pas",
+        'sigfu'     => 'Donner un corps à une présence',
+    ];
+
+    /**
      * Données partagées : les réalisations viennent de la source unique
-     * (Contenu), jamais dupliquées dans une vue.
+     * (Contenu), jamais dupliquées dans une vue. On y greffe seulement le
+     * titre court, sans écraser le titre d'origine — la page de détail
+     * continue de l'afficher.
      */
     private function commun(): array
     {
+        $realisations = Contenu::section('realisations');
+
+        foreach ($realisations as $slug => &$projet) {
+            $projet['titre_court'] = self::TITRES_COURTS[$slug] ?? ($projet['titre'] ?? '');
+        }
+        unset($projet);
+
         return [
-            'realisations' => Contenu::section('realisations'),
+            'realisations' => $realisations,
             'options'      => CibleController::formOptions(),
         ];
     }

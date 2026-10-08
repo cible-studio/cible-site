@@ -90,22 +90,47 @@
   .exp__fl{display:none}
 }
 
+/* ═══════════════ MANIFESTE ═══════════════
+   « Vous visez juste » prend le rang qu'occupe « Truth Well Told » chez
+   la référence citée : seul, grand, juste avant les travaux. Il était
+   relégué en pied de page. */
+.manif{text-align:center;padding:clamp(54px,8vw,110px) var(--pad) clamp(30px,4vw,54px)}
+.manif__l{
+  font-family:var(--titre);font-weight:900;
+  font-size:clamp(34px,7.4vw,112px);line-height:.9;letter-spacing:-.05em;
+  display:block;
+}
+.manif__l em{font-style:normal;color:var(--rouge)}
+.manif__s{
+  margin-top:20px;font-family:var(--titre);font-weight:700;
+  font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--texte-3);
+}
+
 /* ═══════════════ TRAVAUX — défilement horizontal ═══════════════
    La galerie se parcourt à l'horizontale pendant que la page reste
    épinglée : le geste raconte le déplacement le long d'un axe routier.
    Repli en grille verticale sous 900px et en mouvement réduit — un
-   scroll détourné sur mobile est une mauvaise idée, pas une prouesse. */
-.tr{position:relative;overflow:hidden}
+   scroll détourné sur mobile est une mauvaise idée, pas une prouesse.
+
+   Vignettes réduites au client et au titre, sans paragraphe : la galerie
+   doit donner envie d'ouvrir, pas tout raconter. Le détail est sur la
+   page du cas. */
+.tr{position:relative;overflow:hidden;padding-block:0 clamp(60px,8vw,110px)}
 .tr__piste{display:flex;gap:clamp(16px,2vw,28px);padding:0 var(--pad);width:max-content;align-items:stretch}
 .carte{
   width:clamp(276px,31vw,440px);flex:0 0 auto;
   display:flex;flex-direction:column;
 }
 .carte__ph{aspect-ratio:4/5;border-radius:18px;overflow:hidden;--c:var(--rouge)}
-.carte__meta{display:flex;align-items:baseline;gap:10px;margin-top:17px}
-.carte__nom{font-family:var(--titre);font-weight:900;font-size:19px;letter-spacing:-.015em}
-.carte__cat{font-size:12.5px;color:var(--texte-3);margin-left:auto;text-align:right;max-width:46%;line-height:1.3}
-.carte__titre{margin-top:9px;font-size:15.5px;color:var(--texte-2);line-height:1.5}
+.carte__nom{
+  margin-top:18px;font-family:var(--titre);font-weight:800;
+  font-size:11px;letter-spacing:.17em;text-transform:uppercase;color:var(--c);
+}
+.carte__titre{
+  margin-top:9px;font-family:var(--titre);font-weight:900;
+  font-size:clamp(17px,1.7vw,23px);line-height:1.12;letter-spacing:-.022em;
+  text-transform:uppercase;
+}
 .tr__fin{
   width:clamp(220px,24vw,300px);flex:0 0 auto;display:flex;flex-direction:column;
   justify-content:center;gap:16px;padding-left:clamp(8px,2vw,26px);
@@ -176,7 +201,50 @@
     </div>
 </section>
 
-{{-- ═══════════════════════ RUBAN ═══════════════════════ --}}
+{{-- ═══════════════════════ MANIFESTE ═══════════════════════
+     La signature de marque prend ici le rang qu'occupe « Truth Well Told »
+     chez McCann : seule, grande, juste avant les travaux. Elle n'explique
+     rien — c'est la galerie qui argumente. --}}
+<section class="manif">
+    <span class="manif__l" data-rev>Vous visez</span>
+    <span class="manif__l" data-rev=".1"><em>juste.</em></span>
+    <p class="manif__s" data-rev=".22">Six campagnes · et la preuve de chacune</p>
+</section>
+
+{{-- ═══════════════════════ TRAVAUX ═══════════════════════ --}}
+<section class="tr" id="travaux" aria-labelledby="tr-titre">
+    {{-- Titre réservé aux lecteurs d'écran : à l'œil, le manifeste
+         ci-dessus tient ce rôle, et McCann n'intercale aucun intertitre
+         entre son manifeste et ses travaux. --}}
+    <h2 id="tr-titre" class="hors-ecran">Nos travaux</h2>
+
+    <div class="tr__piste" id="piste">
+        @foreach($realisations as $slug => $p)
+            <a class="carte" href="{{ route('v2.travaux') }}#{{ $slug }}" data-viseur
+               style="--c:{{ $p['couleur'] ?? 'var(--rouge)' }}">
+                <div class="carte__ph ph ph--scroll" style="--c:{{ $p['couleur'] ?? 'var(--rouge)' }}">
+                    <img src="{{ \App\Support\Contenu::urlImage($p['image'] ?? 'images/cible/campagne-1.jpg') }}"
+                         alt="Campagne {{ $p['nom'] ?? '' }}" loading="lazy">
+                </div>
+                <span class="carte__nom">{{ $p['nom'] ?? $slug }}</span>
+                <span class="carte__titre">{{ $p['titre_court'] ?? '' }}</span>
+            </a>
+        @endforeach
+
+        <div class="tr__fin">
+            <p class="t-petit">Chaque campagne, de la recommandation à la preuve de pose.</p>
+            <a class="bt bt--clair" href="{{ route('v2.travaux') }}" data-viseur>
+                Tout voir<i class="fl"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+{{-- ═══════════════════════ PREUVE ═══════════════════════
+     Après les travaux, et non avant : on montre d'abord, on prouve ensuite.
+     C'est le seul endroit où la maquette s'écarte de McCann, et c'est
+     volontaire — CIBLE possède un réseau physique, un annonceur qui arrive
+     doit savoir qu'il existe. Une galerie seule le cacherait. --}}
 <div class="ruban" aria-hidden="true">
     <div class="ruban__piste">
         @for($passe = 0; $passe < 2; $passe++)
@@ -192,7 +260,6 @@
     </div>
 </div>
 
-{{-- ═══════════════════════ PREUVE ═══════════════════════ --}}
 <section class="preuve">
     <div class="large">
         <div class="preuve__grille" data-cascade>
@@ -202,34 +269,36 @@
             </div>
             <div class="chiffre" style="--c:var(--jaune)">
                 <div class="chiffre__v num"><span data-compte="{{ \App\Support\Contenu::get('chiffres.communes', 31) }}">0</span></div>
-                <div class="chiffre__l">Communes et villes couvertes</div>
+                <div class="chiffre__l">Communes couvertes</div>
             </div>
             <div class="chiffre" style="--c:var(--vert)">
                 <div class="chiffre__v num">1994</div>
-                <div class="chiffre__l">Année de fondation</div>
+                <div class="chiffre__l">Depuis</div>
             </div>
             <div class="chiffre" style="--c:var(--violet)">
                 <div class="chiffre__v num"><span data-compte="{{ \App\Support\Contenu::get('chiffres.distinctions', 3) }}">0</span></div>
-                <div class="chiffre__l">Distinctions d'État<br>2016 · 2019 · 2020</div>
+                <div class="chiffre__l">Distinctions d'État</div>
             </div>
         </div>
     </div>
 </section>
 
-{{-- ═══════════════════════ EXPERTISES ═══════════════════════ --}}
+{{-- ═══════════════════════ EXPERTISES ═══════════════════════
+     Descriptions ramenées à une ligne chacune : la page Expertises leur
+     consacre un écran entier, les répéter ici n'ajoutait que des mots. --}}
 <section class="bloc exp">
     <div class="large">
         <div class="entete">
             <p class="sur" style="--c:var(--bleu)">Ce qu'on fait</p>
-            <h2 class="t-grand" data-lignes>Quatre métiers, une seule obsession : qu'on vous voie.</h2>
+            <h2 class="t-grand" data-lignes>Quatre métiers, une seule obsession.</h2>
         </div>
 
         <div class="exp__liste">
             @foreach([
-                ['Régie publicitaire',   'var(--rouge)',  'Le plus grand maillage du pays. Panneaux classiques, Lumipub, Trivision, panoramiques et écrans digitaux.'],
-                ['Communication mobile', 'var(--jaune)',  'Votre message va à la rencontre de son audience : camions, motos, taxis, roadshows et dispositifs de proximité.'],
-                ['Brand experience',     'var(--violet)', 'Faire voir votre marque, et surtout la faire vivre. Street marketing, pop-up, stands et activations.'],
-                ['Media Intelligence',   'var(--bleu)',   'Des campagnes pilotées par la donnée et prouvées par la photo horodatée et géolocalisée.'],
+                ['Régie publicitaire',   'var(--rouge)',  'Le plus grand maillage du pays.'],
+                ['Communication mobile', 'var(--jaune)',  'Votre message va à la rencontre de son audience.'],
+                ['Brand experience',     'var(--violet)', 'Faire voir votre marque, et surtout la faire vivre.'],
+                ['Media Intelligence',   'var(--bleu)',   'Des campagnes prouvées par la photo horodatée.'],
             ] as $i => [$nom, $couleur, $texte])
                 <a class="exp__item" style="--c:{{ $couleur }}" href="{{ route('v2.expertises') }}#p{{ $i + 1 }}" data-viseur data-rev="{{ $i * 0.06 }}">
                     <span class="exp__n">0{{ $i + 1 }}</span>
@@ -238,39 +307,6 @@
                     <span class="exp__fl"><i></i></span>
                 </a>
             @endforeach
-        </div>
-    </div>
-</section>
-
-{{-- ═══════════════════════ TRAVAUX ═══════════════════════ --}}
-<section class="bloc tr" id="travaux">
-    <div class="large" style="padding-inline:0">
-        <div class="entete" style="padding-inline:var(--pad)">
-            <p class="sur" style="--c:var(--jaune)">Nos travaux</p>
-            <h2 class="t-grand" data-lignes>Des marques qu'on a rendues impossibles à manquer.</h2>
-        </div>
-    </div>
-
-    <div class="tr__piste" id="piste" style="margin-top:clamp(38px,5vw,64px)">
-        @foreach(\App\Support\Contenu::section('realisations') as $slug => $p)
-            <a class="carte" href="{{ route('v2.travaux') }}#{{ $slug }}" data-viseur>
-                <div class="carte__ph ph ph--scroll" style="--c:{{ $p['couleur'] ?? 'var(--rouge)' }}">
-                    <img src="{{ \App\Support\Contenu::urlImage($p['image'] ?? 'images/cible/campagne-1.jpg') }}"
-                         alt="Campagne {{ $p['nom'] ?? '' }}" loading="lazy">
-                </div>
-                <div class="carte__meta">
-                    <span class="carte__nom">{{ $p['nom'] ?? $slug }}</span>
-                    <span class="carte__cat">{{ $p['cat'] ?? '' }}</span>
-                </div>
-                <p class="carte__titre">{{ $p['titre'] ?? '' }}</p>
-            </a>
-        @endforeach
-
-        <div class="tr__fin">
-            <p class="t-petit">Six campagnes détaillées, de la stratégie à la preuve de pose.</p>
-            <a class="bt bt--clair" href="{{ route('v2.travaux') }}" data-viseur>
-                Tout voir<i class="fl"></i>
-            </a>
         </div>
     </div>
 </section>

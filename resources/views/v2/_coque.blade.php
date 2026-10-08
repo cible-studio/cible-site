@@ -109,6 +109,13 @@
     }
     .corps{color:var(--texte-2);max-width:60ch}
     .num{font-variant-numeric:tabular-nums}
+    /* Titre lu par les lecteurs d'écran mais absent à l'œil : certaines
+       sections sont délibérément sans intertitre visible, elles ont
+       quand même besoin d'un nom dans le plan du document. */
+    .hors-ecran{
+      position:absolute;width:1px;height:1px;overflow:hidden;
+      clip-path:inset(50%);white-space:nowrap;
+    }
 
     /* ═══════════════ 4. MISE EN PAGE ═══════════════ */
     .bloc{padding:clamp(72px,11vw,170px) var(--pad);position:relative}
@@ -189,10 +196,15 @@
       padding-block:13px;border-bottom:1px solid var(--ligne);
     }
     .nav__logo img{height:34px;width:auto}
-    .nav__liens{display:flex;gap:4px;margin-left:auto}
+    /* Navigation en capitales et sans bouton d'appel : la référence citée
+       par le client (McCann) tient sa barre en 4 entrées capitalisées et
+       n'y place aucun CTA — ça sonne moins « site qui vend ». L'appel reste
+       présent en fin de chaque page, là où il a du sens. */
+    .nav__liens{display:flex;gap:2px;margin-left:auto}
     .nav__liens a{
-      font-family:var(--titre);font-weight:700;font-size:14px;
-      padding:9px 15px;border-radius:999px;color:var(--texte-2);
+      font-family:var(--titre);font-weight:700;
+      font-size:12px;letter-spacing:.13em;text-transform:uppercase;
+      padding:10px 16px;border-radius:999px;color:var(--texte-2);
       transition:color .25s,background .25s;
     }
     .nav__liens a:hover{color:#fff;background:rgba(255,255,255,.08)}
@@ -218,8 +230,8 @@
     body.menu .burger span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
     body.menu .burger span:nth-child(2){opacity:0}
     body.menu .burger span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
-    @media(max-width:1040px){
-      .nav__liens,.nav > .bt{display:none}
+    @media(max-width:860px){
+      .nav__liens{display:none}
       .burger{display:flex}
     }
     /* Tiroir plein écran */
@@ -371,11 +383,12 @@
 <div class="viseur-pt" id="viseur-pt" aria-hidden="true"></div>
 
 @php
+    // Travaux en tête : on montre avant d'expliquer.
     $pages = [
-        'accueil'    => ['Accueil',        route('v2.accueil')],
-        'expertises' => ['Ce qu\'on fait', route('v2.expertises')],
-        'reseau'     => ['Le réseau',      route('v2.reseau')],
-        'travaux'    => ['Nos travaux',    route('v2.travaux')],
+        'travaux'    => ['Travaux',    route('v2.travaux')],
+        'expertises' => ['Expertises', route('v2.expertises')],
+        'reseau'     => ['Réseau',     route('v2.reseau')],
+        'contact'    => ['Contact',    route('v2.contact')],
     ];
     $actuelle = $actuelle ?? 'accueil';
 @endphp
@@ -389,9 +402,6 @@
             <a href="{{ $url }}" data-viseur @if($actuelle === $cle) aria-current="page" @endif>{{ $nom }}</a>
         @endforeach
     </nav>
-    <a class="bt" href="{{ route('v2.contact') }}" data-viseur>
-        Parler de mon projet<i class="fl"></i>
-    </a>
     <button class="burger" id="burger" type="button" aria-label="Menu" aria-expanded="false">
         <span></span><span></span><span></span>
     </button>
@@ -399,10 +409,10 @@
 </header>
 
 <div class="tiroir" id="tiroir">
-    @foreach($pages as $cle => [$nom, $url])
-        <a href="{{ $url }}"><span>0{{ $loop->iteration }}</span>{{ $nom }}</a>
+    <a href="{{ route('v2.accueil') }}"><span>01</span>Accueil</a>
+    @foreach($pages as [$nom, $url])
+        <a href="{{ $url }}"><span>0{{ $loop->iteration + 1 }}</span>{{ $nom }}</a>
     @endforeach
-    <a href="{{ route('v2.contact') }}"><span>05</span>Contact</a>
 </div>
 
 <main id="principal">
@@ -422,10 +432,10 @@
             <div>
                 <h4>Le site</h4>
                 <ul>
+                    <li><a href="{{ route('v2.accueil') }}" data-viseur>Accueil</a></li>
                     @foreach($pages as [$nom, $url])
                         <li><a href="{{ $url }}" data-viseur>{{ $nom }}</a></li>
                     @endforeach
-                    <li><a href="{{ route('v2.contact') }}" data-viseur>Contact</a></li>
                 </ul>
             </div>
             <div>
