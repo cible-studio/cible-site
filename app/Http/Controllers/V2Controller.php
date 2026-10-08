@@ -93,10 +93,33 @@ class V2Controller extends Controller
     ];
 
     /**
+     * Visuels de TEST pour la revue — placeholders Unsplash.
+     *
+     * Autorisés explicitement par le client pour la maquette. Ils tiennent
+     * la place des prises de vue que la charte demande et que CIBLE n'a pas
+     * encore : « des personnages humains qui sont en joie », des images de
+     * liberté, le perroquet. Les visuels d'origine du dépôt sont des
+     * créations publicitaires de CIBLE et des constats de pose — utiles,
+     * mais pas des photographies de campagne.
+     *
+     * ⚠ À REMPLACER avant toute mise en ligne publique. On surcharge ici la
+     * copie locale du tableau, sans jamais toucher config/contenu.php : la
+     * V1 en production continue d'afficher ses propres visuels.
+     */
+    public const VISUELS_TEST = [
+        'orange'    => 'refonte/test/foule-festive.webp',   // activation terrain
+        'cofina'    => 'refonte/test/studio-lumiere.webp',  // production audiovisuelle
+        'snedai'    => 'refonte/test/rue-afrique.webp',     // présence multi-supports
+        'sgs-sicta' => 'refonte/test/mobile.webp',          // digital et réseaux
+        'ifg'       => 'refonte/test/stand.webp',           // stand expérientiel
+        'sigfu'     => 'refonte/test/architecture.webp',    // design événementiel
+    ];
+
+    /**
      * Données partagées : les réalisations viennent de la source unique
      * (Contenu), jamais dupliquées dans une vue. On y greffe seulement le
-     * titre court, sans écraser le titre d'origine — la page de détail
-     * continue de l'afficher.
+     * titre court et le visuel de test, sans écraser le titre d'origine —
+     * la page de détail continue de l'afficher.
      */
     private function commun(): array
     {
@@ -104,6 +127,10 @@ class V2Controller extends Controller
 
         foreach ($realisations as $slug => &$projet) {
             $projet['titre_court'] = self::TITRES_COURTS[$slug] ?? ($projet['titre'] ?? '');
+
+            if (isset(self::VISUELS_TEST[$slug])) {
+                $projet['image'] = self::VISUELS_TEST[$slug];
+            }
         }
         unset($projet);
 
