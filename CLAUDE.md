@@ -65,25 +65,82 @@ c:\wamp64\www\cible-site\
 
 ## 🎨 Design system (verrouillé)
 
-### Palette 5 couleurs (dans `_layout.blade.php` `:root`)
+> 📕 **Source officielle : `docs/chart graphique CIBLE 2026.pdf`** (mai 2026,
+> « Opération Plume Rouge »). Extraction lisible : **`docs/CHARTE-GRAPHIQUE.md`**
+> — à relire avant toute décision visuelle. En cas de contradiction avec ce
+> fichier-ci, **le PDF fait foi**.
 
-| Nom | Hex | Usage |
+### 🚨 La règle qui prime : rouge prépondérant, accompagné du jaune
+
+Citation de la charte :
+
+> « **La couleur rouge doit rester prépondérante sur toutes les applications** et
+> peut être principalement accompagnée avec le jaune. »
+
+**Rouge et jaune sont les deux couleurs principales.** Vert, bleu et violet sont
+**secondaires** : ils existent, mais ne sont pas le visage de la marque et ne
+doivent pas être employés à parts égales avec le rouge et le jaune. Une erreur
+déjà commise : traiter les 5 couleurs comme un arc-en-ciel équivalent.
+
+| Rôle | Nom | Hex | Usage |
+|---|---|---|---|
+| **Principale** | `--rouge` | `#E20613` | Couleur prépondérante : titres, CTA, accents, focus |
+| **Principale** | `--jaune` | `#FAB80B` | L'accompagnement du rouge |
+| Secondaire | `--vert` | `#3AA835` | Ponctuel |
+| Secondaire | `--bleu` | `#3F7FC0` | Ponctuel |
+| Secondaire | `--violet` | `#81358A` | Ponctuel |
+| Neutre | `--gris` | `#E6E6E6` | Fonds de section |
+| Neutre | `--noir` | `#111111` | Texte |
+| Neutre | `--blanc` | `#FFFFFF` | **Base neutre et structurante** |
+
+**Ne PAS ajouter de couleurs supplémentaires.** Seule variation admise : le
+dégradé d'une couleur vers le blanc, **en huit étapes**.
+
+### ⛔ Interdits de couleur (charte, textuels)
+
+- « **L'usage de dégradés ou d'effets est à éviter.** » → pas de
+  `linear-gradient` décoratif, pas d'ombre colorée.
+- « Les couleurs peuvent être combinées **avec du blanc ou du noir uniquement**. »
+  → jamais une couleur de marque sur une autre couleur de marque.
+- « **N'appliquez pas le texte du titre en couleur à un arrière-plan non blanc.** »
+  → un mot de titre en rouge ou en jaune ne va que sur fond blanc.
+- « **En cas de doute, privilégier le blanc comme base neutre et structurante.** »
+  → le site se construit sur du blanc, pas sur du noir.
+
+### Typographie
+
+| Rôle | Police | Graisses |
 |---|---|---|
-| `--rouge` | `#E20613` | Accent principal, CTA, focus |
-| `--jaune` | `#FAB80B` | Highlights, illustrations |
-| `--vert` | `#3AA835` | Distinctions, positif |
-| `--bleu` | `#3F7FC0` | Détails |
-| `--violet` | `#81358A` | Détails |
-| `--gris` | `#E6E6E6` | Fonds sections |
-| `--noir` | `#111111` | Texte principal |
-| `--blanc` | `#FFFFFF` | Fonds page |
+| **Titres** | **MADE TOMMY** | Regular · Medium (sous-titres) · Bold · Black |
+| **Corps** | **Nunito** | Regular · Medium · Bold |
+| Bureautique | Arial, Montserrat | documents formels — **pas le site** |
 
-**Ne PAS ajouter de couleurs supplémentaires** sans validation user.
+⚠ **MADE TOMMY n'est pas une Google Font** : c'est une police commerciale, à
+fournir en `.woff2`. Tant que les fichiers manquent, Poppins sert de
+remplaçante — c'est un **pis-aller documenté**, pas la charte.
 
-### Fonts (Google Fonts, chargées dans `_layout`)
+⚠ **« L'utilisation de Nunito peut se faire avec tous les caractères qui la
+composent SAUF LES CHIFFRES. »** Compteurs, dates, téléphones et statistiques se
+composent donc dans la police de titre, jamais en Nunito.
 
-- **Poppins** (400/500/700/800/900) — titres via `var(--titre)`
-- **Nunito** (400/600/700) — corps via `var(--corps)`
+### Photographie (charte)
+
+Images de **liberté** : nuages, grandes étendues de végétation, le perroquet.
+**Priorité aux scènes de vie, « des personnages humains qui sont en joie »**,
+émotions perceptibles de joie ou d'apaisement. « Le but est vraiment
+d'humaniser la marque. »
+
+⚠ Les photos du dépôt sont des constats de pose (rue, panneaux, trafic) : aucune
+ne montre de personnage. **Le matériel photographique que la charte demande
+manque** — à signaler plutôt qu'à contourner.
+
+### Logo (charte)
+
+Sur fond blanc : version couleur uniquement. Sur **fond de couleur** :
+**monochrome obligatoire**. Zone de protection = hauteur/largeur du « E »,
+réductible de moitié si la place manque. Minimum **24 px** en digital.
+Ne jamais déformer, ne pas modifier la pupille, ne pas uniformiser les couleurs
+du symbole, ne pas changer la couleur du slogan.
 
 ### Échelle typographique
 

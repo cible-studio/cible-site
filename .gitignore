@@ -36,3 +36,9 @@ database/database.sqlite
 # Contenu édité depuis l'espace admin : vit sur le volume persistant,
 # jamais dans git. Les valeurs par défaut sont dans config/contenu.php.
 /storage/app/contenu
+
+# Sources de la charte graphique — trop volumineuses pour git (le PDF fait
+# 521 Mo, la limite GitHub est de 100 Mo par fichier). Elles vivent chez le
+# studio ; l'extraction lisible et versionnée est docs/CHARTE-GRAPHIQUE.md.
+/docs/chart graphique CIBLE 2026.pdf
+/docs/flèches et plumes/
