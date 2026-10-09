@@ -26,7 +26,12 @@ class SecurityHeaders
         // — c'est précisément l'intérêt.
         $polices  = 'https://fonts.googleapis.com https://fonts.gstatic.com';
         $leaflet  = 'https://unpkg.com';
-        $tuiles   = 'https://*.basemaps.cartocdn.com';
+        // 2026-10-09 — Esri (fond de carte de la refonte, CARTO exige
+        // désormais une clé) ajouté à côté de CARTO, encore utilisé en V1.
+        $tuiles   = 'https://*.basemaps.cartocdn.com https://server.arcgisonline.com';
+        // 2026-10-09 — Moteur d'animation de la refonte (GSAP, ScrollTrigger,
+        // Lenis) : sans ces origines, la CSP bloquait toutes les animations V2.
+        $animation = 'https://cdnjs.cloudflare.com https://cdn.jsdelivr.net';
         $ga       = 'https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com';
         // Turnstile : script + iframe du défi. Autorisé même quand les clés
         // ne sont pas configurées — la CSP décrit ce qui est permis, pas ce
@@ -46,7 +51,7 @@ class SecurityHeaders
             // contenu affiché est intégralement échappé côté Blade.
             "style-src 'self' 'unsafe-inline' {$polices} {$leaflet}",
             "font-src 'self' data: {$polices}",
-            "script-src 'self' 'unsafe-inline' {$leaflet} {$ga} {$turnstile}",
+            "script-src 'self' 'unsafe-inline' {$leaflet} {$animation} {$ga} {$turnstile}",
             // Turnstile présente son défi dans une iframe.
             "frame-src {$turnstile}",
             "connect-src 'self' {$ga} {$tuiles} {$turnstile}",
