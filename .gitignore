@@ -36,3 +36,7 @@ database/database.sqlite
 # Contenu édité depuis l'espace admin : vit sur le volume persistant,
 # jamais dans git. Les valeurs par défaut sont dans config/contenu.php.
 /storage/app/contenu
+
+# Charte graphique source : 521 Mo, au-dessus de la limite GitHub (100 Mo).
+# L'extraction lisible est versionnée dans docs/CHARTE-GRAPHIQUE.md.
+/docs/chart graphique CIBLE 2026.pdf
