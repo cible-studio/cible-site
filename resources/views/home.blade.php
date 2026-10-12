@@ -602,7 +602,7 @@
         <p>{{ \App\Support\Contenu::get('accueil.contact_texte') }}</p>
         <a class="bouton b-rouge" style="margin-top:28px" href="{{ route('contact') }}">{{ \App\Support\Contenu::get('accueil.contact_cta') }}<i class="fl dessin f-fleche" aria-hidden="true"></i></a>
         <div class="coord">
-            <a href="tel:+2250700780628" class="num">+225 07 00 78 06 28</a>
+            <a href="tel:+2250798496674" class="num">+225 07 98 49 66 74</a>
             <a href="mailto:commercial@cible-ci.com">commercial@cible-ci.com</a>
             <a href="{{ route('contact') }}">Formulaire de contact</a>
         </div>
