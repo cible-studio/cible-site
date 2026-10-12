@@ -378,7 +378,7 @@ class CibleController extends Controller
                 'data'  => Arr::except($data, array_keys(self::DOCUMENTS)),
             ]);
             return back()->withInput()->with('devis_error',
-                'Une erreur est survenue lors de l\'envoi de votre demande. Merci de réessayer ou de nous contacter directement au +225 07 00 78 06 28.'
+                'Une erreur est survenue lors de l\'envoi de votre demande. Merci de réessayer ou de nous contacter directement au +225 07 98 49 66 74.'
             );
         }
 

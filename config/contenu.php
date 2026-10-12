@@ -22,7 +22,7 @@
 return [
 
     'coordonnees' => [
-        'tel_mobile'      => '+225 07 00 78 06 28',
+        'tel_mobile'      => '+225 07 98 49 66 74',
         'tel_fixe'        => '+225 27 22 20 80 08',
         'email_commercial'=> 'commercial@cible-ci.com',
         'email_secretariat'=> 'secretariat@cible-ci.com',

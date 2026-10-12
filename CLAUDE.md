@@ -114,7 +114,7 @@ c:\wamp64\www\cible-site\
 | Panneaux en propre | **+400** (arrondi — voir ci-dessous) |
 | Communes couvertes | **31** |
 | Adresse | Rue des Ambassadeurs, Riviera M'Badon, 10 BP 1029, Abidjan |
-| Téléphone mobile | +225 07 00 78 06 28 |
+| Téléphone mobile | +225 07 98 49 66 74 |
 | Téléphone fixe | +225 27 22 20 80 08 |
 | Email commercial | `commercial@cible-ci.com` |
 | Email secrétariat | `secretariat@cible-ci.com` |
