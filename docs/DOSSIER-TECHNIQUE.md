@@ -73,7 +73,7 @@ récupérer.
 | Mot de passe de l'admin du site | hash uniquement, dans `CIBLE_ADMIN_HASH` | CIBLE |
 | SMTP d'envoi des mails | `MAIL_USERNAME` / `MAIL_PASSWORD` dans Coolify | CIBLE |
 | Clés Cloudflare Turnstile | `TURNSTILE_*` dans Coolify | dash.cloudflare.com |
-| Google Analytics | `CIBLE_GA_ID` dans Coolify | CIBLE |
+| Google Tag Manager / Analytics | `CIBLE_GTM_ID` (ou à défaut `CIBLE_GA_ID`) dans Coolify | CIBLE |
 
 > `cible-studio` est un **compte utilisateur**, pas une organisation : lui seul
 > peut créer un dépôt sous son nom. `Quenum19` peut pousser sur les dépôts
@@ -118,7 +118,7 @@ cible-site/
 │   ├── contenu.php                  # défauts des sections hors schéma
 │   ├── cible.php                    # identifiants de l'admin
 │   ├── mail.php                     # clé cible_devis_to
-│   └── services.php                 # ga_id, turnstile
+│   └── services.php                 # gtm_id, ga_id, turnstile
 ├── docs/
 │   ├── MANUEL-UTILISATION.md        # manuel destiné à CIBLE
 │   ├── DOSSIER-TECHNIQUE.md         # ce document
@@ -265,7 +265,8 @@ MAIL_MAILER=smtp
 MAIL_SCHEME=smtp         # ⚠ PAS MAIL_ENCRYPTION
 CIBLE_DEVIS_TO=commercial@cible-ci.com
 
-CIBLE_GA_ID=             # vide = pas de traceur chargé
+CIBLE_GTM_ID=            # Google Tag Manager, prioritaire sur CIBLE_GA_ID
+CIBLE_GA_ID=             # GA4 direct, seulement sans GTM ; les deux vides = aucun traceur
 TURNSTILE_SITE_KEY=      # vides = widget non rendu, site inchangé
 TURNSTILE_SECRET_KEY=
 CIBLE_ADMIN_EMAIL=       # vides = /admin répond 404
@@ -383,6 +384,14 @@ La CSP autorise explicitement : Google Fonts, unpkg (Leaflet), CartoDB (fonds
 de carte), Google Tag Manager, `challenges.cloudflare.com` (Turnstile).
 **Ajouter un domaine externe impose de l'ajouter à la CSP**, sinon la
 ressource est bloquée silencieusement.
+
+⚠ **Cas Google Tag Manager** : GTM permet d'ajouter des balises sans toucher
+au code, mais la CSP s'applique toujours. GA4 passe (domaines déjà autorisés).
+Toute autre balise ajoutée dans GTM qui charge un domaine tiers (pixel Meta,
+Microsoft Clarity, Hotjar, LinkedIn…) ou une balise « HTML personnalisé » sera
+bloquée sans message tant que son domaine n'est pas ajouté dans
+`SecurityHeaders.php`. Les variables « JavaScript personnalisé » de GTM
+exigeraient en plus `'unsafe-eval'` — à éviter.
 
 **Limitation de débit**
 

@@ -39,12 +39,16 @@ return [
     |--------------------------------------------------------------------------
     | CIBLE CI — services vitrine
     |--------------------------------------------------------------------------
-    | ga_id : ID de mesure Google Analytics 4 (format G-XXXXXXXXXX).
-    |         Injecté dans _layout.blade.php uniquement si non-vide.
-    |         Vide sur dev/local → aucun script chargé.
+    | gtm_id : conteneur Google Tag Manager (format GTM-XXXXXXX).
+    |          Prioritaire : s'il est renseigné, la balise GA4 directe
+    |          n'est PAS chargée — GA4 doit alors être configuré dans GTM.
+    | ga_id  : ID de mesure Google Analytics 4 (format G-XXXXXXXXXX).
+    |          Secours, utilisé seulement quand gtm_id est vide.
+    | Les deux vides sur dev/local → aucun script chargé.
     */
     'cible' => [
-        'ga_id' => env('CIBLE_GA_ID'),
+        'gtm_id' => env('CIBLE_GTM_ID'),
+        'ga_id'  => env('CIBLE_GA_ID'),
     ],
 
     /*

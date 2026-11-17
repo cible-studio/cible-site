@@ -36,7 +36,7 @@ c:\wamp64\www\cible-site\
 │   └── Mail/CibleContactMail.php              ← mailable formulaire devis
 ├── config/
 │   ├── mail.php                                ← clé `cible_devis_to` = destinataire /devis
-│   └── services.php                            ← clé `cible.ga_id` = Google Analytics 4
+│   └── services.php                            ← clés `cible.gtm_id` (GTM, prioritaire) et `cible.ga_id` (GA4 direct)
 ├── database/database.sqlite                    ← fichier SQLite (sessions/cache seulement)
 ├── docs/
 │   └── SITE INTERNET CIBLE_TEXTES.docx         ← 📝 SOURCE UNIQUE pour tous les textes du site
@@ -312,10 +312,18 @@ MAIL_FROM_NAME="Site CIBLE"
 
 CIBLE_DEVIS_TO=commercial@cible-ci.com   # destinataire formulaire /devis
 
-CIBLE_GA_ID=                              # laissé vide en dev, G-XXXXXXXXXX en prod
+CIBLE_GTM_ID=                             # vide en dev, GTM-XXXXXXX en prod (prioritaire)
+CIBLE_GA_ID=                              # GA4 direct, utilisé seulement si CIBLE_GTM_ID est vide
 ```
 
-Le GA n'est chargé côté frontend QUE si `CIBLE_GA_ID` est renseigné (opt-in).
+Mesure d'audience opt-in : rien n'est chargé si les deux variables sont vides.
+Si `CIBLE_GTM_ID` est renseigné, la balise GA4 directe n'est **pas** chargée
+(jamais les deux → pas de double comptage) ; GA4 se configure alors dans GTM.
+
+⚠ Depuis le 2026-11-17, la prod utilise GTM (conteneur fourni par CIBLE, qui
+contient la balise GA4). Une balise ajoutée dans GTM qui charge un autre
+domaine (Meta, Clarity, Hotjar, HTML personnalisé…) est **bloquée par la CSP**
+tant que son domaine n'est pas ajouté dans `SecurityHeaders.php`.
 
 ---
 

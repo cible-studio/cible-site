@@ -69,10 +69,27 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;800;900&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
 
-    {{-- Google Analytics 4 — injecté SEULEMENT si l'ID de mesure est
-         défini dans .env (CIBLE_GA_ID). Sur dev/local, la variable est
-         vide → aucun script chargé → aucune pollution des stats. --}}
-    @if($gaId = config('services.cible.ga_id'))
+    {{-- Mesure d'audience — rien n'est chargé si les deux variables sont
+         vides (dev/local → aucune pollution des stats).
+
+         1. Google Tag Manager (CIBLE_GTM_ID) est prioritaire : GA4 et les
+            éventuelles autres balises se gèrent depuis l'interface GTM.
+            Ce n'est PAS le snippet GTM historique (push de `gtm.start`) mais
+            sa forme « gtag » fournie par CIBLE : le runtime gtm.js convertit
+            `gtag('js', date)` en évènement `gtm.js`, vérifié le 2026-11-17.
+            ⚠ Tout outil ajouté dans GTM qui charge un autre domaine (Meta,
+            Clarity, Hotjar, HTML personnalisé…) doit être autorisé dans
+            SecurityHeaders.php, sinon il est bloqué sans message.
+         2. Sinon, balise GA4 directe (CIBLE_GA_ID).
+         Jamais les deux : ce serait compter chaque visite deux fois. --}}
+    @if($gtmId = config('services.cible.gtm_id'))
+        <script async src="https://www.googletagmanager.com/gtm.js?id={{ $gtmId }}"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+        </script>
+    @elseif($gaId = config('services.cible.ga_id'))
         <script async src="https://www.googletagmanager.com/gtag/js?id={{ $gaId }}"></script>
         <script>
             window.dataLayer = window.dataLayer || [];
