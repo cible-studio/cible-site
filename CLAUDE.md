@@ -320,8 +320,15 @@ Mesure d'audience opt-in : rien n'est chargé si les deux variables sont vides.
 Si `CIBLE_GTM_ID` est renseigné, la balise GA4 directe n'est **pas** chargée
 (jamais les deux → pas de double comptage) ; GA4 se configure alors dans GTM.
 
-⚠ Depuis le 2026-11-17, la prod utilise GTM (conteneur fourni par CIBLE, qui
-contient la balise GA4). Une balise ajoutée dans GTM qui charge un autre
+⚠ Depuis le 2026-11-17, la prod utilise GTM : conteneur `GTM-MZQMNRJN`, géré
+par **Mr Frederic** (seul à pouvoir le publier, le studio n'y a pas accès).
+La propriété GA4 du studio est « Cible - CI » = `G-X7JK0X8Y9P`.
+
+⏳ **En attente** : la balise GA4 du conteneur pointe encore vers
+`G-NY8SPNE73C` (propriété à laquelle le studio n'a pas accès) → « Cible - CI »
+ne reçoit plus rien. Mr Frederic doit remplacer l'ID par `G-X7JK0X8Y9P` et
+publier. Détail et commande de vérification : `docs/DOSSIER-TECHNIQUE.md`,
+section Accès. Rappeler ce point à l'utilisateur tant qu'il n'est pas réglé. Une balise ajoutée dans GTM qui charge un autre
 domaine (Meta, Clarity, Hotjar, HTML personnalisé…) est **bloquée par la CSP**
 tant que son domaine n'est pas ajouté dans `SecurityHeaders.php`.
 

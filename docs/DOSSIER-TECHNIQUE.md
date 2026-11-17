@@ -73,7 +73,24 @@ récupérer.
 | Mot de passe de l'admin du site | hash uniquement, dans `CIBLE_ADMIN_HASH` | CIBLE |
 | SMTP d'envoi des mails | `MAIL_USERNAME` / `MAIL_PASSWORD` dans Coolify | CIBLE |
 | Clés Cloudflare Turnstile | `TURNSTILE_*` dans Coolify | dash.cloudflare.com |
-| Google Tag Manager / Analytics | `CIBLE_GTM_ID` (ou à défaut `CIBLE_GA_ID`) dans Coolify | CIBLE |
+| ID chargé par le site | `CIBLE_GTM_ID=GTM-MZQMNRJN` dans Coolify (prod) ; `CIBLE_GA_ID` supprimée le 2026-11-17 | CIBLE |
+| Google Tag Manager (conteneur `GTM-MZQMNRJN`) | tagmanager.google.com | **Mr Frederic** — lui seul peut modifier et publier le conteneur ; le studio n'y a pas accès |
+| Google Analytics 4 « Cible - CI » (`G-X7JK0X8Y9P`) | analytics.google.com, compte « DIGITAL STUDIO CIBLE » | studio CIBLE |
+| Google Analytics 4 `G-NY8SPNE73C` | propriété visée par le conteneur GTM au 2026-11-17 | détenteur présumé : Mr Frederic — le studio n'y a pas accès |
+
+> ⏳ **En attente au 2026-11-17 — mesure d'audience.** Le site charge GTM, mais
+> la balise GA4 du conteneur envoie vers `G-NY8SPNE73C` et non vers
+> « Cible - CI ». Depuis la bascule (2026-11-17, ~16 h), **« Cible - CI » ne
+> reçoit plus aucune visite**. Décision prise : garder « Cible - CI ».
+> - Mr Frederic : dans GTM, remplacer l'ID de la balise GA4 par
+>   `G-X7JK0X8Y9P`, puis *Envoyer → Publier*. Demande envoyée, sans réponse
+>   pour l'instant.
+> - Studio : ajouter Mr Frederic en accès sur « Cible - CI » dès qu'il a
+>   communiqué son adresse Google.
+> - Vérifier depuis l'extérieur, sans aucun accès :
+>   `curl -s "https://www.googletagmanager.com/gtm.js?id=GTM-MZQMNRJN" | grep -oE "G-[A-Z0-9]{10}" | sort -u`
+>   doit renvoyer `G-X7JK0X8Y9P`. Aucune modification du site n'est
+>   nécessaire.
 
 > `cible-studio` est un **compte utilisateur**, pas une organisation : lui seul
 > peut créer un dépôt sous son nom. `Quenum19` peut pousser sur les dépôts
