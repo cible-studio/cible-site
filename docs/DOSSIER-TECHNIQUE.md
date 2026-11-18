@@ -74,23 +74,20 @@ récupérer.
 | SMTP d'envoi des mails | `MAIL_USERNAME` / `MAIL_PASSWORD` dans Coolify | CIBLE |
 | Clés Cloudflare Turnstile | `TURNSTILE_*` dans Coolify | dash.cloudflare.com |
 | ID chargé par le site | `CIBLE_GTM_ID=GTM-MZQMNRJN` dans Coolify (prod) ; `CIBLE_GA_ID` supprimée le 2026-11-17 | CIBLE |
-| Google Tag Manager (conteneur `GTM-MZQMNRJN`) | tagmanager.google.com | **Mr Frederic** — lui seul peut modifier et publier le conteneur ; le studio n'y a pas accès |
-| Google Analytics 4 « Cible - CI » (`G-X7JK0X8Y9P`) | analytics.google.com, compte « DIGITAL STUDIO CIBLE » | studio CIBLE |
-| Google Analytics 4 `G-NY8SPNE73C` | propriété visée par le conteneur GTM au 2026-11-17 | détenteur présumé : Mr Frederic — le studio n'y a pas accès |
+| Google Tag Manager — conteneur « SITE WEB CIBLE » (`GTM-MZQMNRJN`) | tagmanager.google.com | **Mr Frederic** — lui seul peut modifier et publier ; le studio y a un accès **lecture seule** depuis le 2026-11-18 |
+| Google Analytics 4 « SITE WEB CIBLE » (`G-NY8SPNE73C`) | propriété alimentée par le conteneur GTM | Mr Frederic — accès du studio à vérifier |
+| Google Ads « CIBLE RÉGIE CI » (171-622-1956, balise `AW-17777486487`) | ads.google.com — relié à la même balise Google que GA4 | équipe CIBLE ; le studio y a un accès **Standard** (invitation du 2026-11-18) |
+| Google Analytics 4 « Cible - CI » (`G-X7JK0X8Y9P`) | analytics.google.com, compte « DIGITAL STUDIO CIBLE » | studio CIBLE — **ne reçoit plus rien depuis le 2026-11-17** (historique conservé) |
 
-> ⏳ **En attente au 2026-11-17 — mesure d'audience.** Le site charge GTM, mais
-> la balise GA4 du conteneur envoie vers `G-NY8SPNE73C` et non vers
-> « Cible - CI ». Depuis la bascule (2026-11-17, ~16 h), **« Cible - CI » ne
-> reçoit plus aucune visite**. Décision prise : garder « Cible - CI ».
-> - Mr Frederic : dans GTM, remplacer l'ID de la balise GA4 par
->   `G-X7JK0X8Y9P`, puis *Envoyer → Publier*. Demande envoyée, sans réponse
->   pour l'instant.
-> - Studio : ajouter Mr Frederic en accès sur « Cible - CI » dès qu'il a
->   communiqué son adresse Google.
-> - Vérifier depuis l'extérieur, sans aucun accès :
->   `curl -s "https://www.googletagmanager.com/gtm.js?id=GTM-MZQMNRJN" | grep -oE "G-[A-Z0-9]{10}" | sort -u`
->   doit renvoyer `G-X7JK0X8Y9P`. Aucune modification du site n'est
->   nécessaire.
+> **Décision du 2026-11-18 — on garde « SITE WEB CIBLE ».** La balise Google
+> du conteneur relie le site à la fois à GA4 `G-NY8SPNE73C` et à Google Ads
+> `AW-17777486487`. Remplacer son ID par celui de « Cible - CI » couperait le
+> lien avec Google Ads : **ne pas le faire**. Le studio consulte les
+> statistiques dans « SITE WEB CIBLE » (accès à demander à Mr Frederic s'il
+> n'est pas déjà donné). « Cible - CI » n'est plus alimentée.
+>
+> Vérifier depuis l'extérieur, sans aucun accès, vers quoi envoie le site :
+> `curl -s "https://www.googletagmanager.com/gtag/js?id=G-NY8SPNE73C" | grep -oE "(G|AW)-[A-Z0-9]{9,11}" | sort -u`
 
 > `cible-studio` est un **compte utilisateur**, pas une organisation : lui seul
 > peut créer un dépôt sous son nom. `Quenum19` peut pousser sur les dépôts
@@ -398,12 +395,20 @@ volume, contrairement au fichier.
 `Cross-Origin-Opener-Policy`.
 
 La CSP autorise explicitement : Google Fonts, unpkg (Leaflet), CartoDB (fonds
-de carte), Google Tag Manager, `challenges.cloudflare.com` (Turnstile).
+de carte), Google Tag Manager, Google Analytics, Google Ads (depuis le
+2026-11-18), `challenges.cloudflare.com` (Turnstile).
 **Ajouter un domaine externe impose de l'ajouter à la CSP**, sinon la
 ressource est bloquée silencieusement.
 
+Les domaines Google Ads suivent la liste officielle
+(developers.google.com/tag-platform/security/guides/csp). La CSP n'accepte
+pas de joker sur l'extension : chaque domaine pays de Google est nommé
+(`google.ci`, `google.fr`). Pour suivre finement le remarketing d'un autre
+pays, ajouter son domaine dans `SecurityHeaders.php`.
+
 ⚠ **Cas Google Tag Manager** : GTM permet d'ajouter des balises sans toucher
-au code, mais la CSP s'applique toujours. GA4 passe (domaines déjà autorisés).
+au code, mais la CSP s'applique toujours. GA4 et Google Ads passent (domaines
+déjà autorisés).
 Toute autre balise ajoutée dans GTM qui charge un domaine tiers (pixel Meta,
 Microsoft Clarity, Hotjar, LinkedIn…) ou une balise « HTML personnalisé » sera
 bloquée sans message tant que son domaine n'est pas ajouté dans

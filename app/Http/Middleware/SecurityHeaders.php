@@ -28,6 +28,18 @@ class SecurityHeaders
         $leaflet  = 'https://unpkg.com';
         $tuiles   = 'https://*.basemaps.cartocdn.com';
         $ga       = 'https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com';
+        // Google Ads (compte « CIBLE RÉGIE CI »), relié à la balise Google du
+        // conteneur GTM : remarketing et conversions. Listes reprises de la
+        // doc officielle (developers.google.com/tag-platform/security/guides/csp,
+        // relue le 2026-11-18). Sans elles, Analytics reçoit les visites mais
+        // Google Ads ne reçoit rien, sans aucun message d'erreur.
+        // La CSP n'accepte pas de joker sur l'extension : chaque domaine
+        // pays de Google doit être nommé. .ci pour les visiteurs ivoiriens,
+        // .fr pour ceux de France ; un autre pays retombe sur google.com.
+        $adsScript = 'https://www.googleadservices.com https://www.google.com';
+        $adsHotes  = 'https://*.google.com https://*.google.ci https://*.google.fr '
+                   . 'https://*.g.doubleclick.net https://ad.doubleclick.net '
+                   . 'https://www.googleadservices.com https://pagead2.googlesyndication.com';
         // Turnstile : script + iframe du défi. Autorisé même quand les clés
         // ne sont pas configurées — la CSP décrit ce qui est permis, pas ce
         // qui est chargé, et cela évite un oubli le jour de l'activation.
@@ -39,17 +51,18 @@ class SecurityHeaders
             "object-src 'none'",                  // ni Flash ni plugin
             "frame-ancestors 'none'",             // anti-clickjacking (remplace X-Frame-Options)
             "form-action 'self'",                 // le formulaire ne peut poster que chez nous
-            "img-src 'self' data: {$tuiles} {$leaflet}",
+            "img-src 'self' data: {$tuiles} {$leaflet} {$ga} {$adsHotes}",
             // 'unsafe-inline' est nécessaire : le site est construit sur des
             // styles et scripts en ligne. La protection reste réelle — aucun
             // script d'une origine non listée ne peut s'exécuter, et le
             // contenu affiché est intégralement échappé côté Blade.
             "style-src 'self' 'unsafe-inline' {$polices} {$leaflet}",
             "font-src 'self' data: {$polices}",
-            "script-src 'self' 'unsafe-inline' {$leaflet} {$ga} {$turnstile}",
-            // Turnstile présente son défi dans une iframe.
-            "frame-src {$turnstile}",
-            "connect-src 'self' {$ga} {$tuiles} {$turnstile}",
+            "script-src 'self' 'unsafe-inline' {$leaflet} {$ga} {$adsScript} {$turnstile}",
+            // Turnstile présente son défi dans une iframe ; GTM aussi (Google
+            // Ads, mode aperçu).
+            "frame-src {$turnstile} https://www.googletagmanager.com",
+            "connect-src 'self' {$ga} {$adsHotes} {$tuiles} {$turnstile}",
             'upgrade-insecure-requests',
         ]);
 
