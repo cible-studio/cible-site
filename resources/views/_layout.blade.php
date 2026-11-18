@@ -12,6 +12,10 @@
     <title>{{ $seo_title ?? 'CIBLE — Régie publicitaire en Côte d\'Ivoire · Vous visez juste' }}</title>
     <meta name="description" content="{{ $seo_description ?? 'Régie publicitaire ivoirienne depuis 1994. Affichage grand format, publicité mobile, communication 360°. +400 panneaux dans 31 communes. Réponse sous 24 h ouvrées.' }}">
     <link rel="canonical" href="{{ url()->current() }}">
+    {{-- Pages sans intérêt dans les résultats Google (ex. /contact/merci). --}}
+    @if(!empty($noindex))
+    <meta name="robots" content="noindex">
+    @endif
 
     {{-- Icônes 2026-08-14 — fond détouré.
          Les sources ont un fond NOIR opaque (et non blanc, contrairement à
