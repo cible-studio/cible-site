@@ -12,7 +12,7 @@
 - **Laravel 13 + Blade + SQLite + Leaflet** — statique, sans base de données réelle (SQLite juste pour sessions/cache Laravel).
 - **6 pages** : accueil, qui-sommes-nous, services, réseau, références, contact — **+ 6 pages détail de réalisation** `/references/{slug}` (2026-08-10).
 - **1 endpoint JSON** `/api/reseau-map` alimenté par un fichier statique `public/data/reseau-map.json` (31 communes + GPS).
-- **1 formulaire /devis** → mail à `commercial@cible-ci.com` (rate-limited 5/10min, **accepte 4 pièces jointes** depuis 2026-08-10).
+- **1 formulaire /devis** → mail à `commercial@cible-ci.com` **et** `studio@cible-ci.com` (liste séparée par des virgules dans `CIBLE_DEVIS_TO`, depuis 2026-11-18), rate-limited 5/10min, **accepte 4 pièces jointes** dont le contenu réel est contrôlé ; succès → redirection vers `/contact/merci` (URL de conversion GTM).
 
 ### 🚨 Règle N°1 absolue — CIBLE ≠ PANORA
 
@@ -310,7 +310,7 @@ MAIL_SCHEME=smtp                      # ⚠ PAS MAIL_ENCRYPTION (ignoré en Lara
 MAIL_FROM_ADDRESS="site@cible-ci.com"
 MAIL_FROM_NAME="Site CIBLE"
 
-CIBLE_DEVIS_TO=commercial@cible-ci.com   # destinataire formulaire /devis
+CIBLE_DEVIS_TO=commercial@cible-ci.com,studio@cible-ci.com   # destinataires /devis, séparés par des virgules
 
 CIBLE_GTM_ID=                             # vide en dev, GTM-XXXXXXX en prod (prioritaire)
 CIBLE_GA_ID=                              # GA4 direct, utilisé seulement si CIBLE_GTM_ID est vide

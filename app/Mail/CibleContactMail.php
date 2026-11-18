@@ -8,7 +8,8 @@ use Illuminate\Queue\SerializesModels;
 
 /**
  * Mail de demande reçue via /contact (mini-brief marketing).
- * Envoyé à commercial@cible-ci.com (config mail.cible_devis_to).
+ * Envoyé à commercial@ et studio@cible-ci.com (config mail.cible_devis_to,
+ * liste séparée par des virgules dans CIBLE_DEVIS_TO).
  *
  * Les documents éventuellement déposés par le visiteur sont attachés
  * depuis leur emplacement temporaire d'upload. L'envoi est synchrone
