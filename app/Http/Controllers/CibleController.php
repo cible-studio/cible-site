@@ -8,6 +8,7 @@ use App\Support\Contenu;
 use App\Support\Journal;
 use App\Support\Turnstile;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -264,6 +265,102 @@ class CibleController extends Controller
     private const DOC_MAX_KO  = 10240; // 10 Mo
 
     /**
+     * Ce qu'un document de brief ne peut en aucun cas être, quelle que soit
+     * son extension — cf. contenuDangereux(). Liste de refus et non liste
+     * d'acceptation : on ne veut pas revivre le rejet des .ai / .eps.
+     */
+    private const SIGNATURES_BINAIRES = [
+        "MZ"               => 'executable-windows',
+        "\x7FELF"          => 'executable-linux',
+        "\xCF\xFA\xED\xFE" => 'executable-mac',
+        "\xCA\xFE\xBA\xBE" => 'executable-mac-ou-java',
+        "#!"               => 'script',
+    ];
+    private const SIGNATURES_TEXTE = [
+        '<?php'          => 'php',
+        '<!doctype html' => 'page-web',
+        '<html'          => 'page-web',
+        '<script'        => 'script',
+        '<hta:'          => 'application-hta',
+    ];
+    private const TYPES_INTERDITS = [
+        'application/x-dosexec', 'application/vnd.microsoft.portable-executable',
+        'application/x-msdownload', 'application/x-executable', 'application/x-pie-executable',
+        'application/x-sharedlib', 'application/x-mach-binary', 'application/x-elf',
+        'application/x-msi', 'application/x-ms-shortcut', 'application/java-archive',
+        'text/html', 'application/xhtml+xml', 'text/x-php', 'application/x-php',
+        'text/x-shellscript', 'application/x-shellscript', 'text/javascript', 'application/javascript',
+    ];
+    /** Fichiers exécutables qu'une archive .zip ne doit pas contenir. */
+    private const EXT_EXECUTABLES = 'exe|com|scr|bat|cmd|pif|msi|msp|dll|cpl|vbs|vbe|js|jse|wsf|wsh|hta|ps1|psm1|lnk|jar|apk|sh|php|reg|iso|img|docm|xlsm|pptm';
+
+    /**
+     * Analyse le contenu réel d'un document déposé. Renvoie la raison du
+     * refus, ou null s'il est acceptable.
+     *
+     * Complète `extensions:` sans le remplacer. Ces fichiers partent en pièce
+     * jointe chez le commercial : un « brief.pdf » qui est en réalité un
+     * exécutable, une page web ou un SVG porteur de JavaScript est l'attaque
+     * classique contre un formulaire de contact. Le reste (PDF piégés,
+     * macros…) relève de l'antivirus de la boîte destinataire.
+     */
+    private static function contenuDangereux(UploadedFile $f): ?string
+    {
+        $chemin = $f->getRealPath();
+        if ($chemin === false || !is_readable($chemin)) {
+            return 'illisible';
+        }
+
+        // 1. Signature : les premiers octets ne mentent pas, l'extension si.
+        $debut = (string) file_get_contents($chemin, false, null, 0, 1024);
+        foreach (self::SIGNATURES_BINAIRES as $sig => $nature) {
+            if (str_starts_with($debut, $sig)) {
+                return $nature;
+            }
+        }
+        $tete = ltrim($debut, "\xEF\xBB\xBF \t\r\n");   // BOM UTF-8 et blancs
+        foreach (self::SIGNATURES_TEXTE as $sig => $nature) {
+            if (stripos($tete, $sig) === 0) {
+                return $nature;
+            }
+        }
+
+        // 2. Type déduit du contenu (libmagic).
+        $mime = (string) $f->getMimeType();
+        if (in_array($mime, self::TYPES_INTERDITS, true)) {
+            return "type:$mime";
+        }
+
+        $ext = strtolower($f->getClientOriginalExtension());
+
+        // 3. SVG : du XML qui peut embarquer du JavaScript, exécuté si le
+        //    fichier est ouvert dans un navigateur.
+        if ($ext === 'svg' || $mime === 'image/svg+xml') {
+            $svg = (string) file_get_contents($chemin);
+            if (preg_match('#<script|javascript:|\son[a-z]+\s*=|<foreignObject|<iframe|<embed|<object#i', $svg)) {
+                return 'svg-actif';
+            }
+        }
+
+        // 4. Archive : un exécutable glissé parmi les fichiers.
+        if ($ext === 'zip' && class_exists(\ZipArchive::class)) {
+            $zip = new \ZipArchive();
+            if ($zip->open($chemin) === true) {
+                for ($i = 0; $i < $zip->numFiles; $i++) {
+                    $nom = (string) $zip->getNameIndex($i);
+                    if (preg_match('#\.(' . self::EXT_EXECUTABLES . ')$#i', $nom)) {
+                        $zip->close();
+                        return 'zip-executable';
+                    }
+                }
+                $zip->close();
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Réception du formulaire /contact — mini-brief marketing.
      *
      * Les documents éventuels sont joints au mail depuis leur emplacement
@@ -280,12 +377,35 @@ class CibleController extends Controller
         // arbitraire dans le mail envoyé au commercial.
         $regleItem = fn (string $cle) => ['string', Rule::in(array_keys($options[$cle]))];
 
+        // Champs d'une seule ligne : ni retour à la ligne ni caractère de
+        // contrôle (la tabulation reste tolérée, copier-coller oblige). Nom
+        // et entreprise composent l'objet du mail ; Symfony Mailer encode
+        // déjà les en-têtes, c'est une seconde barrière.
+        $uneLigne = 'not_regex:/[\x00-\x08\x0A-\x1F\x7F]/';
+
+        // Contenu réel des documents joints — cf. contenuDangereux().
+        $documentSur = function (string $champ, mixed $fichier, \Closure $echec) use ($request) {
+            if (!$fichier instanceof UploadedFile) {
+                return;
+            }
+            $raison = self::contenuDangereux($fichier);
+            if ($raison !== null) {
+                // Tracé pour repérer un éventuel faux positif sur un vrai brief.
+                Journal::avertir('cible.devis.document_refuse', [
+                    'raison'  => $raison,
+                    'fichier' => mb_substr($fichier->getClientOriginalName(), 0, 120),
+                    'ip'      => $request->ip(),
+                ]);
+                $echec('Ce fichier a été refusé par sécurité. Merci d\'envoyer un PDF, une image ou un document Office.');
+            }
+        };
+
         $data = $request->validate([
-            'nom'          => ['required', 'string', 'max:100'],
-            'entreprise'   => ['required', 'string', 'max:150'],
-            'poste'        => ['required', 'string', 'max:100'],
+            'nom'          => ['required', 'string', 'max:100', $uneLigne],
+            'entreprise'   => ['required', 'string', 'max:150', $uneLigne],
+            'poste'        => ['required', 'string', 'max:100', $uneLigne],
             'email'        => ['required', 'email', 'max:150'],
-            'tel'          => ['required', 'string', 'max:30'],
+            'tel'          => ['required', 'string', 'max:30', $uneLigne],
 
             'objectif'     => ['nullable', 'array'],
             'objectif.*'   => $regleItem('objectif'),
@@ -309,12 +429,13 @@ class CibleController extends Controller
             'company_url'  => ['nullable', 'string', 'max:0'],
             '_ts'          => ['nullable', 'string', 'max:600'],  // jeton d'ouverture chiffre
 
-            'doc_brief'    => ['nullable', 'file', 'extensions:' . self::DOC_EXT, 'max:' . self::DOC_MAX_KO],
-            'doc_logo'     => ['nullable', 'file', 'extensions:' . self::DOC_EXT, 'max:' . self::DOC_MAX_KO],
-            'doc_charte'   => ['nullable', 'file', 'extensions:' . self::DOC_EXT, 'max:' . self::DOC_MAX_KO],
-            'doc_cahier'   => ['nullable', 'file', 'extensions:' . self::DOC_EXT, 'max:' . self::DOC_MAX_KO],
+            'doc_brief'    => ['nullable', 'file', 'extensions:' . self::DOC_EXT, 'max:' . self::DOC_MAX_KO, $documentSur],
+            'doc_logo'     => ['nullable', 'file', 'extensions:' . self::DOC_EXT, 'max:' . self::DOC_MAX_KO, $documentSur],
+            'doc_charte'   => ['nullable', 'file', 'extensions:' . self::DOC_EXT, 'max:' . self::DOC_MAX_KO, $documentSur],
+            'doc_cahier'   => ['nullable', 'file', 'extensions:' . self::DOC_EXT, 'max:' . self::DOC_MAX_KO, $documentSur],
         ], [
             'website.max'          => 'Champ invalide.',
+            'not_regex'            => 'Ce champ doit tenir sur une seule ligne.',
             'consentement.accepted'=> 'Merci d\'accepter d\'être recontacté pour que nous puissions traiter votre demande.',
         ]);
 
@@ -376,7 +497,9 @@ class CibleController extends Controller
         }
 
         try {
-            Mail::to(config('mail.cible_devis_to', 'commercial@cible-ci.com'))
+            // Tableau d'adresses (cf. config/mail.php) ; filet si la variable
+            // a été vidée par erreur, pour ne jamais envoyer à personne.
+            Mail::to(config('mail.cible_devis_to') ?: ['commercial@cible-ci.com'])
                 ->send(new CibleContactMail([
                     'nom'         => $data['nom'],
                     'entreprise'  => $data['entreprise'],

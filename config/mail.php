@@ -119,8 +119,15 @@ return [
     |--------------------------------------------------------------------------
     | CIBLE — destinataire des demandes de devis
     |--------------------------------------------------------------------------
-    | Adresse qui reçoit les mails du formulaire /contact (CibleContactMail).
+    | Adresses qui reçoivent les mails du formulaire /contact
+    | (CibleContactMail), séparées par des virgules dans CIBLE_DEVIS_TO.
+    |
+    | ⚠ Découpées ICI en tableau : passée telle quelle à Mail::to(), la chaîne
+    | « a@x,b@y » devient UNE adresse invalide, refusée par le serveur SMTP —
+    | le formulaire affichait alors une erreur à chaque envoi (2026-11-18).
     */
-    'cible_devis_to' => env('CIBLE_DEVIS_TO', 'commercial@cible-ci.com'),
+    'cible_devis_to' => array_values(array_filter(array_map('trim', explode(',',
+        (string) env('CIBLE_DEVIS_TO', 'commercial@cible-ci.com,studio@cible-ci.com')
+    )))),
 
 ];

@@ -291,7 +291,7 @@ LOG_CHANNEL=stderr       # voir §11
 
 MAIL_MAILER=smtp
 MAIL_SCHEME=smtp         # ⚠ PAS MAIL_ENCRYPTION
-CIBLE_DEVIS_TO=commercial@cible-ci.com
+CIBLE_DEVIS_TO=commercial@cible-ci.com,studio@cible-ci.com
 
 CIBLE_GTM_ID=            # Google Tag Manager, prioritaire sur CIBLE_GA_ID
 CIBLE_GA_ID=             # GA4 direct, seulement sans GTM ; les deux vides = aucun traceur
@@ -450,6 +450,25 @@ ne peut donc pas identifier ce qui l'a trahi.
 déguisé, un `.eps` du PostScript, et `mimes:` rejetait des fichiers légitimes.
 Rien n'est stocké : les fichiers partent en pièce jointe et disparaissent.
 
+**Contenu des uploads** (2026-11-18, `CibleController::contenuDangereux()`) :
+en plus de l'extension, le contenu réel est inspecté et **refusé** s'il ne
+peut pas être un document de brief. Sont refusés : un exécutable (Windows,
+Linux, Mac), un script, du PHP ou une page web, quelle que soit l'extension ;
+un SVG contenant du JavaScript (`<script>`, `onload=`…) ; un ZIP contenant un
+exécutable (`.exe`, `.js`, `.bat`, `.lnk`, `.docm`…). C'est une liste de
+**refus** et non d'acceptation, pour ne pas rejeter de `.ai` / `.eps`
+légitimes. Chaque refus est journalisé (`cible.devis.document_refuse`) avec
+sa raison : en cas de plainte d'un prospect, chercher ce libellé. Les PDF
+piégés et les macros restent du ressort de l'antivirus de la boîte mail.
+
+**Champs d'une ligne** (nom, entreprise, poste, téléphone) : retours à la
+ligne et caractères de contrôle refusés. Seconde barrière contre l'injection
+d'en-têtes dans l'objet du mail, que Symfony Mailer encode déjà.
+
+**Cloudflare Turnstile** : prêt dans le code, actif dès que les deux clés
+sont dans Coolify. C'est la seule protection contre un robot qui pilote un
+vrai navigateur.
+
 > ⚠ `post_max_size` (Dockerfile, 45M) borne le corps **entier** de la requête.
 > Il doit rester ≥ 4 × `DOC_MAX_KO` (10 Mo), sinon PHP rejette le POST avant
 > Laravel et le visiteur reçoit un 419 au lieu d'un message de validation.
@@ -470,8 +489,12 @@ sur la connexion à l'admin.
 
 ## 12. Mail
 
-`config/mail.php` → `cible_devis_to` = destinataire du formulaire, piloté par
-`CIBLE_DEVIS_TO`.
+`config/mail.php` → `cible_devis_to` = destinataires du formulaire, pilotés
+par `CIBLE_DEVIS_TO` : **plusieurs adresses séparées par des virgules**
+(depuis le 2026-11-18 ; défaut `commercial@cible-ci.com,studio@cible-ci.com`).
+La chaîne est découpée en tableau dans la config. Passée telle quelle à
+`Mail::to()`, elle devenait une seule adresse invalide, refusée par le
+serveur SMTP : le formulaire affichait une erreur à chaque envoi.
 
 **Laravel 11+ lit `MAIL_SCHEME`, jamais `MAIL_ENCRYPTION`** — cette dernière
 est ignorée en silence.
