@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\CibleContactMail;
 use App\Support\AntiSpam;
 use App\Support\Contenu;
+use App\Support\Journal;
 use App\Support\Turnstile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -41,6 +42,26 @@ class CibleController extends Controller
     public function reseau()           { return view('reseau',            $this->baseData('reseau')); }
     public function references()       { return view('references',        $this->baseData('references') + ['projets' => self::projets()]); }
     public function contact()          { return view('contact',           $this->baseData('contact')); }
+
+    /**
+     * Confirmation d'envoi du formulaire — /contact/merci
+     *
+     * Même page que /contact (le bloc « demande reçue » s'affiche à la
+     * place du formulaire), mais à une URL distincte : c'est ce qui permet à
+     * GTM de compter une conversion sur une simple « Page vue ».
+     *
+     * N'est servie que juste après un envoi (flash `devis_sent`). Un accès
+     * direct, un favori ou un rafraîchissement renvoient au formulaire :
+     * sinon chacun compterait une fausse demande dans Analytics et Google Ads.
+     */
+    public function merci()
+    {
+        if (!session('devis_sent')) {
+            return redirect()->route('contact');
+        }
+
+        return view('contact', $this->baseData('contact') + ['noindex' => true]);
+    }
 
     /**
      * Page détail d'une réalisation — /references/{slug}
@@ -321,7 +342,10 @@ class CibleController extends Controller
                 'email'   => $data['email'] ?? null,
             ]);
 
-            return back()->with('devis_sent', true);
+            // Même destination qu'un envoi réussi, pour la même raison. Sans
+            // JavaScript, le robot ne déclenche pas GTM : pas de fausse
+            // conversion.
+            return redirect()->route('contact.merci')->with('devis_sent', true);
         }
 
         // Envoi accepté mais suspect : on trace pour pouvoir régler le seuil
@@ -382,6 +406,8 @@ class CibleController extends Controller
             );
         }
 
-        return back()->with('devis_sent', true);
+        // URL distincte de /contact : c'est elle que GTM compte comme une
+        // demande envoyée. Les erreurs, elles, restent sur /contact (back()).
+        return redirect()->route('contact.merci')->with('devis_sent', true);
     }
 }

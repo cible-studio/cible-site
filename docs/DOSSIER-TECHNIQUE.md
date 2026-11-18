@@ -236,12 +236,26 @@ sont écrits à la main. Les six pages passent, elles, par le schéma.
 | GET | `/qui-sommes-nous` `/services` `/reseau` `/references` `/contact` | pages |
 | GET | `/references/{slug}` | détail d'une réalisation (6 slugs, cf. `CibleController::projets()`) |
 | POST | `/devis` | formulaire de contact — limité 5/10 min par IP **et** 40/h au total |
+| GET | `/contact/merci` | confirmation d'envoi — **URL de conversion pour GTM**, `noindex` |
 | GET | `/api/reseau-map` | JSON de la carte, limité 60/min |
 | GET | `/visuels/{nom}` | visuel téléversé, servi depuis le volume |
 | GET | `/up` | sonde de santé (Laravel) |
 
 `/references/{slug}` est déclarée **après** `/references` : Laravel teste les
 routes dans l'ordre, la route statique reste prioritaire.
+
+**`/contact/merci` — mesure des demandes (2026-11-18).** Un envoi réussi
+redirige vers cette URL au lieu de revenir sur `/contact`, pour que GTM compte
+une demande sur un simple déclencheur « Page vue » (Page Path =
+`/contact/merci`). Pour que le chiffre reste juste :
+- les erreurs (validation, anti-robot, échec du mail) restent sur `/contact` ;
+- la page n'est servie qu'avec le flash `devis_sent` : accès direct, favori ou
+  rafraîchissement → retour à `/contact`, donc pas de fausse conversion ;
+- les robots écartés y sont aussi envoyés (ne pas leur révéler le rejet),
+  mais sans JavaScript ils ne déclenchent pas GTM.
+
+⚠ Renommer cette URL casse la mesure des conversions dans GTM, GA4 et Google
+Ads : prévenir le gestionnaire du conteneur avant.
 
 **Administration** — préfixe `/admin`, toutes derrière `AdminProtege` sauf la
 connexion.

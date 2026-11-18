@@ -25,6 +25,10 @@ Route::get('/references',       [CibleController::class, 'references'])->name('r
 // route statique reste donc prioritaire sur le paramètre.
 Route::get('/references/{slug}', [CibleController::class, 'realisation'])->name('realisation');
 Route::get('/contact',          [CibleController::class, 'contact'])->name('contact');
+// Confirmation d'envoi : URL distincte pour que GTM compte les demandes
+// (déclencheur « Page vue », Page Path = /contact/merci). Accessible
+// seulement juste après un envoi — cf. CibleController::merci().
+Route::get('/contact/merci',    [CibleController::class, 'merci'])->name('contact.merci');
 // Deux limites cumulées :
 //   - `devis-ip`     : 5 envois / 10 min par visiteur, contre l'acharnement
 //                      d'une seule source ;
