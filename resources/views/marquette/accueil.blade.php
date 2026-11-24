@@ -17,11 +17,13 @@
 @php
     $ch = Contenu::section('chiffres');
     $hero = \App\Support\Marquette::photo('axe');
+    // [ancre, n°, photo, couleur, couleur du surtitre de carte (jamais de
+    //  petit texte jaune ou bleu sur blanc, cf. mq.css), étiquettes]
     $poles = [
-        ['regie',              1, 'uber',   'var(--rouge)',  array_slice(Contenu::lignes('services.p1_dispositifs'), 0, 4)],
-        ['mobile',             2, 'camion', 'var(--jaune)',  array_slice(Contenu::lignes('accueil.terr2_tags'), 0, 4)],
-        ['experience',         3, 'foule',  'var(--violet)', array_slice(Contenu::lignes('accueil.terr5_tags'), 0, 4)],
-        ['media-intelligence', 4, 'route',  'var(--bleu)',   ['Inventaire média digitalisé', 'Suivi terrain digitalisé', 'Reporting de campagne']],
+        ['regie',              1, 'uber',   'var(--rouge)',  'var(--rouge)',  array_slice(Contenu::lignes('services.p1_dispositifs'), 0, 4)],
+        ['mobile',             2, 'camion', 'var(--jaune)',  'var(--noir)',   array_slice(Contenu::lignes('accueil.terr2_tags'), 0, 4)],
+        ['experience',         3, 'foule',  'var(--violet)', 'var(--violet)', array_slice(Contenu::lignes('accueil.terr5_tags'), 0, 4)],
+        ['media-intelligence', 4, 'route',  'var(--bleu)',   'var(--noir)',   ['Inventaire média digitalisé', 'Suivi terrain digitalisé', 'Reporting de campagne']],
     ];
     $territoires = [
         [1, 'rouge',  '+' . $ch['panneaux'], true],
@@ -56,18 +58,14 @@
                     <a class="btn btn--ligne" href="{{ route('marquette.services') }}">Nos services</a>
                 </div>
                 {{-- Audit : dire ce qui se passe après le clic, à côté du bouton. --}}
-                <ul class="reassurance">
-                    @foreach(array_slice(Contenu::lignes('contact.reass_liste'), 0, 2) as $r)
-                        <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>{{ $r }}</li>
-                    @endforeach
-                </ul>
+                <x-mq.reassurance />
             </div>
             <div class="hero__visuel">
                 <div class="cadre cadre--panneau">
                     <x-mq.photo cle="axe" sizes="(min-width: 960px) 46vw, 100vw" prioritaire style="object-position:40% 50%" />
                 </div>
                 <span class="pastille-flottante pastille-flottante--a"><b class="num">+{{ $ch['panneaux'] }}</b>Panneaux en exploitation</span>
-                <span class="pastille-flottante pastille-flottante--b" style="--c:var(--vert)"><b class="num">{{ $ch['communes'] }}</b>Communes et villes couvertes</span>
+                <span class="pastille-flottante pastille-flottante--b" style="--c:var(--vert);--fg:var(--noir)"><b class="num">{{ $ch['communes'] }}</b>Communes et villes couvertes</span>
             </div>
         </div>
 
@@ -95,22 +93,19 @@
 {{-- ═══ 2. LES 4 PÔLES ═══ --}}
 <section class="section section--motif" aria-labelledby="poles-titre">
     <div class="wrap">
-        <div class="tete tete--ligne rv">
-            <div style="display:grid;gap:18px">
-                <span class="sur">{{ Contenu::get('services.hero_surtitre') }}</span>
-                <h2 class="t2" id="poles-titre">{{ Contenu::get('services.hero_titre_1') }} <em>{{ Contenu::get('services.hero_titre_2') }}</em></h2>
-            </div>
-            <p class="chapo riche">{!! Contenu::riche('accueil.hero_accroche') !!}</p>
-        </div>
+        <x-mq.tete ligne :surtitre="Contenu::get('services.hero_surtitre')" id-titre="poles-titre">
+            {{ Contenu::get('services.hero_titre_1') }} <em>{{ Contenu::get('services.hero_titre_2') }}</em>
+            <x-slot:intro>{!! Contenu::riche('accueil.hero_accroche') !!}</x-slot:intro>
+        </x-mq.tete>
 
         <div class="poles">
-            @foreach($poles as $i => [$ancre, $n, $photo, $c, $tags])
-                <a class="carte rv" href="{{ route('marquette.services') }}#{{ $ancre }}" style="--c:{{ $c }};--d:{{ $i * .08 }}s">
+            @foreach($poles as $i => [$ancre, $n, $photo, $c, $t, $tags])
+                <a class="carte rv" href="{{ route('marquette.services') }}#{{ $ancre }}" style="--c:{{ $c }};--t:{{ $t }};--d:{{ $i * .08 }}s">
                     <div class="cadre cadre--169 cadre--zoom"><x-mq.photo :cle="$photo" sizes="(min-width: 1200px) 300px, (min-width: 720px) 50vw, 100vw" /></div>
                     <div class="carte__corps">
-                        <span class="carte__tag" @if($n === 2) style="color:var(--noir)" @endif>{{ Contenu::get("services.p{$n}_tag") }}</span>
+                        <span class="carte__tag">{{ Contenu::get("services.p{$n}_tag") }}</span>
                         <h3 class="t3 riche">{!! Contenu::riche("services.p{$n}_titre") !!}</h3>
-                        <div class="tags">@foreach($tags as $t)<span class="tag">{{ $t }}</span>@endforeach</div>
+                        <div class="tags">@foreach($tags as $tag)<span class="tag">{{ $tag }}</span>@endforeach</div>
                         <span class="lien-fleche"><span class="rond"><svg class="ic" aria-hidden="true"><use href="#i-fleche"/></svg></span>Découvrir le pôle</span>
                     </div>
                 </a>
@@ -154,8 +149,8 @@
         </div>
         <div class="rv" style="--d:.1s">
             <span class="sur">{{ Contenu::get('accueil.marque_surtitre') }}</span>
-            <h2 class="t2" id="recit-titre" style="margin-top:16px">{{ Contenu::get('accueil.marque_titre') }}</h2>
-            <p class="chapo" style="margin-top:18px">{{ Contenu::get('accueil.marque_intro') }}</p>
+            <h2 class="t2" id="recit-titre">{{ Contenu::get('accueil.marque_titre') }}</h2>
+            <p class="chapo">{{ Contenu::get('accueil.marque_intro') }}</p>
             <ol class="recit-liste">
                 @foreach([1, 2, 3] as $n)
                     <li>
@@ -187,19 +182,19 @@
     <div class="wrap grille-2 grille-2--55">
         <div class="rv">
             <span class="sur">{{ Contenu::get('accueil.reseau_surtitre') }}</span>
-            <h2 class="t2" id="reseau-titre" style="margin-top:16px">{{ Contenu::get('accueil.reseau_titre') }}</h2>
+            <h2 class="t2" id="reseau-titre">{{ Contenu::get('accueil.reseau_titre') }}</h2>
             <p class="citation-preuve">{{ Contenu::get('accueil.reseau_texte') }}</p>
             <div class="chiffres-duo">
                 <x-mq.chiffre :valeur="$ch['panneaux']" plus libelle="Panneaux en exploitation" />
                 <x-mq.chiffre :valeur="$ch['communes']" libelle="Communes et villes couvertes" />
             </div>
-            <div class="actions" style="margin-top:30px">
+            <div class="actions">
                 <a class="btn btn--ligne" href="{{ route('marquette.reseau') }}">{{ Contenu::get('accueil.reseau_cta') }}<svg class="ic" aria-hidden="true"><use href="#i-fleche"/></svg></a>
             </div>
         </div>
         <div class="preuve-photo rv" style="--d:.1s">
             <div class="cadre cadre--panneau"><x-mq.photo cle="bache" sizes="(min-width: 900px) 42vw, 100vw" style="object-position:50% 30%" /></div>
-            <span class="pastille-flottante" style="--c:var(--rouge)"><b><svg class="ic" style="width:18px;height:18px" aria-hidden="true"><use href="#i-check"/></svg></b>{{ Contenu::get('accueil.terr1_preuve') }}</span>
+            <span class="pastille-flottante" style="--c:var(--rouge)"><b><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg></b>{{ Contenu::get('accueil.terr1_preuve') }}</span>
         </div>
     </div>
 </section>
@@ -208,16 +203,19 @@
 <section class="section" aria-labelledby="dist-titre">
     <div class="wrap">
         <x-mq.tete surtitre="Reconnaissances officielles" titre="Trois distinctions de l'État ivoirien." id-titre="dist-titre" />
-        <div class="distinctions">
+        {{-- [année, distinction, précision, couleur, couleur de l'année (noir pour le jaune)] --}}
+        <div class="grille-3">
             @foreach([
-                ['2016', '2ᵉ prix du meilleur publicitaire', 'Distinction professionnelle du secteur de la publicité ivoirienne.', 'var(--jaune)'],
-                ['2019', 'Chevalier de l\'Ordre du Mérite de la Communication', 'Reconnaissance de la contribution à la structuration du métier.', 'var(--vert)'],
-                ['2020', 'Officier de l\'Ordre du Mérite National', 'Distinction républicaine pour services rendus au pays.', 'var(--violet)'],
-            ] as $i => [$an, $titre, $texte, $c])
-                <article class="carte distinction rv" style="--c:{{ $c }};--d:{{ $i * .08 }}s">
-                    <div class="distinction__an num" @if($c === 'var(--jaune)') style="color:var(--noir)" @endif>{{ $an }}</div>
-                    <h3>{{ $titre }}</h3>
-                    <p>{{ $texte }}</p>
+                ['2016', '2ᵉ prix du meilleur publicitaire', 'Distinction professionnelle du secteur de la publicité ivoirienne.', 'var(--jaune)', 'var(--noir)'],
+                ['2019', 'Chevalier de l\'Ordre du Mérite de la Communication', 'Reconnaissance de la contribution à la structuration du métier.', 'var(--vert)', 'var(--vert)'],
+                ['2020', 'Officier de l\'Ordre du Mérite National', 'Distinction républicaine pour services rendus au pays.', 'var(--violet)', 'var(--violet)'],
+            ] as $i => [$an, $titre, $texte, $c, $t])
+                <article class="carte distinction rv" style="--c:{{ $c }};--t:{{ $t }};--d:{{ $i * .08 }}s">
+                    <div class="carte__corps">
+                        <span class="carte__num num">{{ $an }}</span>
+                        <h3>{{ $titre }}</h3>
+                        <p>{{ $texte }}</p>
+                    </div>
                 </article>
             @endforeach
         </div>

@@ -5,8 +5,12 @@
    Charte « Opération Plume Rouge » (mai 2026) appliquée :
    · Rouge prépondérant, accompagné du jaune ; vert, bleu, violet en ponctuation.
    · Aplats uniquement — aucun dégradé, aucune ombre colorée. Le blanc est la base.
-   · Une couleur de marque ne se pose que sur du blanc ou du noir ; texte noir
-     sur le jaune (contraste), blanc sur les autres couleurs.
+   · Une couleur de marque ne se pose que sur du blanc ou du noir. Texte posé
+     SUR une couleur (variable --fg) : blanc sur le rouge et le violet ; noir
+     sur le jaune, le vert et le bleu — en blanc, le vert (3,1:1) et le bleu
+     (4,2:1) n'atteignent pas le contraste AA de 4,5:1 du texte courant.
+   · Couleur employée EN texte sur blanc (variable --t) : jamais le jaune
+     (noir à la place) ; vert et bleu réservés aux grands corps (≥ 24 px).
    · Titres : Made Tommy → Poppins tant que les fichiers manquent (une ligne
      à changer, cf. @font-face « Cible Titre »). Texte : Nunito, SAUF les
      chiffres, composés dans la police de titre (la charte l'exclut pour eux).
@@ -68,12 +72,18 @@ img, svg, video { display: block; max-width: 100%; }
 img { height: auto; }
 a { color: inherit; text-decoration: none; }
 button { font: inherit; color: inherit; cursor: pointer; }
+/* Pas de flash gris au toucher sur Android : chaque élément interactif a
+   son propre retour visuel (survol, appui, contour de focus). */
+a, button, label { -webkit-tap-highlight-color: transparent; }
+/* Paragraphes : pas de mot orphelin en fin de bloc (ignoré si non pris en charge). */
+p, li { text-wrap: pretty; }
 h1, h2, h3, h4 { margin: 0; font-family: var(--titre); color: var(--noir); }
 p { margin: 0; }
 ul, ol { margin: 0; padding: 0; list-style: none; }
 strong { font-weight: 800; }
 :focus-visible { outline: 3px solid var(--noir); outline-offset: 3px; border-radius: 6px; }
-.fond-rouge :focus-visible, .fond-noir :focus-visible { outline-color: var(--blanc); }
+/* Sur fond sombre, un contour noir serait invisible (pied de page compris). */
+.section--noir :focus-visible, .pied :focus-visible, .defilant :focus-visible, .cote-pourquoi :focus-visible { outline-color: var(--blanc); }
 ::selection { background: var(--rouge); color: var(--blanc); }
 .vh { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .evitement { position: absolute; left: 12px; top: -60px; z-index: 200; background: var(--noir); color: var(--blanc); padding: 12px 18px; border-radius: 10px; font-weight: 700; }
@@ -91,23 +101,31 @@ strong { font-weight: 800; }
   content: ""; position: absolute; inset: 0; z-index: -1; background: #E9E9E4;
   -webkit-mask: url("img/marque/motif.svg") 0 0 / 260px auto repeat; mask: url("img/marque/motif.svg") 0 0 / 260px auto repeat;
 }
+/* Fond noir : titres blancs, textes adoucis, accents en jaune (le rouge y
+   reste lisible, mais le jaune y est la couleur d'emphase de la charte). */
 .section--noir { background: var(--noir); color: var(--blanc); }
 .section--noir h2, .section--noir h3 { color: var(--blanc); }
 .section--noir .chapo, .section--noir p { color: rgba(255,255,255,.78); }
-.section--noir .sur { color: var(--jaune); }
+.section--noir .sur, .section--noir .t1 em, .section--noir .t2 em, .section--noir .riche strong { color: var(--jaune); }
 /* Deux sections blanches consécutives : une seule respiration entre elles.
-   (Après une section colorée, la marge haute est conservée.) */
-.section:not([class*="--"]) + .section:not([class*="--"]) { padding-top: 0; }
+   (Après une section colorée, la marge haute est conservée.) La bande
+   contact (section--serre) suit la même règle. */
+.section:not([class*="--"]) + .section:not([class*="--"]),
+.section:not([class*="--"]) + .section--serre { padding-top: 0; }
 
 .grille-2 { display: grid; gap: clamp(32px, 5vw, 80px); align-items: center; grid-template-columns: 1fr; }
 @media (min-width: 900px) { .grille-2 { grid-template-columns: 1fr 1fr; } .grille-2--55 { grid-template-columns: 1.1fr .9fr; } }
+/* Trois cartes de même rang (approche, distinctions…) : même grille partout. */
+.grille-3 { display: grid; gap: clamp(16px, 2vw, 24px); grid-template-columns: 1fr; }
+@media (min-width: 820px) { .grille-3 { grid-template-columns: repeat(3, 1fr); } }
 
 /* ---------- Typographie ---------- */
 .sur {
-  display: inline-flex; align-items: center; gap: 12px;
+  display: inline-flex; align-items: flex-start; gap: 12px;
   font: 800 12.5px/1.2 var(--titre); letter-spacing: .14em; text-transform: uppercase; color: var(--rouge);
 }
-.sur::before { content: ""; width: 26px; height: 4px; border-radius: 4px; background: currentColor; flex-shrink: 0; }
+/* Trait calé sur la première ligne (surtitre long sur deux lignes en mobile). */
+.sur::before { content: ""; width: 26px; height: 4px; margin-top: .4em; border-radius: 4px; background: currentColor; flex-shrink: 0; }
 .sur--blanc { color: var(--blanc); }
 .sur--noir { color: var(--noir); }
 
@@ -119,10 +137,31 @@ strong { font-weight: 800; }
 .chapo { font-size: clamp(17px, 1.45vw, 19.5px); line-height: 1.6; color: var(--texte-2); max-width: 62ch; }
 .petit { font-size: 15px; color: var(--texte-3); }
 .num { font-family: var(--titre); font-variant-numeric: tabular-nums; }
+/* Rythme vertical d'un bloc de texte : surtitre → titre → chapo. Les mêmes
+   écarts partout, sans style en ligne dans les vues. */
+.sur + .t1, .sur + .t2 { margin-top: 16px; }
+:is(.t1, .t2) + :is(.chapo, .citation-preuve, .accroche) { margin-top: 18px; }
+.chapo + .accroche { margin-top: 20px; }
 
-.tete { display: grid; gap: 18px; max-width: 760px; margin-bottom: clamp(40px, 5vw, 64px); }
+/* Accroche : phrase forte isolée par un filet à la couleur du bloc. */
+.accroche {
+  max-width: 58ch; padding: 3px 0 3px 18px; border-left: 4px solid var(--c, var(--rouge));
+  font: 700 clamp(16.5px, 1.3vw, 18px)/1.5 var(--titre); letter-spacing: -.01em; color: var(--noir);
+}
+.accroche strong { color: var(--rouge); }
+
+/* En-tête de section (composant x-mq.tete). */
+.tete { display: grid; max-width: 760px; margin-bottom: clamp(40px, 5vw, 64px); }
 .tete--centre { margin-inline: auto; text-align: center; justify-items: center; }
-.tete--ligne { max-width: none; grid-template-columns: 1fr; align-items: end; }
+.tete--centre .chapo { margin-inline: auto; }
+/* Petit écran : un long texte centré se lit mal ; toutes les têtes de
+   section s'alignent à gauche, comme le reste de la page. */
+@media (max-width: 759px) {
+  .tete--centre { margin-inline: 0; text-align: left; justify-items: start; }
+  .tete--centre .chapo { margin-inline: 0; }
+}
+.tete--ligne { max-width: none; grid-template-columns: 1fr; gap: 18px; align-items: end; }
+.tete--ligne > .chapo { margin-top: 0; }
 @media (min-width: 900px) { .tete--ligne { grid-template-columns: 1.2fr 1fr; gap: 48px; } }
 
 /* ---------- Boutons ---------- */
@@ -136,6 +175,7 @@ strong { font-weight: 800; }
 .btn:hover .ic { transform: translateX(3px); }
 .btn--rouge { background: var(--rouge); color: var(--blanc); }
 .btn--rouge:hover { background: var(--rouge-fonce); transform: translateY(-2px); }
+.btn:active { transform: translateY(0) scale(.98); } /* appui : retour tactile sobre */
 .btn--ligne { border-color: var(--noir); color: var(--noir); }
 .btn--ligne:hover { background: var(--noir); color: var(--blanc); }
 .btn--blanc { background: var(--blanc); color: var(--noir); }
@@ -176,7 +216,7 @@ strong { font-weight: 800; }
   transition: box-shadow .3s;
 }
 .entete.est-defile .entete__barre { box-shadow: var(--ombre); }
-.logo { display: flex; align-items: center; flex-shrink: 0; }
+.logo { display: flex; align-items: center; flex-shrink: 0; min-height: 48px; }
 .logo img { height: 42px; width: auto; }
 .nav { display: none; margin-left: auto; align-items: center; gap: 4px; }
 .nav__lien, .nav__bouton {
@@ -210,7 +250,7 @@ strong { font-weight: 800; }
 .deroulant__lien:hover { background: var(--gris-6); }
 .deroulant__lien b { display: block; font: 700 14.5px/1.3 var(--titre); }
 .deroulant__lien small { display: block; margin-top: 3px; font-size: 13px; line-height: 1.4; color: var(--texte-3); }
-.deroulant__num { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: var(--c); color: var(--blanc); font: 800 13px/1 var(--titre); }
+.deroulant__num { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: var(--c); color: var(--fg, var(--blanc)); font: 800 13px/1 var(--titre); }
 
 @media (min-width: 1100px) {
   .nav { display: flex; }
@@ -229,7 +269,9 @@ strong { font-weight: 800; }
 .panneau-mobile nav { display: grid; margin-top: 24px; border-top: 1px solid var(--ligne); }
 .panneau-mobile nav a { display: flex; align-items: center; justify-content: space-between; min-height: 60px; border-bottom: 1px solid var(--ligne); font: 700 21px/1.2 var(--titre); letter-spacing: -.01em; }
 .panneau-mobile nav a[aria-current="page"] { color: var(--rouge); }
-.panneau-mobile nav a.sous { min-height: 50px; padding-left: 18px; font-size: 16px; font-weight: 600; color: var(--texte-2); }
+/* Sous-liens des pôles : mêmes pastilles numérotées que le sous-menu ordinateur. */
+.panneau-mobile nav a.sous { justify-content: flex-start; gap: 12px; min-height: 54px; padding: 8px 0 8px 4px; font-size: 16px; font-weight: 600; line-height: 1.3; color: var(--texte-2); }
+.panneau-mobile .deroulant__num { width: 30px; height: 30px; border-radius: 9px; font-size: 12px; flex-shrink: 0; }
 .panneau-mobile__bas { margin-top: auto; padding-top: 28px; display: grid; gap: 12px; }
 html.est-verrouille { overflow: hidden; }
 
@@ -244,11 +286,12 @@ html.est-verrouille { overflow: hidden; }
 .barre-action .btn { min-height: 50px; padding: 0 18px; font-size: 14.5px; }
 .barre-action .rond-outil { width: 50px; height: 50px; }
 @media (min-width: 1100px) { .barre-action { display: none; } }
-@media (max-width: 1099px) { body { padding-bottom: 76px; } }
 
 /* ---------- Fil d'Ariane ---------- */
-.fil { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font: 600 13px/1.4 var(--titre); color: var(--texte-3); margin-bottom: 22px; }
-.fil a { display: inline-flex; min-height: 32px; align-items: center; }
+/* Liens à 44 px de haut (zone tactile) ; marges négatives : l'encombrement
+   visuel reste celui d'une ligne de texte. */
+.fil { display: flex; flex-wrap: wrap; gap: 0 8px; align-items: center; font: 600 13px/1.4 var(--titre); color: var(--texte-3); margin: -6px 0 16px; }
+.fil a { display: inline-flex; min-height: 44px; align-items: center; }
 .fil a:hover { color: var(--rouge); }
 .fil span[aria-hidden] { opacity: .5; }
 
@@ -267,7 +310,8 @@ a:hover .cadre--zoom img, .cadre--zoom:hover img { transform: scale(1.04); }
   padding: 10px 16px 10px 10px; border-radius: 999px; background: var(--blanc); box-shadow: var(--ombre);
   font: 700 13.5px/1.2 var(--titre);
 }
-.pastille-flottante b { display: grid; place-items: center; min-width: 34px; height: 34px; padding: 0 8px; border-radius: 999px; background: var(--c, var(--rouge)); color: var(--blanc); font-weight: 800; }
+.pastille-flottante b { display: grid; place-items: center; min-width: 34px; height: 34px; padding: 0 8px; border-radius: 999px; background: var(--c, var(--rouge)); color: var(--fg, var(--blanc)); font-weight: 800; }
+.pastille-flottante b .ic { width: 18px; height: 18px; }
 
 /* ---------- Héro d'accueil ---------- */
 .hero { padding: clamp(28px, 5vw, 64px) 0 clamp(56px, 7vw, 96px); position: relative; }
@@ -279,13 +323,15 @@ a:hover .cadre--zoom img, .cadre--zoom:hover img { transform: scale(1.04); }
 .hero__sous { margin-top: 24px; }
 .hero .actions { margin-top: 32px; }
 .reassurance { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 18px; font: 600 14px/1.4 var(--corps); color: var(--texte-3); }
-.reassurance li { display: inline-flex; align-items: center; gap: 8px; }
-.reassurance .ic { width: 18px; height: 18px; color: var(--vert); stroke-width: 2.6; }
+/* Coche alignée sur la première ligne quand l'engagement passe à la ligne. */
+.reassurance li { display: inline-flex; align-items: flex-start; gap: 8px; }
+.reassurance .ic { width: 18px; height: 18px; margin-top: 1px; flex-shrink: 0; color: var(--vert); stroke-width: 2.6; }
 .hero__visuel { position: relative; }
 .hero__visuel .cadre { aspect-ratio: 5 / 4.4; }
-.hero__visuel .pastille-flottante--a { left: clamp(-14px, -1.5vw, -6px); bottom: 14%; }
-.hero__visuel .pastille-flottante--b { right: 14px; top: 16px; }
-@media (max-width: 959px) { .hero__visuel .pastille-flottante--a { left: 12px; bottom: 12px; } }
+/* Pastilles posées sur la photo du héro (accueil et pages intérieures). */
+:is(.hero__visuel, .page-hero__visuel) .pastille-flottante--a { left: clamp(-14px, -1.5vw, -6px); bottom: 14%; }
+:is(.hero__visuel, .page-hero__visuel) .pastille-flottante--b { right: 14px; top: 16px; }
+@media (max-width: 959px) { :is(.hero__visuel, .page-hero__visuel) .pastille-flottante--a { left: 12px; bottom: 12px; } }
 
 /* Preuves chiffrées */
 .chiffres { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--ligne); border: 1px solid var(--ligne); border-radius: var(--rayon); overflow: hidden; }
@@ -314,8 +360,13 @@ a:hover .cadre--zoom img, .cadre--zoom:hover img { transform: scale(1.04); }
 a.carte:hover, .carte--survol:hover { transform: translateY(-6px); box-shadow: var(--ombre-forte); border-color: transparent; }
 .carte__corps { display: flex; flex-direction: column; gap: 14px; padding: clamp(22px, 2.6vw, 32px); flex: 1; }
 .carte__corps .lien-fleche { margin-top: auto; padding-top: 6px; }
-.carte__tag { font: 800 12px/1.35 var(--titre); letter-spacing: .1em; text-transform: uppercase; color: var(--c, var(--rouge)); }
+.carte__tag { font: 800 12px/1.35 var(--titre); letter-spacing: .1em; text-transform: uppercase; color: var(--t, var(--c, var(--rouge))); }
 .carte .cadre { border-radius: 0; }
+/* Grand numéro d'étape (cartes d'approche) : chiffre en police de titre,
+   à la couleur de la carte (--t : noir pour le jaune). */
+.carte__num { font: 800 clamp(38px, 3.6vw, 48px)/1 var(--titre); letter-spacing: -.03em; color: var(--t, var(--c, var(--rouge))); }
+.carte__num + .t3 { margin-top: 4px; }
+.carte__texte { font-size: 16px; line-height: 1.6; color: var(--texte-2); }
 
 /* Grille des 4 pôles */
 .poles { display: grid; gap: clamp(16px, 2vw, 24px); grid-template-columns: 1fr; }
@@ -330,16 +381,23 @@ a.carte:hover, .carte--survol:hover { transform: translateY(-6px); box-shadow: v
   position: relative; display: flex; flex-direction: column; gap: 14px; min-height: 100%;
   padding: clamp(24px, 2.8vw, 34px); border-radius: var(--rayon); background: var(--c); color: var(--fg); overflow: hidden; isolation: isolate;
 }
-.territoire--jaune { --fg: var(--noir); }
+/* Texte noir sur les aplats clairs (contraste AA, cf. en-tête du fichier). */
+.territoire--jaune, .territoire--vert, .territoire--bleu { --fg: var(--noir); }
 .territoire h3 { color: var(--fg); font-size: clamp(19px, 1.7vw, 22px); line-height: 1.25; letter-spacing: -.015em; }
 .territoire__haut { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
-.territoire__nom { font: 800 12.5px/1.3 var(--titre); letter-spacing: .12em; text-transform: uppercase; opacity: .92; }
+/* Aucune transparence sur ces petits textes : sur le rouge, elle les faisait
+   passer sous 4,5:1. */
+.territoire__nom { font: 800 12.5px/1.3 var(--titre); letter-spacing: .12em; text-transform: uppercase; }
 .territoire__v { font: 800 clamp(38px, 4.4vw, 58px)/1 var(--titre); letter-spacing: -.035em; }
-.territoire__l { font: 700 13px/1.3 var(--corps); opacity: .9; margin-top: 6px; }
-.territoire p { font-size: 15.5px; line-height: 1.55; opacity: .95; }
+.territoire__l { font: 700 13px/1.3 var(--corps); margin-top: 6px; }
+.territoire p { font-size: 15.5px; line-height: 1.55; }
 .territoire .tags { margin-top: auto; }
-.territoire .tag { background: rgba(255,255,255,.18); color: var(--fg); }
-.territoire--jaune .tag { background: rgba(17,17,17,.08); }
+/* Étiquettes au trait (aplat + filet) : un fond éclairci ferait chuter le
+   contraste du texte posé dessus. */
+.territoire .tag {
+  background: none; color: var(--fg);
+  border: 1.5px solid currentColor; border-color: color-mix(in srgb, currentColor 50%, transparent);
+}
 .territoire__forme { position: absolute; z-index: -1; right: -26px; bottom: -30px; width: 150px; height: 150px; opacity: .14; background: var(--fg);
   -webkit-mask: url("img/marque/plume.svg") center / contain no-repeat; mask: url("img/marque/plume.svg") center / contain no-repeat; transform: rotate(-18deg); }
 
@@ -365,14 +423,11 @@ a.carte:hover, .carte--survol:hover { transform: translateY(-6px); box-shadow: v
 .citation-preuve { margin-top: 22px; padding: 22px 24px; border-left: 5px solid var(--rouge); background: var(--gris-6); border-radius: 0 var(--rayon-s) var(--rayon-s) 0; font: 600 18px/1.5 var(--corps); color: var(--noir); }
 .chiffres-duo { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 28px; }
 .chiffres-duo .chiffre { border: 1px solid var(--ligne); border-radius: var(--rayon-s); }
+.chiffres-duo + .actions { margin-top: 30px; }
 
-/* ---------- Distinctions ---------- */
-.distinctions { display: grid; gap: 16px; grid-template-columns: 1fr; }
-@media (min-width: 820px) { .distinctions { grid-template-columns: repeat(3, 1fr); } }
-.distinction { padding: clamp(24px, 2.6vw, 32px); }
-.distinction__an { font: 800 clamp(40px, 4vw, 54px)/1 var(--titre); letter-spacing: -.03em; color: var(--c); }
-.distinction h3 { margin-top: 18px; font-size: 19px; line-height: 1.3; }
-.distinction p { margin-top: 10px; font-size: 15.5px; color: var(--texte-2); }
+/* ---------- Distinctions (grille : .grille-3) ---------- */
+.distinction h3 { font-size: 19px; line-height: 1.3; letter-spacing: -.01em; }
+.distinction p { font-size: 15.5px; line-height: 1.6; color: var(--texte-2); }
 
 /* ---------- Bande contact (jaune + plumes) ---------- */
 .bande-contact {
@@ -387,10 +442,12 @@ a.carte:hover, .carte--survol:hover { transform: translateY(-6px); box-shadow: v
   -webkit-mask: url("img/marque/motif.svg") 0 0 / 240px auto repeat; mask: url("img/marque/motif.svg") 0 0 / 240px auto repeat;
 }
 .bande-contact .sur { color: var(--noir); }
-.bande-contact .t2 { margin-top: 16px; }
-.bande-contact .chapo { color: var(--noir); margin-top: 16px; }
+.bande-contact .chapo { color: var(--noir); }
+.bande-contact .actions { margin-top: 28px; }
 .bande-contact .reassurance { color: var(--noir); }
 .bande-contact .reassurance .ic { color: var(--noir); }
+
+/* Coordonnées (composant x-mq.coordonnees) : grandes zones tactiles. */
 .coordonnees { display: grid; gap: 10px; }
 .coord {
   display: flex; align-items: center; gap: 14px; min-height: 64px; padding: 12px 18px;
@@ -401,6 +458,13 @@ a.carte:hover, .carte--survol:hover { transform: translateY(-6px); box-shadow: v
 .coord .rond { width: 42px; height: 42px; border-radius: 50%; background: var(--rouge); color: var(--blanc); display: grid; place-items: center; flex-shrink: 0; }
 .coord small { display: block; font: 600 12.5px/1.3 var(--corps); color: var(--texte-3); }
 .coord > span:last-child { min-width: 0; overflow-wrap: anywhere; }
+.coord__suite { display: block; margin-top: 2px; font: 600 14.5px/1.45 var(--corps); color: var(--texte-2); }
+.coord--adresse { cursor: default; }
+.coord--adresse:hover { transform: none; box-shadow: none; }
+.coord--adresse .rond { background: var(--noir); }
+/* Adresse e-mail : coupure permise avant « @ » seulement (jamais au tiret
+   de « cible-ci »). */
+.insecable { white-space: nowrap; }
 
 /* ---------- Pied de page ---------- */
 .pied { background: var(--noir); color: rgba(255,255,255,.78); padding: clamp(56px, 7vw, 88px) 0 28px; font-size: 15.5px; }
@@ -416,14 +480,32 @@ a.carte:hover, .carte--survol:hover { transform: translateY(-6px); box-shadow: v
 .pied__bas a { text-decoration: underline; text-underline-offset: 3px; }
 .pied__couleurs { display: flex; gap: 6px; margin-top: 22px; }
 .pied__couleurs i { width: 28px; height: 6px; border-radius: 6px; background: var(--c); }
+/* Barre d'action mobile : place réservée sous le pied de page (et non sous
+   le body) — le noir du pied se prolonge sous la barre, sans bande blanche. */
+@media (max-width: 1099px) { .pied { padding-bottom: calc(28px + 76px + env(safe-area-inset-bottom)); } }
 
-/* ---------- Héro des pages intérieures ---------- */
+/* ---------- Héro des pages intérieures ----------
+   Même composition sur les quatre pages : fil d'Ariane, surtitre, titre
+   (même corps partout, un cran sous celui de l'accueil), chapo, actions,
+   engagements ; visuel en forme de panneau ; flèche jaune en haut à droite. */
 .page-hero { position: relative; padding: clamp(24px, 4vw, 48px) 0 clamp(48px, 6vw, 88px); }
 .page-hero__grille { display: grid; gap: clamp(32px, 5vw, 64px); align-items: center; }
 @media (min-width: 960px) { .page-hero__grille { grid-template-columns: 1.05fr .95fr; } }
-.page-hero h1 { margin-top: 18px; }
+.page-hero h1 { margin-top: 18px; font-size: clamp(36px, 4.1vw, 58px); }
 .page-hero .chapo { margin-top: 22px; }
 .page-hero .actions { margin-top: 30px; }
+.page-hero__visuel { position: relative; }
+.page-hero__visuel .cadre { aspect-ratio: 5 / 4.4; }
+/* Tablette, une seule colonne : photo plus panoramique (comme la mosaïque
+   des services), sinon elle occupe tout l'écran. */
+@media (min-width: 600px) and (max-width: 959px) { :is(.hero__visuel, .page-hero__visuel) .cadre { aspect-ratio: 16 / 10; } }
+@media (min-width: 600px) and (max-width: 899px) { .preuve-photo .cadre { aspect-ratio: 16 / 10; } }
+.page-hero__fleche {
+  --c: var(--jaune); --o: .9; width: 84px; transform: rotate(-14deg);
+  top: clamp(20px, 2.6vw, 40px); right: max(var(--gout), calc((100% - var(--wrap)) / 2));
+}
+/* En dessous, la place manque : la flèche finirait sur un titre. */
+@media (max-width: 1099px) { .page-hero__fleche { display: none; } }
 
 /* ---------- Apparition au défilement (amélioration progressive) ---------- */
 html.js .rv { opacity: 0; transform: translateY(22px); transition: opacity .7s var(--ease), transform .7s var(--ease); transition-delay: var(--d, 0s); }
@@ -433,7 +515,9 @@ html.js .rv.est-vu { opacity: 1; transform: none; }
 .decor { position: absolute; z-index: 0; pointer-events: none; background: var(--c, var(--rouge)); opacity: var(--o, .12); }
 .decor--fleche { -webkit-mask: url("img/marque/fleche.svg") center / contain no-repeat; mask: url("img/marque/fleche.svg") center / contain no-repeat; aspect-ratio: 283 / 196; }
 .decor--plume { -webkit-mask: url("img/marque/plume.svg") center / contain no-repeat; mask: url("img/marque/plume.svg") center / contain no-repeat; aspect-ratio: 1; }
-@media (max-width: 759px) { .decor--masque-mobile { display: none; } }
+/* Sous 1100 px, les colonnes s'empilent : un décor finirait sur un titre
+   ou un texte (constaté sur tablette). Il n'apparaît que sur grand écran. */
+@media (max-width: 1099px) { .decor--masque-mobile { display: none; } }
 
 /* ---------- Transitions entre pages ---------- */
 @view-transition { navigation: auto; }

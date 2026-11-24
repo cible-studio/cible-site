@@ -422,7 +422,8 @@ modifier. CIBLE ne vend plus seulement des panneaux : la maquette met les
   textes en dur des vues actuelles, mot pour mot. Rien d'inventé.
 - **Socle partagé** (cohérence entre pages) : `public/mq/mq.css` + `mq.js`,
   `resources/views/marquette/layout.blade.php`, composants
-  `resources/views/components/mq/*` (photo, tete, chiffre, fil,
+  `resources/views/components/mq/*` (photo, tete, chiffre, fil, reassurance,
+  coordonnees,
   bande-contact). Styles propres à une page : `public/mq/pages/<page>.css`.
 - ⚠ Dossier statique nommé **`public/mq`** et non `public/marquette` : un
   dossier homonyme de la route est servi à la place de la page (404/403).

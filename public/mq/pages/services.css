@@ -7,7 +7,7 @@
    noir sur le jaune, blanc ailleurs — cf. charte).
    ========================================================================== */
 
-/* ---------- Pastille numérotée (approche, pôles, listes) ---------- */
+/* ---------- Pastille numérotée (pôles, listes des pôles) ---------- */
 .sv-num {
   display: grid; place-items: center; flex-shrink: 0;
   width: 44px; height: 44px; border-radius: 12px;
@@ -15,13 +15,6 @@
   font: 800 15px/1 var(--titre); letter-spacing: -.01em;
 }
 .sv-num--grand { width: 56px; height: 56px; border-radius: 16px 16px 16px 6px; font-size: 19px; }
-
-/* Accroche : phrase de conclusion, filet à la couleur du bloc */
-.sv-accroche {
-  margin-top: 20px; max-width: 58ch; padding: 4px 0 4px 18px;
-  border-left: 4px solid var(--c, var(--rouge));
-  font: 600 16.5px/1.55 var(--corps); color: var(--noir);
-}
 
 /* ---------- Héro ---------- */
 .sv-hero { position: relative; }
@@ -37,7 +30,8 @@
 .sv-mosaique .cadre { border-radius: var(--rayon-s); }
 .sv-mosaique .cadre:first-child { grid-row: span 2; }
 @media (min-width: 600px) and (max-width: 959px) { .sv-mosaique { aspect-ratio: 16 / 10; } }
-@media (min-width: 960px) { .sv-mosaique { aspect-ratio: 1 / 1.08; } }
+/* Grand écran : même proportion que le visuel des autres héros (mq.css). */
+@media (min-width: 960px) { .sv-mosaique { aspect-ratio: 5 / 4.4; } }
 
 /* ---------- Navigation interne collante ---------- */
 .sv-nav {
@@ -71,12 +65,8 @@
   .sv-nav__lien { justify-content: center; }
 }
 
-/* ---------- Approche ---------- */
+/* ---------- Approche (cartes : .grille-3 et .carte__num de mq.css) ---------- */
 .sv-approche-section { padding-top: calc(var(--espace) + 12px); }
-.sv-approche { display: grid; gap: clamp(16px, 2vw, 24px); grid-template-columns: 1fr; }
-@media (min-width: 820px) { .sv-approche { grid-template-columns: repeat(3, 1fr); } }
-.sv-approche h3 { margin-top: 6px; }
-.sv-approche p { font-size: 16px; color: var(--texte-2); }
 
 /* ---------- Les 4 pôles ---------- */
 .sv-pole__marque { display: flex; align-items: center; gap: 16px; }
@@ -89,7 +79,6 @@
   color: var(--noir); background: var(--jaune); padding: 0 .12em; border-radius: .12em;
   -webkit-box-decoration-break: clone; box-decoration-break: clone;
 }
-.sv-pole__texte { margin-top: 20px; }
 
 .sv-pole__visuel { position: relative; }
 .sv-pole__visuel .cadre { aspect-ratio: 4 / 3; }
@@ -112,7 +101,7 @@
 .sv-dispositifs .tag { --c: var(--rouge); background: var(--blanc); border: 1px solid var(--ligne); }
 
 /* Listes des pôles 2 à 4 : cartes numérotées, même hauteur par ligne */
-.sv-items { display: grid; gap: clamp(14px, 1.6vw, 20px); grid-template-columns: 1fr; }
+.sv-items { display: grid; gap: clamp(16px, 2vw, 24px); grid-template-columns: 1fr; } /* même écart que .grille-3 */
 @media (min-width: 640px) { .sv-items { grid-template-columns: repeat(2, 1fr); } }
 @media (min-width: 1000px) { .sv-items--3 { grid-template-columns: repeat(3, 1fr); } }
 @media (min-width: 1120px) { .sv-items--4 { grid-template-columns: repeat(4, 1fr); } }
@@ -136,7 +125,7 @@
 .sv-sous-tete p { font-size: 16.5px; color: var(--texte-2); }
 .sv-formats { display: grid; gap: 12px; grid-template-columns: repeat(2, 1fr); }
 @media (min-width: 760px) { .sv-formats { grid-template-columns: repeat(3, 1fr); gap: clamp(14px, 1.6vw, 20px); } }
-.sv-format { display: flex; flex-direction: column; background: var(--blanc); border: 1px solid var(--ligne); border-radius: var(--rayon-s); overflow: hidden; }
+.sv-format { display: flex; flex-direction: column; background: var(--blanc); border: 1px solid var(--ligne); border-radius: var(--rayon); overflow: hidden; } /* rayon des cartes */
 .sv-format__cadre { padding: clamp(14px, 2vw, 24px) clamp(10px, 1.6vw, 20px) 0; background: var(--gris-6); }
 .sv-format__scene { position: relative; aspect-ratio: 16 / 6.5; border-bottom: 2px solid var(--noir); }
 .sv-format__humain { position: absolute; left: 0; bottom: 0; width: calc(.5 / 16 * 100%); height: calc(1.75 / 6.5 * 100%); fill: var(--texte-3); }
@@ -171,10 +160,7 @@
   .sv-parcours__fleche { left: auto; right: -6px; top: 21px; bottom: auto; transform: none; }
 }
 
-/* ---------- Méthode : frise numérotée sur fond noir ---------- */
-.sv-methode-section .sur { color: var(--jaune); }
-.sv-methode-section .t2 em { color: var(--jaune); }
-.sv-methode-section .chapo { color: rgba(255,255,255,.78); }
+/* ---------- Méthode : frise numérotée sur fond noir (couleurs : .section--noir) ---------- */
 .sv-methode { display: grid; grid-template-columns: 1fr; }
 .sv-methode li { position: relative; padding: 0 0 36px 48px; }
 /* segment de couleur + point d'étape */

@@ -24,12 +24,12 @@
     $hero = \App\Support\Marquette::photo('bache');
 
     // Les 4 pôles : ancre, numéro, couleur, couleur du texte posé dessus
-    // (noir sur le jaune, cf. charte), photo et son cadrage.
+    // (noir sur le jaune et le bleu, cf. mq.css), photo et son cadrage.
     $poles = collect([
         ['regie',              1, 'var(--rouge)',  'var(--blanc)', 'uber',   '18% 50%'],
         ['mobile',             2, 'var(--jaune)',  'var(--noir)',  'camion', '34% 50%'],
         ['experience',         3, 'var(--violet)', 'var(--blanc)', 'course', '50% 50%'],
-        ['media-intelligence', 4, 'var(--bleu)',   'var(--blanc)', 'route',  '60% 50%'],
+        ['media-intelligence', 4, 'var(--bleu)',   'var(--noir)',  'route',  '60% 50%'],
     ])->map(function ($p) {
         $tag = Contenu::get("services.p{$p[1]}_tag");
         // Nom court pour la navigation interne : « Pôle 01 · Régie publicitaire
@@ -92,7 +92,7 @@
     $parcours = [
         ['Attirer',   'Créer la visibilité et capter l\'attention grâce aux dispositifs outdoor, mobiles et digitaux.', 'var(--rouge)', 'var(--blanc)'],
         ['Engager',   'Faire participer les publics grâce aux activations, aux animations, aux contenus et aux expériences interactives.', 'var(--jaune)', 'var(--noir)'],
-        ['Convertir', 'Générer du trafic, des prises de contact, des visites en point de vente, des essais ou des actions mesurables.', 'var(--vert)', 'var(--blanc)'],
+        ['Convertir', 'Générer du trafic, des prises de contact, des visites en point de vente, des essais ou des actions mesurables.', 'var(--vert)', 'var(--noir)'],
         ['Amplifier', 'Prolonger l\'expérience en ligne grâce aux réseaux sociaux, aux contenus et aux dispositifs de partage.', 'var(--violet)', 'var(--blanc)'],
     ];
 
@@ -111,8 +111,8 @@
     // Cycle de 5 tons, comme la vue actuelle : supporte tout nombre de lignes
     // saisi dans l'admin. [couleur, couleur du pictogramme posé dessus]
     $tons = [
-        ['var(--rouge)', 'var(--blanc)'], ['var(--jaune)', 'var(--noir)'], ['var(--vert)', 'var(--blanc)'],
-        ['var(--bleu)', 'var(--blanc)'], ['var(--violet)', 'var(--blanc)'],
+        ['var(--rouge)', 'var(--blanc)'], ['var(--jaune)', 'var(--noir)'], ['var(--vert)', 'var(--noir)'],
+        ['var(--bleu)', 'var(--noir)'], ['var(--violet)', 'var(--blanc)'],
     ];
 @endphp
 
@@ -140,22 +140,18 @@
 
 {{-- ═══ 1. HÉRO ═══ --}}
 <section class="page-hero sv-hero" aria-labelledby="services-titre">
-    <span class="decor decor--fleche decor--masque-mobile" aria-hidden="true" style="--c:var(--jaune);--o:.9;width:80px;top:2%;right:6%;transform:rotate(-14deg)"></span>
+    <span class="decor decor--fleche page-hero__fleche" aria-hidden="true"></span>
     <div class="wrap page-hero__grille">
         <div>
             <x-mq.fil :etapes="['Nos services']" />
             <span class="sur">{{ Contenu::get('services.hero_surtitre') }}</span>
             <h1 class="t1" id="services-titre">{{ Contenu::get('services.hero_titre_1') }} <em>{{ Contenu::get('services.hero_titre_2') }}</em></h1>
             <p class="chapo">{{ Contenu::get('services.hero_texte') }}</p>
-            <p class="sv-accroche">{{ Contenu::get('services.hero_accroche') }}</p>
+            <p class="accroche">{{ Contenu::get('services.hero_accroche') }}</p>
             <div class="actions">
                 <a class="btn btn--rouge" href="{{ route('marquette.contact') }}">Recevoir ma recommandation média<svg class="ic" aria-hidden="true"><use href="#i-fleche"/></svg></a>
             </div>
-            <ul class="reassurance">
-                @foreach(array_slice(Contenu::lignes('contact.reass_liste'), 0, 2) as $r)
-                    <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>{{ $r }}</li>
-                @endforeach
-            </ul>
+            <x-mq.reassurance />
         </div>
 
         {{-- Trois photos dans la silhouette « panneau » de la charte :
@@ -193,17 +189,19 @@
         <div class="wrap">
             <x-mq.tete :surtitre="Contenu::get('services.approche_surtitre')" :titre="Contenu::get('services.approche_titre')" :intro="Contenu::get('services.approche_texte')" centre id-titre="approche-titre" />
 
-            <div class="sv-approche">
-                @foreach([['var(--rouge)', 'var(--blanc)'], ['var(--jaune)', 'var(--noir)'], ['var(--bleu)', 'var(--blanc)']] as $i => [$c, $fg])
-                    <article class="carte rv" style="--c:{{ $c }};--fg:{{ $fg }};--d:{{ $i * .08 }}s">
+            {{-- Même gabarit que l'approche de la page réseau : grand numéro à la
+                 couleur de la carte (noir pour le jaune). --}}
+            <ol class="grille-3">
+                @foreach([['var(--rouge)', 'var(--rouge)'], ['var(--jaune)', 'var(--noir)'], ['var(--bleu)', 'var(--bleu)']] as $i => [$c, $t])
+                    <li class="carte rv" style="--c:{{ $c }};--t:{{ $t }};--d:{{ $i * .08 }}s">
                         <div class="carte__corps">
-                            <span class="sv-num num" aria-hidden="true">0{{ $i + 1 }}</span>
+                            <span class="carte__num num" aria-hidden="true">0{{ $i + 1 }}</span>
                             <h3 class="t3">{{ Contenu::get('services.approche_' . ($i + 1) . '_titre') }}</h3>
-                            <p>{{ Contenu::get('services.approche_' . ($i + 1) . '_texte') }}</p>
+                            <p class="carte__texte">{{ Contenu::get('services.approche_' . ($i + 1) . '_texte') }}</p>
                         </div>
-                    </article>
+                    </li>
                 @endforeach
-            </div>
+            </ol>
         </div>
     </section>
 
@@ -230,7 +228,7 @@
                             <p class="chapo sv-pole__texte">{{ Contenu::get("services.p{$n}_texte") }}</p>
                         @endif
                         @if($accroche)
-                            <p class="sv-accroche">{{ $accroche }}</p>
+                            <p class="accroche">{{ $accroche }}</p>
                         @endif
 
                         @if($n === 1)
@@ -328,11 +326,9 @@
 <section class="section section--noir sv-methode-section" aria-labelledby="methode-titre">
     <span class="decor decor--plume decor--masque-mobile" aria-hidden="true" style="--c:var(--blanc);--o:.06;width:170px;top:7%;left:3%;transform:rotate(20deg)"></span>
     <div class="wrap">
-        <div class="tete tete--centre rv">
-            <span class="sur">{{ Contenu::get('services.work_surtitre') }}</span>
-            <h2 class="t2" id="methode-titre">{{ Contenu::get('services.work_titre_1') }} <em>{{ Contenu::get('services.work_titre_2') }}</em></h2>
-            <p class="chapo" style="margin-inline:auto">{{ Contenu::get('services.work_intro') }}</p>
-        </div>
+        <x-mq.tete centre :surtitre="Contenu::get('services.work_surtitre')" :intro="Contenu::get('services.work_intro')" id-titre="methode-titre">
+            {{ Contenu::get('services.work_titre_1') }} <em>{{ Contenu::get('services.work_titre_2') }}</em>
+        </x-mq.tete>
 
         <ol class="sv-methode">
             @foreach($methode as $k => [$titre, $texte, $c])

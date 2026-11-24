@@ -4,17 +4,7 @@
    territoires, chiffres…). Préfixe « rs- » pour ne rien heurter.
    ========================================================================== */
 
-/* Section blanche explicite. mq.css retire la marge haute d'une section
-   « simple » qui suit une autre section (.section + .section:not([class*="--"])),
-   y compris quand la précédente a un fond gris ou noir : le titre collerait
-   alors au bord du fond. Le modificateur garde la respiration. */
-.section--blanc { background: var(--blanc); }
-
-/* ---------- Héro ---------- */
-/* Titre long (73 signes) : un cran sous .t1 pour tenir en 4 lignes. */
-.rs-hero h1 { font-size: clamp(34px, 4.4vw, 58px); }
-.rs-hero__visuel { position: relative; }
-.rs-hero__visuel .cadre { aspect-ratio: 5 / 4.2; }
+/* ---------- Héro (composition commune : .page-hero de mq.css) ---------- */
 .rs-vers-carte:hover .ic { transform: translateY(3px); }
 
 /* Les deux totaux officiels, posés sur la photo. */
@@ -26,12 +16,6 @@
   .chiffres.rs-hero__chiffres { position: absolute; left: -28px; bottom: -40px; width: min(440px, 84%); margin: 0; }
   .rs-hero { padding-bottom: clamp(88px, 8vw, 120px); }
 }
-
-/* ---------- Approche : trois étapes ---------- */
-.rs-etapes { display: grid; gap: clamp(16px, 2vw, 24px); grid-template-columns: 1fr; }
-@media (min-width: 820px) { .rs-etapes { grid-template-columns: repeat(3, 1fr); } }
-.rs-n { font: 800 clamp(38px, 3.6vw, 48px)/1 var(--titre); letter-spacing: -.03em; color: var(--t, var(--c)); }
-.rs-texte { font-size: 16px; line-height: 1.6; color: var(--texte-2); }
 
 /* ---------- Carte interactive ---------- */
 .no-js .rs-zones-btn, .no-js .rs-carte { display: none; }
@@ -197,16 +181,15 @@
 .rs-picto--lumineux i::before { box-shadow: 0 0 0 4px var(--blanc), 0 0 0 7px var(--c); }
 .rs-picto--proximite { --l: 26px; --h: 50px; --hp: 36px; }
 
-/* ---------- Media Intelligence (fond noir) ---------- */
-.rs-mi .sur { color: var(--jaune); }
-.rs-mi .chapo { color: rgba(255,255,255,.78); }
+/* ---------- Media Intelligence (fond noir : couleurs de .section--noir) ---------- */
 .rs-briques { display: grid; gap: 14px; grid-template-columns: 1fr; }
 @media (min-width: 620px) { .rs-briques { grid-template-columns: 1fr 1fr; } }
 .rs-brique {
   position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 10px;
-  padding: clamp(24px, 2.4vw, 30px); border: 1px solid rgba(255,255,255,.16); border-radius: var(--rayon-s);
+  padding: clamp(22px, 2.6vw, 32px); border: 1px solid rgba(255,255,255,.16); border-radius: var(--rayon);
 }
-.rs-brique::before { content: ""; position: absolute; inset: 0 0 auto; height: 4px; background: var(--c); }
+/* Même liseré, même rayon, mêmes marges que les cartes blanches (.carte). */
+.rs-brique::before { content: ""; position: absolute; inset: 0 0 auto; height: 5px; background: var(--c); }
 .rs-brique__n { font: 800 30px/1 var(--titre); letter-spacing: -.02em; color: var(--c); }
 .rs-brique h3 { font-size: 18.5px; line-height: 1.3; letter-spacing: -.01em; }
 .rs-brique p { font-size: 15px; line-height: 1.6; color: rgba(255,255,255,.74); }
@@ -214,6 +197,5 @@
 /* ---------- Exigence terrain ---------- */
 .rs-exigence__photo { aspect-ratio: 4 / 4.4; }
 @media (max-width: 899px) { .rs-exigence__photo { aspect-ratio: 4 / 3; } }
-.rs-exigence__titre { margin-top: 16px; }
 .rs-coche { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--rouge); color: var(--blanc); margin-top: 1px; }
 .rs-coche .ic { width: 18px; height: 18px; stroke-width: 2.8; }

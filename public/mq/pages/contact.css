@@ -15,26 +15,20 @@
 .contact-hero__grille { display: grid; gap: 22px clamp(32px, 5vw, 72px); }
 @media (min-width: 960px) { .contact-hero__grille { grid-template-columns: 1.05fr .95fr; align-items: end; } }
 .contact-hero .chapo { margin-top: 0; }
-.contact-hero__accroche {
-  margin-top: 20px; padding-left: 18px; border-left: 4px solid var(--rouge);
-  font: 700 clamp(17px, 1.4vw, 19px)/1.45 var(--titre); letter-spacing: -.01em; color: var(--noir); max-width: 52ch;
-}
-/* Flèche de marque : dans le coin vide au-dessus du texte, jamais sur le titre. */
-.contact-hero__fleche { width: 92px; top: clamp(24px, 3vw, 44px); right: max(var(--gout), calc((100% - var(--wrap)) / 2)); transform: rotate(-14deg); }
-@media (max-width: 1099px) { .contact-hero__fleche { display: none; } }
+/* Accroche (.accroche) et flèche (.page-hero__fleche) : mq.css. */
 
-/* Bénéfices : pastilles cochées. Bande à cellules égales sur grand écran,
-   simple liste sur mobile (le formulaire doit arriver vite). */
+/* Bénéfices : pastilles cochées. Bande de 5 cellules égales sur grand écran
+   (même dessin que la bande de chiffres de l'accueil), simple liste en
+   dessous : une bande qui passe à la ligne laissait une cellule orpheline
+   (4 + 1 à 1024 px). */
 .benefices { display: grid; gap: 12px; margin-top: 28px; }
 .benefices li { display: flex; align-items: center; gap: 12px; font: 700 15.5px/1.35 var(--titre); color: var(--noir); }
 .benefices .rond { width: 30px; height: 30px; border-radius: 50%; background: var(--rouge); color: var(--blanc); display: grid; place-items: center; flex-shrink: 0; }
 .benefices .rond .ic { width: 16px; height: 16px; stroke-width: 2.8; }
-@media (min-width: 640px) {
-  .benefices { display: flex; flex-wrap: wrap; gap: 1px; margin-top: clamp(32px, 3.5vw, 44px); background: var(--ligne); border: 1px solid var(--ligne); border-radius: var(--rayon); overflow: hidden; }
-  .benefices li { flex: 1 1 210px; padding: 18px 20px; background: var(--blanc); }
-}
-@media (min-width: 1100px) {
-  .benefices li { flex-direction: column; align-items: flex-start; gap: 12px; padding: 20px 22px; }
+@media (min-width: 640px) and (max-width: 899px) { .benefices { grid-template-columns: 1fr 1fr; gap: 14px 24px; } }
+@media (min-width: 900px) {
+  .benefices { grid-template-columns: repeat(5, 1fr); gap: 1px; margin-top: clamp(32px, 3.5vw, 44px); background: var(--ligne); border: 1px solid var(--ligne); border-radius: var(--rayon); overflow: hidden; }
+  .benefices li { flex-direction: column; align-items: flex-start; gap: 12px; padding: 20px clamp(16px, 1.6vw, 22px); background: var(--blanc); }
 }
 
 /* ---------- Bloc principal : formulaire + colonne d'appui ---------- */
@@ -214,7 +208,8 @@ html.js .doc__fichier { display: block; }
 .contact-cote { display: grid; gap: clamp(16px, 2vw, 20px); align-content: start; }
 .contact-cote h2:not(.sur) { font-weight: 800; font-size: clamp(21px, 1.9vw, 24px); line-height: 1.2; letter-spacing: -.02em; text-wrap: balance; }
 
-/* Coordonnées : aplat jaune, zones blanches (comme la bande contact) */
+/* Coordonnées : aplat jaune, zones blanches (composant x-mq.coordonnees,
+   comme la bande contact des autres pages) */
 .cote-coord {
   position: relative; overflow: hidden; isolation: isolate;
   padding: clamp(22px, 2.4vw, 28px); border-radius: var(--rayon); background: var(--jaune); color: var(--noir);
@@ -225,11 +220,6 @@ html.js .doc__fichier { display: block; }
 }
 .cote-coord .sur { margin-bottom: 16px; }
 .cote-coord .coord { min-height: 64px; }
-.coord__suite { display: block; margin-top: 2px; font: 600 14.5px/1.45 var(--corps); color: var(--texte-2); }
-.coord--adresse { cursor: default; }
-.coord--adresse:hover { transform: none; box-shadow: none; }
-.coord--adresse .rond { background: var(--noir); }
-.insecable { white-space: nowrap; }
 @media (max-width: 519px) {
   .cote-coord { padding: 20px 12px 12px; }
   .cote-coord .sur { margin-left: 8px; }

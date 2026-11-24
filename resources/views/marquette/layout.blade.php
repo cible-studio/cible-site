@@ -13,15 +13,17 @@
     $tel = fn (string $n) => 'tel:+' . preg_replace('#\D#', '', $n);
 
     // Les 4 pôles : nom court tiré du libellé admin « Pôle 0X · Nom ».
+    // [ancre, libellé, couleur, texte posé sur la couleur (cf. mq.css)]
     $poles = collect([
-        ['regie',              'services.p1_tag', 'var(--rouge)'],
-        ['mobile',             'services.p2_tag', 'var(--jaune)'],
-        ['experience',         'services.p3_tag', 'var(--violet)'],
-        ['media-intelligence', 'services.p4_tag', 'var(--bleu)'],
+        ['regie',              'services.p1_tag', 'var(--rouge)',  'var(--blanc)'],
+        ['mobile',             'services.p2_tag', 'var(--jaune)',  'var(--noir)'],
+        ['experience',         'services.p3_tag', 'var(--violet)', 'var(--blanc)'],
+        ['media-intelligence', 'services.p4_tag', 'var(--bleu)',   'var(--noir)'],
     ])->map(fn ($p, $i) => [
         'ancre' => $p[0],
         'nom'   => trim(\Illuminate\Support\Str::after(Contenu::get($p[1]), '·')),
         'c'     => $p[2],
+        'fg'    => $p[3],
         'n'     => sprintf('%02d', $i + 1),
     ]);
 
@@ -74,7 +76,7 @@
 <header class="entete">
     <div class="entete__barre">
         <a class="logo" href="{{ route('marquette.accueil') }}" aria-label="CIBLE — accueil">
-            <img src="{{ asset('mq/img/marque/logo-couleur.png') }}" alt="CIBLE — Vous visez juste" width="152" height="42">
+            <img src="{{ asset('mq/img/marque/logo-couleur-240.webp') }}" alt="CIBLE — Vous visez juste" width="79" height="42">
         </a>
 
         <nav class="nav" aria-label="Navigation principale">
@@ -87,7 +89,7 @@
                         <div class="deroulant__panneau" id="sous-menu-services">
                             @foreach($poles as $p)
                                 <a class="deroulant__lien" href="{{ route('marquette.services') }}#{{ $p['ancre'] }}">
-                                    <span class="deroulant__num" style="--c:{{ $p['c'] }}{{ $p['ancre'] === 'mobile' ? ';color:var(--noir)' : '' }}">{{ $p['n'] }}</span>
+                                    <span class="deroulant__num" style="--c:{{ $p['c'] }};--fg:{{ $p['fg'] }}">{{ $p['n'] }}</span>
                                     <span><b>{{ $p['nom'] }}</b></span>
                                 </a>
                             @endforeach
@@ -115,7 +117,7 @@
 {{-- Menu mobile : plein écran, gros liens (≥ 50 px), action et contacts en bas. --}}
 <div class="panneau-mobile" id="panneau-mobile" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Menu">
     <div class="panneau-mobile__haut">
-        <a class="logo" href="{{ route('marquette.accueil') }}"><img src="{{ asset('mq/img/marque/logo-couleur.png') }}" alt="CIBLE" width="152" height="42"></a>
+        <a class="logo" href="{{ route('marquette.accueil') }}"><img src="{{ asset('mq/img/marque/logo-couleur-240.webp') }}" alt="CIBLE" width="79" height="42"></a>
         <button class="rond-outil" type="button" data-menu-fermer aria-label="Fermer le menu"><svg class="ic" aria-hidden="true"><use href="#i-fermer"/></svg></button>
     </div>
     <nav aria-label="Navigation mobile">
@@ -123,7 +125,7 @@
             <a href="{{ route("marquette.$cle") }}" @if($page === $cle) aria-current="page" @endif>{{ $libelle }}<svg class="ic" aria-hidden="true"><use href="#i-fleche"/></svg></a>
             @if($cle === 'services')
                 @foreach($poles as $p)
-                    <a class="sous" href="{{ route('marquette.services') }}#{{ $p['ancre'] }}">{{ $p['n'] }} · {{ $p['nom'] }}</a>
+                    <a class="sous" href="{{ route('marquette.services') }}#{{ $p['ancre'] }}"><span class="deroulant__num" style="--c:{{ $p['c'] }};--fg:{{ $p['fg'] }}" aria-hidden="true">{{ $p['n'] }}</span>{{ $p['nom'] }}</a>
                 @endforeach
             @endif
         @endforeach
@@ -142,7 +144,7 @@
     <div class="wrap">
         <div class="pied__grille">
             <div>
-                <img src="{{ asset('mq/img/marque/logo-fond-noir.png') }}" alt="CIBLE — Vous visez juste" width="166" height="46" loading="lazy">
+                <img src="{{ asset('mq/img/marque/logo-fond-noir-260.webp') }}" alt="CIBLE — Vous visez juste" width="86" height="46" loading="lazy">
                 <p class="pied__slogan">Régie publicitaire et studio créatif.<br>+&nbsp;de&nbsp;30&nbsp;ans à rendre les marques visibles en Côte d'Ivoire.</p>
                 <div class="pied__couleurs" aria-hidden="true">
                     @foreach(['rouge','jaune','vert','bleu','violet'] as $c)<i style="--c:var(--{{ $c }})"></i>@endforeach

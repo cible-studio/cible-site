@@ -63,7 +63,7 @@
 
 {{-- ═══ 1. HÉRO ═══ --}}
 <section class="page-hero rs-hero" aria-labelledby="page-titre">
-    <span class="decor decor--fleche decor--masque-mobile" aria-hidden="true" style="--c:var(--jaune);--o:.9;width:72px;top:5%;left:50%;transform:rotate(24deg)"></span>
+    <span class="decor decor--fleche page-hero__fleche" aria-hidden="true"></span>
     <div class="wrap">
         <div class="page-hero__grille">
             <div>
@@ -75,8 +75,9 @@
                     <a class="btn btn--rouge" href="{{ route('marquette.contact') }}">Recevoir ma recommandation média<svg class="ic" aria-hidden="true"><use href="#i-fleche"/></svg></a>
                     <a class="btn btn--ligne rs-vers-carte" href="#carte">{{ Contenu::get('reseau.hero_cta') }}<svg class="ic" aria-hidden="true"><use href="#i-bas"/></svg></a>
                 </div>
+                <x-mq.reassurance />
             </div>
-            <div class="rs-hero__visuel">
+            <div class="page-hero__visuel rs-hero__visuel">
                 <div class="cadre cadre--panneau">
                     <x-mq.photo cle="route" sizes="(min-width: 960px) 44vw, 100vw" prioritaire style="object-position:56% 50%" />
                 </div>
@@ -95,21 +96,16 @@
 <section class="section section--motif" aria-labelledby="approche-titre">
     <span class="decor decor--plume decor--masque-mobile" aria-hidden="true" style="--c:var(--rouge);--o:.08;width:150px;bottom:8%;right:3%;transform:rotate(18deg)"></span>
     <div class="wrap">
-        <div class="tete tete--ligne rv">
-            <div style="display:grid;gap:18px">
-                <span class="sur">{{ Contenu::get('reseau.app_surtitre') }}</span>
-                <h2 class="t2" id="approche-titre">{{ Contenu::get('reseau.app_titre') }}</h2>
-            </div>
-            <p class="chapo">{{ Contenu::get('reseau.app_texte') }}</p>
-        </div>
+        <x-mq.tete ligne :surtitre="Contenu::get('reseau.app_surtitre')" :titre="Contenu::get('reseau.app_titre')" :intro="Contenu::get('reseau.app_texte')" id-titre="approche-titre" />
 
-        <ol class="rs-etapes">
+        {{-- Même gabarit que l'approche de la page services. --}}
+        <ol class="grille-3">
             @foreach($approche as $i => [$titre, $texte, $c])
-                <li class="carte rv" style="--c:{{ $c }};--d:{{ $i * .08 }}s">
+                <li class="carte rv" style="--c:{{ $c }};--t:{{ $c === 'var(--jaune)' ? 'var(--noir)' : $c }};--d:{{ $i * .08 }}s">
                     <div class="carte__corps">
-                        <span class="rs-n num" @if($c === 'var(--jaune)') style="--t:var(--noir)" @endif>{{ sprintf('%02d', $i + 1) }}</span>
+                        <span class="carte__num num" aria-hidden="true">{{ sprintf('%02d', $i + 1) }}</span>
                         <h3 class="t3">{{ $titre }}</h3>
-                        <p class="rs-texte">{{ $texte }}</p>
+                        <p class="carte__texte">{{ $texte }}</p>
                     </div>
                 </li>
             @endforeach
@@ -122,15 +118,9 @@
      données n'est JAMAIS affiché (décision 2026-08-10). Les listes de
      l'admin fixent l'ordre de priorité des étiquettes quand elles se
      chevauchent. --}}
-<section class="section section--blanc rs-carte-section" id="carte" aria-labelledby="carte-titre">
+<section class="section rs-carte-section" id="carte" aria-labelledby="carte-titre">
     <div class="wrap">
-        <div class="tete tete--ligne rv">
-            <div style="display:grid;gap:18px">
-                <span class="sur">Notre couverture</span>
-                <h2 class="t2" id="carte-titre">Explorez les zones couvertes par CIBLE.</h2>
-            </div>
-            <p class="chapo">Consultez les principales villes et zones dans lesquelles notre parc publicitaire est déployé.</p>
-        </div>
+        <x-mq.tete ligne surtitre="Notre couverture" titre="Explorez les zones couvertes par CIBLE." intro="Consultez les principales villes et zones dans lesquelles notre parc publicitaire est déployé." id-titre="carte-titre" />
 
         <div class="rs-carte-bloc rv"
              data-carte
@@ -203,7 +193,7 @@
 </section>
 
 {{-- ═══ 5. FORMATS ═══ --}}
-<section class="section section--blanc" aria-labelledby="formats-titre">
+<section class="section" aria-labelledby="formats-titre">
     <div class="wrap">
         <x-mq.tete surtitre="Des formats pour chaque ambition" titre="De la proximité à l'impact spectaculaire." intro="Notre parc comprend des dispositifs adaptés aux campagnes locales, urbaines, nationales et événementielles." id-titre="formats-titre" />
 
@@ -213,7 +203,7 @@
                     <div class="carte__corps">
                         <span class="rs-picto rs-picto--{{ $picto }}" aria-hidden="true"><i></i></span>
                         <h3 class="t3">{{ $titre }}</h3>
-                        <p class="rs-texte">{{ $texte }}</p>
+                        <p class="carte__texte">{{ $texte }}</p>
                     </div>
                 </article>
             @endforeach
@@ -227,8 +217,8 @@
     <div class="wrap grille-2">
         <div class="rv">
             <span class="sur">Media Intelligence</span>
-            <h2 class="t2" id="mi-titre" style="margin-top:16px">Un parc référencé, piloté et documenté.</h2>
-            <p class="chapo" style="margin-top:18px">Notre réseau est progressivement digitalisé afin d'améliorer la sélection des emplacements, la planification des campagnes, le contrôle des poses et la transmission des preuves de diffusion.</p>
+            <h2 class="t2" id="mi-titre">Un parc référencé, piloté et documenté.</h2>
+            <p class="chapo">Notre réseau est progressivement digitalisé afin d'améliorer la sélection des emplacements, la planification des campagnes, le contrôle des poses et la transmission des preuves de diffusion.</p>
         </div>
         <ul class="rs-briques">
             @foreach($intelligence as $i => [$titre, $texte, $c])
@@ -243,7 +233,7 @@
 </section>
 
 {{-- ═══ 7. EXIGENCE TERRAIN ═══ --}}
-<section class="section section--blanc" aria-labelledby="exigence-titre">
+<section class="section" aria-labelledby="exigence-titre">
     <div class="wrap grille-2 rs-exigence">
         <div class="rv">
             <div class="cadre cadre--panneau rs-exigence__photo">
@@ -252,7 +242,7 @@
         </div>
         <div class="rv" style="--d:.1s">
             <span class="sur">Notre exigence terrain</span>
-            <h2 class="t2 rs-exigence__titre" id="exigence-titre">Un réseau exploité avec rigueur, du choix de l'emplacement au suivi de la campagne.</h2>
+            <h2 class="t2" id="exigence-titre">Un réseau exploité avec rigueur, du choix de l'emplacement au suivi de la campagne.</h2>
             <ul class="recit-liste">
                 @foreach($exigence as [$titre, $texte])
                     <li>

@@ -13,11 +13,9 @@
   const zone = document.getElementById('formulaire');
   if (!zone) return;
 
-  /* ---- 1. Boutons d'action communs → formulaire ----
-     Ils pointent vers cette même page : un clic rechargerait la page et
-     effacerait la saisie en cours. Ici, ils mènent au formulaire. */
-  document.querySelectorAll('.entete__cta, .barre-action .btn, .panneau-mobile__bas .btn--rouge')
-    .forEach((a) => a.setAttribute('href', '#formulaire'));
+  /* ---- 1. Barre d'action mobile masquée tant que le formulaire est à l'écran ----
+     (Les boutons d'action communs mènent déjà à #formulaire : le layout
+     le fait sur cette page, sans JavaScript.) */
   if ('IntersectionObserver' in window) {
     new IntersectionObserver(([e]) => html.classList.toggle('formulaire-en-vue', e.isIntersecting),
       { rootMargin: '-20% 0px -20% 0px' }).observe(zone);

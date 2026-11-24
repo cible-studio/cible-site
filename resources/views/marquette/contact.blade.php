@@ -27,12 +27,6 @@
 @section('description', 'Décrivez votre projet : objectifs, audiences, zones, services et budget. Notre équipe vous répond sous 24 heures ouvrées avec une recommandation média personnalisée.')
 
 @php
-    $co   = Contenu::section('coordonnees');
-    $tel  = fn (string $n) => 'tel:+' . preg_replace('#\D#', '', $n);
-    // Adresse e-mail : si elle doit passer à la ligne, c'est avant « @ »,
-    // jamais au tiret de « cible-ci ». Renvoie du HTML déjà échappé.
-    $courriel = fn (string $a) => e(\Illuminate\Support\Str::before($a, '@'))
-        . '<wbr><span class="insecable">@' . e(\Illuminate\Support\Str::after($a, '@')) . '</span>';
     $opt  = CibleController::formOptions();
     $nbsp = "\u{00A0}";
 
@@ -127,7 +121,7 @@
 {{-- ═══ 1. HÉRO ═══ Titre à gauche, texte à droite : le héro reste bas et
      le formulaire remonte dans le premier écran. --}}
 <section class="page-hero contact-hero" aria-labelledby="contact-titre">
-    <span class="decor decor--fleche decor--masque-mobile contact-hero__fleche" aria-hidden="true" style="--c:var(--jaune);--o:.9"></span>
+    <span class="decor decor--fleche page-hero__fleche" aria-hidden="true"></span>
     <div class="wrap">
         <x-mq.fil :etapes="['Contact']" />
         <div class="contact-hero__grille">
@@ -137,7 +131,7 @@
             </div>
             <div class="rv" style="--d:.08s">
                 <p class="chapo">{{ Contenu::get('contact.hero_texte') }}</p>
-                <p class="contact-hero__accroche riche">{!! Contenu::riche('contact.hero_accroche') !!}</p>
+                <p class="accroche riche">{!! Contenu::riche('contact.hero_accroche') !!}</p>
             </div>
         </div>
 
@@ -343,35 +337,11 @@
 
         {{-- ── Colonne d'appui : coordonnées, engagements, arguments ── --}}
         <div class="contact-cote">
-            {{-- Coordonnées : grandes zones tactiles (≥ 64 px), comme la bande contact des autres pages. --}}
+            {{-- Coordonnées : même composant que la bande contact des autres pages,
+                 complété du secrétariat et de l'adresse. --}}
             <section class="cote-coord rv" aria-labelledby="coord-titre">
                 <h2 class="sur sur--noir" id="coord-titre">Contact</h2>
-                <div class="coordonnees">
-                    <a class="coord" href="{{ $tel($co['tel_mobile']) }}">
-                        <span class="rond"><svg class="ic" aria-hidden="true"><use href="#i-tel"/></svg></span>
-                        <span><small>Mobile</small><span class="num">{{ $co['tel_mobile'] }}</span></span>
-                    </a>
-                    @if($co['tel_fixe'])
-                        <a class="coord" href="{{ $tel($co['tel_fixe']) }}">
-                            <span class="rond"><svg class="ic" aria-hidden="true"><use href="#i-tel"/></svg></span>
-                            <span><small>Fixe</small><span class="num">{{ $co['tel_fixe'] }}</span></span>
-                        </a>
-                    @endif
-                    <a class="coord" href="mailto:{{ $co['email_commercial'] }}">
-                        <span class="rond"><svg class="ic" aria-hidden="true"><use href="#i-mail"/></svg></span>
-                        <span><small>Service commercial</small>{!! $courriel($co['email_commercial']) !!}</span>
-                    </a>
-                    @if($co['email_secretariat'])
-                        <a class="coord" href="mailto:{{ $co['email_secretariat'] }}">
-                            <span class="rond"><svg class="ic" aria-hidden="true"><use href="#i-mail"/></svg></span>
-                            <span><small>Secrétariat</small>{!! $courriel($co['email_secretariat']) !!}</span>
-                        </a>
-                    @endif
-                    <div class="coord coord--adresse">
-                        <span class="rond"><svg class="ic" aria-hidden="true"><use href="#i-lieu"/></svg></span>
-                        <span><small>Adresse</small>{{ $co['adresse_rue'] }}@if($co['adresse_complement'])<span class="coord__suite">{{ $co['adresse_complement'] }}</span>@endif</span>
-                    </div>
-                </div>
+                <x-mq.coordonnees complet />
             </section>
 
             {{-- Engagements --}}
