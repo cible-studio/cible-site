@@ -33,6 +33,9 @@
         ['contact',  'Contact'],
     ];
     $cta = 'Recevoir ma recommandation média';
+    // Sur la page contact, l'action mène au formulaire de la page : recharger
+    // /marquette/contact effacerait une saisie en cours.
+    $ctaHref = $page === 'contact' ? '#formulaire' : route('marquette.contact');
 @endphp
 <!DOCTYPE html>
 <html lang="fr" class="no-js">
@@ -96,7 +99,7 @@
             @endforeach
         </nav>
 
-        <a class="btn btn--rouge entete__cta" href="{{ route('marquette.contact') }}">{{ $cta }}</a>
+        <a class="btn btn--rouge entete__cta" href="{{ $ctaHref }}">{{ $cta }}</a>
 
         <div class="entete__outils">
             <a class="rond-outil rond-outil--rouge" href="{{ $tel($co['tel_mobile']) }}" aria-label="Appeler CIBLE au {{ $co['tel_mobile'] }}">
@@ -126,7 +129,7 @@
         @endforeach
     </nav>
     <div class="panneau-mobile__bas">
-        <a class="btn btn--rouge btn--plein" href="{{ route('marquette.contact') }}">{{ $cta }}<svg class="ic" aria-hidden="true"><use href="#i-fleche"/></svg></a>
+        <a class="btn btn--rouge btn--plein" href="{{ $ctaHref }}">{{ $cta }}<svg class="ic" aria-hidden="true"><use href="#i-fleche"/></svg></a>
         <a class="btn btn--ligne btn--plein" href="{{ $tel($co['tel_mobile']) }}"><svg class="ic" aria-hidden="true"><use href="#i-tel"/></svg>{{ $co['tel_mobile'] }}</a>
     </div>
 </div>
@@ -185,7 +188,7 @@
 {{-- Action toujours à portée de pouce sur mobile (audit PPC.io). --}}
 <div class="barre-action" aria-label="Actions rapides">
     <a class="rond-outil" href="{{ $tel($co['tel_mobile']) }}" aria-label="Appeler CIBLE au {{ $co['tel_mobile'] }}"><svg class="ic" aria-hidden="true"><use href="#i-tel"/></svg></a>
-    <a class="btn btn--rouge" href="{{ route('marquette.contact') }}">{{ $cta }}</a>
+    <a class="btn btn--rouge" href="{{ $ctaHref }}">{{ $cta }}</a>
 </div>
 
 <script src="{{ Marquette::asset('mq.js') }}" defer></script>

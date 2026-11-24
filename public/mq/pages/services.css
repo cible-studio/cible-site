@@ -1,0 +1,205 @@
+/* ==========================================================================
+   Maquette — page NOS SERVICES (/marquette/services)
+   Styles propres à la page ; tout le reste vient de mq.css (jetons, cartes,
+   boutons, sections). Préfixe « sv- » : aucune collision avec le socle.
+
+   Couleur d'un bloc : --c (couleur de marque) et --fg (texte posé dessus :
+   noir sur le jaune, blanc ailleurs — cf. charte).
+   ========================================================================== */
+
+/* ---------- Pastille numérotée (approche, pôles, listes) ---------- */
+.sv-num {
+  display: grid; place-items: center; flex-shrink: 0;
+  width: 44px; height: 44px; border-radius: 12px;
+  background: var(--c, var(--rouge)); color: var(--fg, var(--blanc));
+  font: 800 15px/1 var(--titre); letter-spacing: -.01em;
+}
+.sv-num--grand { width: 56px; height: 56px; border-radius: 16px 16px 16px 6px; font-size: 19px; }
+
+/* Accroche : phrase de conclusion, filet à la couleur du bloc */
+.sv-accroche {
+  margin-top: 20px; max-width: 58ch; padding: 4px 0 4px 18px;
+  border-left: 4px solid var(--c, var(--rouge));
+  font: 600 16.5px/1.55 var(--corps); color: var(--noir);
+}
+
+/* ---------- Héro ---------- */
+.sv-hero { position: relative; }
+.sv-hero h1 em { display: block; }
+
+/* Trois photos dans la silhouette « panneau » : la forme est portée par
+   le conteneur, les vignettes n'ont qu'un petit arrondi intérieur. */
+.sv-mosaique {
+  display: grid; grid-template-columns: 1.1fr 1fr; grid-template-rows: 1fr 1fr;
+  gap: clamp(8px, 1vw, 12px); aspect-ratio: 5 / 4.6;
+  border-radius: var(--rayon-panneau); overflow: hidden;
+}
+.sv-mosaique .cadre { border-radius: var(--rayon-s); }
+.sv-mosaique .cadre:first-child { grid-row: span 2; }
+@media (min-width: 600px) and (max-width: 959px) { .sv-mosaique { aspect-ratio: 16 / 10; } }
+@media (min-width: 960px) { .sv-mosaique { aspect-ratio: 1 / 1.08; } }
+
+/* ---------- Navigation interne collante ---------- */
+.sv-nav {
+  position: sticky; top: calc(var(--hdr) + 20px); z-index: 70;
+  margin-bottom: -31px; /* à cheval sur le héro et la section suivante */
+}
+.sv-nav__piste {
+  position: relative; /* repère des offsetLeft (services.js) */
+  display: flex; gap: 4px; padding: 5px;
+  overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x proximity; scrollbar-width: none;
+  background: rgba(255,255,255,.96); backdrop-filter: saturate(1.4) blur(12px); -webkit-backdrop-filter: saturate(1.4) blur(12px);
+  border: 1px solid var(--ligne); border-radius: 999px; box-shadow: var(--ombre);
+}
+.sv-nav__piste::-webkit-scrollbar { display: none; }
+.sv-nav__piste li { flex: 0 0 auto; scroll-snap-align: start; }
+.sv-nav__lien {
+  display: flex; align-items: center; gap: 10px; min-height: 50px; padding: 0 18px 0 7px;
+  border-radius: 999px; white-space: nowrap;
+  font: 700 14.5px/1.15 var(--titre); color: var(--noir);
+  transition: background-color .2s, color .2s;
+}
+.sv-nav__lien:hover { background: var(--gris-4); }
+.sv-nav__lien:focus-visible { outline-offset: -3px; }
+.sv-nav__lien[aria-current="true"] { background: var(--noir); color: var(--blanc); }
+.sv-nav__num {
+  display: grid; place-items: center; flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%;
+  background: var(--c); color: var(--fg, var(--blanc)); font: 800 13px/1 var(--titre);
+}
+@media (min-width: 900px) {
+  .sv-nav__piste li { flex: 1 1 0; }
+  .sv-nav__lien { justify-content: center; }
+}
+
+/* ---------- Approche ---------- */
+.sv-approche-section { padding-top: calc(var(--espace) + 12px); }
+.sv-approche { display: grid; gap: clamp(16px, 2vw, 24px); grid-template-columns: 1fr; }
+@media (min-width: 820px) { .sv-approche { grid-template-columns: repeat(3, 1fr); } }
+.sv-approche h3 { margin-top: 6px; }
+.sv-approche p { font-size: 16px; color: var(--texte-2); }
+
+/* ---------- Les 4 pôles ---------- */
+.sv-pole__marque { display: flex; align-items: center; gap: 16px; }
+.sv-pole__tag { font: 800 12.5px/1.45 var(--titre); letter-spacing: .12em; text-transform: uppercase; color: var(--noir); }
+.sv-pole h2 { margin-top: 24px; }
+.sv-pole .riche strong { color: var(--c); }
+/* Pas de texte jaune sur fond clair : sur le pôle mobile, l'emphase devient
+   un surlignage jaune (texte noir sur aplat jaune). */
+.sv-pole--mobile .riche strong {
+  color: var(--noir); background: var(--jaune); padding: 0 .12em; border-radius: .12em;
+  -webkit-box-decoration-break: clone; box-decoration-break: clone;
+}
+.sv-pole__texte { margin-top: 20px; }
+
+.sv-pole__visuel { position: relative; }
+.sv-pole__visuel .cadre { aspect-ratio: 4 / 3; }
+.sv-pole__visuel .pastille-flottante { left: 16px; bottom: 16px; }
+@media (min-width: 900px) {
+  .sv-pole__visuel .cadre { aspect-ratio: 1; }
+  .sv-pole--inverse .sv-pole__visuel { order: -1; }
+}
+.sv-pole__suite { margin-top: clamp(48px, 6vw, 80px); }
+
+/* Filigrane de pôle : dans la marge haute, côté photo, jamais sur un titre. */
+.sv-pole__decor { --o: .14; width: 120px; top: clamp(16px, 3vw, 40px); right: 4%; transform: rotate(10deg); }
+.sv-pole--inverse .sv-pole__decor { width: 110px; transform: rotate(-16deg); }
+@media (min-width: 900px) { .sv-pole--inverse .sv-pole__decor { right: auto; left: 4%; } }
+.sv-pole--mobile .sv-pole__decor { --o: .3; }
+
+/* Dispositifs d'affichage (pôle 1) */
+.sv-dispositifs { margin-top: 30px; }
+.sv-label { margin-bottom: 14px; font: 800 12.5px/1.3 var(--titre); letter-spacing: .12em; text-transform: uppercase; color: var(--texte-3); }
+.sv-dispositifs .tag { --c: var(--rouge); background: var(--blanc); border: 1px solid var(--ligne); }
+
+/* Listes des pôles 2 à 4 : cartes numérotées, même hauteur par ligne */
+.sv-items { display: grid; gap: clamp(14px, 1.6vw, 20px); grid-template-columns: 1fr; }
+@media (min-width: 640px) { .sv-items { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1000px) { .sv-items--3 { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 1120px) { .sv-items--4 { grid-template-columns: repeat(4, 1fr); } }
+.sv-items .carte__corps { gap: 12px; padding: clamp(22px, 2.2vw, 28px); }
+.sv-items h3 { margin-top: 4px; font-size: 18px; line-height: 1.3; letter-spacing: -.01em; }
+.sv-items p { font-size: 15px; line-height: 1.6; color: var(--texte-2); }
+/* Petit écran : numéro et titre sur une ligne, texte pleine largeur dessous
+   (20 cartes empilées — chaque ligne gagnée compte). */
+@media (max-width: 639px) {
+  .sv-items .carte__corps { display: grid; grid-template-columns: 40px 1fr; align-items: center; gap: 12px 14px; padding: 22px 20px; }
+  .sv-items .sv-num { width: 40px; height: 40px; border-radius: 11px; font-size: 14px; }
+  .sv-items h3 { margin-top: 0; font-size: 17px; }
+  .sv-items p { grid-column: 1 / -1; }
+}
+
+/* ---------- Formats à l'échelle (pôle 1) ----------
+   Une scène = 16 m × 6,5 m, identique pour les 6 formats : les rectangles
+   se comparent entre eux. Tout est en pourcentage de la scène, donc juste
+   quelle que soit la largeur d'écran. */
+.sv-sous-tete { display: grid; gap: 10px; max-width: 760px; margin-bottom: clamp(24px, 3vw, 36px); }
+.sv-sous-tete p { font-size: 16.5px; color: var(--texte-2); }
+.sv-formats { display: grid; gap: 12px; grid-template-columns: repeat(2, 1fr); }
+@media (min-width: 760px) { .sv-formats { grid-template-columns: repeat(3, 1fr); gap: clamp(14px, 1.6vw, 20px); } }
+.sv-format { display: flex; flex-direction: column; background: var(--blanc); border: 1px solid var(--ligne); border-radius: var(--rayon-s); overflow: hidden; }
+.sv-format__cadre { padding: clamp(14px, 2vw, 24px) clamp(10px, 1.6vw, 20px) 0; background: var(--gris-6); }
+.sv-format__scene { position: relative; aspect-ratio: 16 / 6.5; border-bottom: 2px solid var(--noir); }
+.sv-format__humain { position: absolute; left: 0; bottom: 0; width: calc(.5 / 16 * 100%); height: calc(1.75 / 6.5 * 100%); fill: var(--texte-3); }
+.sv-format__rect {
+  position: absolute; bottom: 0; left: calc(1.2 / 16 * 100%);
+  width: calc(var(--l) / 16 * 100%); height: calc(var(--h) / 6.5 * 100%);
+  background: var(--rouge); border-radius: 2px 2px 0 0;
+}
+.sv-format__rect--max { background: none; border: 2px dashed var(--rouge); border-bottom: 0; }
+.sv-format__corps { display: grid; gap: 2px; align-content: start; padding: 14px clamp(12px, 1.6vw, 20px) 18px; }
+.sv-format h4 { font-size: clamp(15px, 1.4vw, 17.5px); line-height: 1.25; letter-spacing: -.01em; }
+.sv-format__dim { font-size: 14px; color: var(--texte-3); }
+.sv-format__surface { margin-top: 6px; font: 800 clamp(16px, 1.5vw, 19px)/1.2 var(--titre); color: var(--rouge); }
+
+/* ---------- Parcours phygital : frise en 4 temps ---------- */
+.sv-parcours { display: grid; grid-template-columns: 1fr; }
+.sv-parcours li { position: relative; display: grid; grid-template-columns: 64px 1fr; align-content: start; gap: 20px; padding-bottom: 36px; }
+.sv-parcours li:last-child { padding-bottom: 0; }
+.sv-parcours__n {
+  position: relative; z-index: 1; display: grid; place-items: center; width: 64px; height: 64px; border-radius: 50%;
+  background: var(--c); color: var(--fg, var(--blanc)); font: 800 20px/1 var(--titre);
+}
+/* Liaison : verticale sur mobile, horizontale sur ordinateur */
+.sv-parcours li:not(:last-child)::after { content: ""; position: absolute; left: 31px; top: 74px; bottom: 30px; border-left: 2px dashed var(--texte-3); }
+.sv-parcours__fleche { position: absolute; left: 21px; bottom: 6px; width: 22px; height: 22px; color: var(--texte-3); transform: rotate(90deg); }
+.sv-parcours h3 { margin-top: 16px; }
+.sv-parcours p { margin-top: 8px; font-size: 15.5px; color: var(--texte-2); }
+@media (min-width: 900px) {
+  .sv-parcours { grid-template-columns: repeat(4, 1fr); gap: clamp(24px, 3vw, 40px); }
+  .sv-parcours li { grid-template-columns: 1fr; gap: 6px; padding-bottom: 0; }
+  .sv-parcours li:not(:last-child)::after { left: 76px; right: 6px; top: 31px; bottom: auto; border-left: 0; border-top: 2px dashed var(--texte-3); }
+  .sv-parcours__fleche { left: auto; right: -6px; top: 21px; bottom: auto; transform: none; }
+}
+
+/* ---------- Méthode : frise numérotée sur fond noir ---------- */
+.sv-methode-section .sur { color: var(--jaune); }
+.sv-methode-section .t2 em { color: var(--jaune); }
+.sv-methode-section .chapo { color: rgba(255,255,255,.78); }
+.sv-methode { display: grid; grid-template-columns: 1fr; }
+.sv-methode li { position: relative; padding: 0 0 36px 48px; }
+/* segment de couleur + point d'étape */
+.sv-methode li::before { content: ""; position: absolute; left: 7px; top: 10px; bottom: -10px; width: 3px; background: var(--c); }
+.sv-methode li:last-child::before { display: none; }
+.sv-methode li::after { content: ""; position: absolute; left: 0; top: 2px; width: 17px; height: 17px; border-radius: 50%; background: var(--c); box-shadow: 0 0 0 5px var(--noir); }
+.sv-methode__n { display: block; font: 800 clamp(30px, 3vw, 40px)/1 var(--titre); letter-spacing: -.03em; color: var(--blanc); }
+.sv-methode h3 { margin-top: 12px; font-size: 19px; line-height: 1.3; letter-spacing: -.01em; }
+.sv-methode p { margin-top: 8px; font-size: 15.5px; line-height: 1.6; color: rgba(255,255,255,.74); }
+@media (min-width: 640px) {
+  .sv-methode { grid-template-columns: repeat(2, 1fr); row-gap: 52px; }
+  .sv-methode li { padding: 38px 28px 0 0; }
+  .sv-methode li::before, .sv-methode li:last-child::before { display: block; left: 0; right: 0; top: 7px; bottom: auto; width: auto; height: 3px; }
+  .sv-methode li::after { top: 0; }
+}
+@media (min-width: 1000px) { .sv-methode { grid-template-columns: repeat(4, 1fr); } }
+
+/* ---------- Objectifs ---------- */
+.sv-objectifs { display: grid; gap: 12px; grid-template-columns: 1fr; }
+@media (min-width: 640px) { .sv-objectifs { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1100px) { .sv-objectifs { grid-template-columns: repeat(4, 1fr); gap: 16px; } }
+.sv-objectif {
+  display: flex; align-items: center; gap: 14px; min-height: 80px; padding: 16px 18px;
+  background: var(--blanc); border: 1px solid var(--ligne); border-radius: var(--rayon-s);
+  font: 700 15.5px/1.35 var(--titre); letter-spacing: -.005em; color: var(--noir);
+}
+.sv-objectif__rond { display: grid; place-items: center; flex-shrink: 0; width: 38px; height: 38px; border-radius: 50%; background: var(--c); color: var(--fg, var(--blanc)); }
+.sv-objectif__rond .ic { width: 18px; height: 18px; stroke-width: 2.8; }
