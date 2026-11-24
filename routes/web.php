@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CibleController;
+use App\Http\Controllers\MarquetteController;
 use App\Http\Middleware\AdminProtege;
 use Illuminate\Support\Facades\Route;
 
@@ -40,6 +41,17 @@ Route::get('/contact/merci',    [CibleController::class, 'merci'])->name('contac
 Route::post('/devis',           [CibleController::class, 'submitDevis'])
     ->middleware(['throttle:devis-ip', 'throttle:devis-global'])
     ->name('devis.submit');
+
+// Maquette de refonte (2026-11-24) — servie à côté du site, sans le modifier.
+// Non indexée (noindex dans sa mise en page), absente du menu. Le
+// formulaire de sa page contact poste sur la vraie route /devis.
+Route::prefix('marquette')->name('marquette.')->controller(MarquetteController::class)->group(function () {
+    Route::get('/',                'accueil')->name('accueil');
+    Route::get('/qui-sommes-nous', 'qui')->name('qui');
+    Route::get('/services',        'services')->name('services');
+    Route::get('/reseau',          'reseau')->name('reseau');
+    Route::get('/contact',         'contact')->name('contact');
+});
 
 // Endpoint JSON de la carte réseau — lit un fichier statique
 // public/data/reseau-map.json (pas de BDD, découplé de Panora).

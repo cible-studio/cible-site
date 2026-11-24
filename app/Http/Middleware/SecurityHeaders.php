@@ -44,6 +44,9 @@ class SecurityHeaders
         // ne sont pas configurées — la CSP décrit ce qui est permis, pas ce
         // qui est chargé, et cela évite un oubli le jour de l'activation.
         $turnstile = 'https://challenges.cloudflare.com';
+        // Photos provisoires de la maquette /marquette (2026-11-24), en
+        // attendant les visuels CIBLE. Images seulement, aucun script.
+        $unsplash = 'https://images.unsplash.com';
 
         $csp = implode('; ', [
             "default-src 'self'",
@@ -51,7 +54,7 @@ class SecurityHeaders
             "object-src 'none'",                  // ni Flash ni plugin
             "frame-ancestors 'none'",             // anti-clickjacking (remplace X-Frame-Options)
             "form-action 'self'",                 // le formulaire ne peut poster que chez nous
-            "img-src 'self' data: {$tuiles} {$leaflet} {$ga} {$adsHotes}",
+            "img-src 'self' data: {$tuiles} {$leaflet} {$ga} {$adsHotes} {$unsplash}",
             // 'unsafe-inline' est nécessaire : le site est construit sur des
             // styles et scripts en ligne. La protection reste réelle — aucun
             // script d'une origine non listée ne peut s'exécuter, et le

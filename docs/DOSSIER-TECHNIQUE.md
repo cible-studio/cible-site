@@ -591,6 +591,18 @@ recréer sur un poste de développement.
 **Tester en 360 px et en 1440 px.** Le site est majoritairement consulté depuis
 Abidjan, sur des téléphones Android d'entrée de gamme en 3G/4G.
 
+### Maquette de refonte `/marquette` (2026-11-24)
+
+Proposition de refonte servie à côté du site, sans le modifier : mêmes textes,
+nouvelle mise en page, 4 pôles mis au même niveau, corrections de l'audit
+PPC.io intégrées. Non indexée, sans GTM. Détail (fichiers, photos provisoires,
+police, suppression) : section « Maquette de refonte » de `CLAUDE.md`.
+
+Contrôle visuel fidèle en mobile : Chrome impose une largeur de fenêtre
+minimale et la CSP interdit l'iframe (`frame-ancestors 'none'`) ; les captures
+de contrôle passent donc par le protocole DevTools
+(`Emulation.setDeviceMetricsOverride`, largeur 360, `mobile: true`).
+
 ---
 
 ## 16. Points ouverts

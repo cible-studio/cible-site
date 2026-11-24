@@ -41,7 +41,29 @@ class CibleController extends Controller
     public function qui()              { return view('qui-sommes-nous',   $this->baseData('qui')); }
     public function services()         { return view('services',          $this->baseData('services')); }
     public function reseau()           { return view('reseau',            $this->baseData('reseau')); }
-    public function references()       { return view('references',        $this->baseData('references') + ['projets' => self::projets()]); }
+    public function references(Request $request)
+    {
+        if ($masquees = $this->realisationsMasquees($request)) {
+            return $masquees;
+        }
+
+        return view('references', $this->baseData('references') + ['projets' => self::projets()]);
+    }
+
+    /**
+     * Réalisations masquées (config cible.realisations_visibles) : renvoie la
+     * redirection vers /services, ou null pour afficher la page. Redirection
+     * temporaire (302) : la page reviendra, les moteurs ne doivent pas
+     * l'oublier. L'admin connecté passe, pour préparer le contenu.
+     */
+    private function realisationsMasquees(Request $request)
+    {
+        if (config('cible.realisations_visibles') || \App\Support\AdminAuth::connecte($request)) {
+            return null;
+        }
+
+        return redirect()->route('services');
+    }
     public function contact()          { return view('contact',           $this->baseData('contact')); }
 
     /**
@@ -70,8 +92,12 @@ class CibleController extends Controller
      * Contenu 100 % statique issu du document textes (pas de BDD).
      * Un slug inconnu renvoie un 404 standard.
      */
-    public function realisation(string $slug)
+    public function realisation(Request $request, string $slug)
     {
+        if ($masquees = $this->realisationsMasquees($request)) {
+            return $masquees;
+        }
+
         $projets = self::projets();
 
         abort_unless(isset($projets[$slug]), 404);

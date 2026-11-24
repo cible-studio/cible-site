@@ -1,0 +1,201 @@
+/* ==========================================================================
+   CIBLE — maquette de refonte · page NOTRE RÉSEAU (/marquette/reseau)
+   Styles propres à la page ; tout le reste vient de mq.css (jetons, cartes,
+   territoires, chiffres…). Préfixe « rs- » pour ne rien heurter.
+   ========================================================================== */
+
+/* ---------- Héro (composition commune : .page-hero de mq.css) ---------- */
+.rs-vers-carte:hover .ic { transform: translateY(3px); }
+
+/* Les deux totaux officiels, posés sur la photo. */
+.chiffres.rs-hero__chiffres {
+  grid-template-columns: 1fr 1fr; position: relative; z-index: 2;
+  margin: -44px 14px 0; box-shadow: var(--ombre);
+}
+@media (min-width: 960px) {
+  .chiffres.rs-hero__chiffres { position: absolute; left: -28px; bottom: -40px; width: min(440px, 84%); margin: 0; }
+  .rs-hero { padding-bottom: clamp(88px, 8vw, 120px); }
+}
+
+/* ---------- Carte interactive ---------- */
+.no-js .rs-zones-btn, .no-js .rs-carte { display: none; }
+.rs-carte-bloc { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); grid-template-areas: "zones" "carte" "pied"; }
+.rs-zones-btn { grid-area: zones; }
+.rs-carte { grid-area: carte; }
+.rs-carte-pied { grid-area: pied; }
+/* Ordinateur : panneau latéral gris sur toute la hauteur de la carte. */
+@media (min-width: 1000px) {
+  .rs-carte-bloc {
+    grid-template-columns: minmax(0, 1fr) 320px; grid-template-rows: auto 1fr;
+    grid-template-areas: "carte zones" "carte pied"; gap: 0 24px;
+  }
+  .rs-carte-bloc::before { content: ""; grid-column: 2; grid-row: 1 / 3; border-radius: var(--rayon); background: var(--gris-6); }
+  .rs-zones-btn, .rs-carte-pied { position: relative; z-index: 1; grid-column: 2; }
+  .rs-zones-btn { flex-direction: column; flex-wrap: nowrap; padding: 24px 24px 0; }
+}
+
+/* Boutons de zone = légende des couleurs + raccourci de cadrage. */
+.rs-zones-btn { display: flex; flex-wrap: wrap; gap: 10px; }
+.rs-zone-btn {
+  display: inline-flex; align-items: center; gap: 12px; min-height: 48px; padding: 0 20px 0 16px;
+  border: 2px solid var(--ligne); border-radius: 999px; background: var(--blanc);
+  font: 700 15px/1.1 var(--titre); color: var(--noir);
+  transition: background-color .2s, border-color .2s, color .2s;
+}
+.rs-zone-btn:hover { border-color: var(--noir); }
+.rs-zone-btn[aria-pressed="true"] { background: var(--noir); border-color: var(--noir); color: var(--blanc); }
+.rs-zone-btn i, .rs-pin__point {
+  border-radius: 50%; background: var(--c); border: 3px solid var(--blanc);
+  box-shadow: 0 0 0 1.5px var(--noir);
+}
+.rs-zone-btn i { width: 18px; height: 18px; flex-shrink: 0; }
+@media (min-width: 1000px) { .rs-zone-btn { width: 100%; min-height: 56px; font-size: 16px; } }
+
+.rs-carte {
+  position: relative; isolation: isolate; /* les contrôles Leaflet (z-index 1000) restent sous l'en-tête */
+  height: clamp(380px, 56vh, 460px); overflow: hidden;
+  border: 1px solid var(--ligne); border-radius: var(--rayon); background: var(--gris-6);
+}
+@media (min-width: 900px) { .rs-carte { height: clamp(540px, 66vh, 640px); } }
+.rs-carte__map { position: absolute; inset: 0; }
+/* Hors de Côte d'Ivoire : gris plein ; le pays est dessiné en blanc (reseau.js). */
+.rs-carte .leaflet-container { background: var(--gris); font: 600 13px/1.4 var(--corps); }
+.rs-carte .leaflet-container:focus-visible { outline: 3px solid var(--noir); outline-offset: -3px; }
+
+/* États : chargement, vide, erreur. */
+.rs-carte__etat {
+  position: absolute; inset: 0; z-index: 1100; display: grid; place-items: center; padding: 24px;
+  background: var(--gris-6); text-align: center; font: 700 15px/1.45 var(--titre); color: var(--texte-2);
+}
+.rs-carte__etat[hidden], .rs-carte__etat > span[hidden] { display: none; }
+.rs-carte__etat > span { display: grid; justify-items: center; gap: 12px; }
+.rs-carte__etat small { font: 600 14px/1.5 var(--corps); color: var(--texte-3); }
+.rs-carte__etat a { color: var(--noir); text-decoration: underline; text-underline-offset: 3px; }
+.rs-spin { width: 34px; height: 34px; border-radius: 50%; border: 3px solid var(--rouge-7); border-top-color: var(--rouge); animation: rs-tourne .9s linear infinite; }
+@keyframes rs-tourne { to { transform: rotate(360deg); } }
+
+/* Écran tactile : rappel « deux doigts » quand un doigt glisse sur la carte. */
+.rs-carte__aide {
+  position: absolute; inset: 0; z-index: 1050; display: grid; place-items: center; margin: 0; padding: 24px;
+  background: rgba(17,17,17,.58); color: var(--blanc); font: 700 17px/1.4 var(--titre); text-align: center;
+  opacity: 0; pointer-events: none; transition: opacity .25s;
+}
+.rs-carte__aide.est-visible { opacity: 1; }
+
+/* Repères : point + nom. Le conteneur Leaflet fait 0 × 0 px, ancré sur la
+   coordonnée ; le point est centré dessus, le nom part à droite (ou à
+   gauche s'il chevauche un voisin — cf. reseau.js). */
+.rs-pin-boite { background: none; border: 0; }
+.rs-pin {
+  --r: 9px; /* rayon du point : c'est son centre qui est posé sur la coordonnée */
+  position: absolute; left: 0; top: 0; display: flex; align-items: center; gap: 6px;
+  width: max-content; transform: translate(calc(-1 * var(--r)), -50%);
+}
+/* Mouvement réduit : mq.css donne alors .01ms de transition à TOUT élément
+   (propriété « all » par défaut). Dans la carte, repères et calques
+   arrivaient à leur place une image trop tard, et reseau.js mesurait les
+   étiquettes à leur ancienne position. Hors de ce mode, rien n'est touché
+   (Leaflet anime lui-même ses zooms). */
+@media (prefers-reduced-motion: reduce) {
+  .rs-carte .leaflet-container, .rs-carte .leaflet-container * { transition: none !important; }
+}
+.rs-pin__point { position: relative; width: 18px; height: 18px; flex-shrink: 0; box-shadow: 0 0 0 1.5px var(--noir), 0 2px 6px rgba(17,17,17,.3); }
+.rs-pin__point::before { content: ""; position: absolute; inset: -13px; border-radius: 50%; } /* zone tactile ≥ 44 px */
+.rs-pin__nom {
+  padding: 4px 10px; border-radius: 999px; background: var(--blanc); white-space: nowrap;
+  border: 1px solid rgba(17,17,17,.16); box-shadow: 0 2px 6px rgba(17,17,17,.14);
+  font: 700 12.5px/1.25 var(--titre); color: var(--noir);
+}
+@media (max-width: 599px) { .rs-pin__nom { padding: 3px 8px; font-size: 12px; } }
+.rs-pin--gauche { flex-direction: row-reverse; transform: translate(calc(-100% + var(--r)), -50%); }
+.rs-pin--haut { flex-direction: column-reverse; gap: 4px; transform: translate(-50%, calc(-100% + var(--r))); }
+.rs-pin--bas { flex-direction: column; gap: 4px; transform: translate(-50%, calc(-1 * var(--r))); }
+.rs-pin--muet .rs-pin__nom { visibility: hidden; }
+.rs-pin-boite:hover .rs-pin__nom { background: var(--noir); color: var(--blanc); }
+
+/* Grand Abidjan regroupé (vue d'ensemble) : une seule étiquette, cliquable. */
+.rs-pin--groupe { --r: 11px; }
+.rs-pin--groupe .rs-pin__point { width: 22px; height: 22px; }
+.rs-pin--groupe .rs-pin__nom { padding: 6px 13px; background: var(--rouge); color: var(--blanc); font-size: 13.5px; }
+.rs-pin-boite:hover .rs-pin--groupe .rs-pin__nom { background: var(--rouge-fonce); }
+.rs-pin-boite:focus { outline: none; }
+.rs-pin-boite:focus-visible .rs-pin__nom { outline: 3px solid var(--noir); outline-offset: 2px; }
+
+/* Bulle d'information */
+.rs-carte .leaflet-popup-content-wrapper { border-radius: 16px; box-shadow: var(--ombre-forte); }
+.rs-carte .leaflet-popup-tip { box-shadow: none; }
+.rs-carte .leaflet-popup-content { margin: 16px 40px 16px 18px; font: 400 14px/1.5 var(--corps); color: var(--texte-2); }
+.rs-carte .leaflet-container a.leaflet-popup-close-button { width: 40px; height: 40px; font: 400 24px/40px var(--titre); color: var(--texte-3); }
+.rs-popup strong { display: block; font: 800 17px/1.2 var(--titre); letter-spacing: -.01em; color: var(--noir); }
+.rs-popup em { display: block; margin-top: 2px; font: 600 13.5px/1.4 var(--corps); font-style: normal; color: var(--texte-3); }
+.rs-popup__couvert { display: flex; align-items: center; gap: 8px; margin-top: 10px; font: 700 13.5px/1.35 var(--corps); color: var(--noir); }
+.rs-popup__couvert::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--c); box-shadow: 0 0 0 1.5px var(--noir); flex-shrink: 0; }
+
+/* Contrôles : zones tactiles de 44 px. */
+.rs-carte .leaflet-bar.leaflet-control-zoom { border: 0; border-radius: 14px; overflow: hidden; box-shadow: var(--ombre); }
+.rs-carte .leaflet-bar.leaflet-control-zoom a { width: 44px; height: 44px; font: 700 22px/44px var(--titre); color: var(--noir); }
+.rs-carte .leaflet-control-container .leaflet-top.leaflet-left { margin: 4px 0 0 4px; }
+/* Crédits décollés du coin arrondi, qui les rognait. */
+.rs-carte .leaflet-container .leaflet-control-attribution {
+  margin: 0 16px 10px 0; padding: 2px 8px; border-radius: 6px; background: rgba(255,255,255,.88);
+  font: 600 11px/1.5 var(--corps); color: var(--texte-3);
+}
+.rs-carte .leaflet-container .leaflet-control-attribution a { color: var(--texte-2); text-decoration: underline; text-underline-offset: 2px; }
+
+/* Note + action : sous la carte (mobile, tablette), bas du panneau (ordinateur). */
+.rs-carte-pied { display: grid; gap: 16px; margin-top: 8px; align-items: center; }
+@media (min-width: 700px) and (max-width: 999px) { .rs-carte-pied { grid-template-columns: 1fr auto; gap: 40px; } }
+@media (min-width: 1000px) { .rs-carte-pied { align-self: end; margin-top: 0; padding: 24px; } }
+.rs-carte-note { display: flex; gap: 14px; align-items: flex-start; max-width: 76ch; font-size: 15.5px; line-height: 1.6; color: var(--texte-2); }
+@media (min-width: 1000px) { .rs-carte-note { flex-direction: column; gap: 12px; font-size: 15px; } }
+.rs-carte-note__ic { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; flex-shrink: 0; background: var(--rouge-7); color: var(--rouge); }
+.rs-carte-note__ic .ic { width: 20px; height: 20px; }
+
+/* ---------- Couverture territoriale (territoires de mq.css) ---------- */
+.territoire.rs-zone { gap: 18px; }
+.rs-zone__haut { display: flex; align-items: center; gap: 14px; }
+.rs-zone__ic { width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; flex-shrink: 0; background: var(--fg); color: var(--c); }
+.rs-zone__ic .ic { width: 22px; height: 22px; }
+.territoire.rs-zone h3 { font-size: clamp(26px, 2.6vw, 34px); line-height: 1.1; letter-spacing: -.025em; }
+.territoire.rs-zone .tags { margin-top: 2px; }
+.territoire .rs-zone__note {
+  margin-top: auto; padding-top: 16px; border-top: 1px solid currentColor;
+  border-color: color-mix(in srgb, currentColor 28%, transparent);
+  font: 700 14.5px/1.5 var(--corps);
+}
+
+/* ---------- Formats ---------- */
+.rs-grille-4 { display: grid; gap: clamp(16px, 2vw, 24px); grid-template-columns: 1fr; }
+@media (min-width: 620px) { .rs-grille-4 { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 1100px) { .rs-grille-4 { grid-template-columns: repeat(4, 1fr); } }
+.rs-format .t3 { font-size: clamp(19px, 1.6vw, 21px); }
+
+/* Pictogramme : un panneau à l'échelle de son format (aplats). */
+.rs-picto { position: relative; display: block; width: 100px; height: 66px; border-bottom: 3px solid var(--ligne); }
+.rs-picto i { position: absolute; left: 50%; bottom: 0; width: var(--l); height: var(--h); transform: translateX(-50%); }
+.rs-picto i::before { content: ""; position: absolute; inset: 0 0 auto; height: var(--hp); border-radius: 5px; background: var(--c); }
+.rs-picto i::after { content: ""; position: absolute; left: 50%; bottom: 0; width: 4px; height: calc(100% - var(--hp)); margin-left: -2px; background: var(--noir); }
+.rs-picto--classique { --l: 50px; --h: 46px; --hp: 28px; }
+.rs-picto--grand     { --l: 92px; --h: 62px; --hp: 42px; }
+.rs-picto--lumineux  { --l: 50px; --h: 50px; --hp: 30px; }
+.rs-picto--lumineux i::before { box-shadow: 0 0 0 4px var(--blanc), 0 0 0 7px var(--c); }
+.rs-picto--proximite { --l: 26px; --h: 50px; --hp: 36px; }
+
+/* ---------- Media Intelligence (fond noir : couleurs de .section--noir) ---------- */
+.rs-briques { display: grid; gap: 14px; grid-template-columns: 1fr; }
+@media (min-width: 620px) { .rs-briques { grid-template-columns: 1fr 1fr; } }
+.rs-brique {
+  position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 10px;
+  padding: clamp(22px, 2.6vw, 32px); border: 1px solid rgba(255,255,255,.16); border-radius: var(--rayon);
+}
+/* Même liseré, même rayon, mêmes marges que les cartes blanches (.carte). */
+.rs-brique::before { content: ""; position: absolute; inset: 0 0 auto; height: 5px; background: var(--c); }
+.rs-brique__n { font: 800 30px/1 var(--titre); letter-spacing: -.02em; color: var(--c); }
+.rs-brique h3 { font-size: 18.5px; line-height: 1.3; letter-spacing: -.01em; }
+.rs-brique p { font-size: 15px; line-height: 1.6; color: rgba(255,255,255,.74); }
+
+/* ---------- Exigence terrain ---------- */
+.rs-exigence__photo { aspect-ratio: 4 / 4.4; }
+@media (max-width: 899px) { .rs-exigence__photo { aspect-ratio: 4 / 3; } }
+.rs-coche { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--rouge); color: var(--blanc); margin-top: 1px; }
+.rs-coche .ic { width: 18px; height: 18px; stroke-width: 2.8; }

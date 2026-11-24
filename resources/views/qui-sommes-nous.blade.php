@@ -155,7 +155,9 @@
     <h2 class="t2">{{ \App\Support\Contenu::get('qui.cta_titre') }}</h2>
     <div style="margin-top:28px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
         <a class="bouton b-rouge" href="{{ route('contact') }}">{{ \App\Support\Contenu::get('qui.cta_bouton1') }}</a>
+        @if(config('cible.realisations_visibles'))
         <a class="bouton b-ligne" href="{{ route('references') }}">{{ \App\Support\Contenu::get('qui.cta_bouton2') }}</a>
+        @endif
     </div>
 </section>
 

@@ -1,0 +1,252 @@
+/* ==========================================================================
+   Maquette — page CONTACT. Complète mq.css (jetons, boutons, .coord…)
+   sans jamais la contredire.
+   · Champs et boutons ≥ 48 px, texte ≥ 16 px dans les champs (pas de zoom
+     automatique sur iPhone), libellés toujours visibles.
+   · Bord des champs à 3:1 contre le blanc (WCAG 1.4.11) : le gris de
+     filet (--ligne) ne suffit pas pour délimiter une zone de saisie.
+   ========================================================================== */
+
+.contact-corps, .contact-hero { --bord-champ: #8E8E8B; }
+
+/* ---------- Héro ---------- */
+.contact-hero { position: relative; padding-bottom: clamp(32px, 3.5vw, 44px); }
+.contact-hero .wrap { position: relative; z-index: 1; }
+.contact-hero__grille { display: grid; gap: 22px clamp(32px, 5vw, 72px); }
+@media (min-width: 960px) { .contact-hero__grille { grid-template-columns: 1.05fr .95fr; align-items: end; } }
+.contact-hero .chapo { margin-top: 0; }
+/* Accroche (.accroche) et flèche (.page-hero__fleche) : mq.css. */
+
+/* Bénéfices : pastilles cochées. Bande de 5 cellules égales sur grand écran
+   (même dessin que la bande de chiffres de l'accueil), simple liste en
+   dessous : une bande qui passe à la ligne laissait une cellule orpheline
+   (4 + 1 à 1024 px). */
+.benefices { display: grid; gap: 12px; margin-top: 28px; }
+.benefices li { display: flex; align-items: center; gap: 12px; font: 700 15.5px/1.35 var(--titre); color: var(--noir); }
+.benefices .rond { width: 30px; height: 30px; border-radius: 50%; background: var(--rouge); color: var(--blanc); display: grid; place-items: center; flex-shrink: 0; }
+.benefices .rond .ic { width: 16px; height: 16px; stroke-width: 2.8; }
+@media (min-width: 640px) and (max-width: 899px) { .benefices { grid-template-columns: 1fr 1fr; gap: 14px 24px; } }
+@media (min-width: 900px) {
+  .benefices { grid-template-columns: repeat(5, 1fr); gap: 1px; margin-top: clamp(32px, 3.5vw, 44px); background: var(--ligne); border: 1px solid var(--ligne); border-radius: var(--rayon); overflow: hidden; }
+  .benefices li { flex-direction: column; align-items: flex-start; gap: 12px; padding: 20px clamp(16px, 1.6vw, 22px); background: var(--blanc); }
+}
+
+/* ---------- Bloc principal : formulaire + colonne d'appui ---------- */
+.contact-corps { padding-top: clamp(28px, 3.5vw, 44px); }
+.contact-grille { display: grid; gap: clamp(20px, 3vw, 40px); }
+@media (min-width: 1100px) {
+  .contact-grille { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); align-items: start; gap: 40px; }
+  /* Colonnes collantes : --colle est calculé par contact.js (haut de la
+     colonne si elle tient à l'écran, sinon ancrage par le bas). Sans
+     JavaScript, top:auto = défilement normal. */
+  .contact-grille > * { position: sticky; top: var(--colle, auto); }
+}
+
+/* ---------- Carte du formulaire ---------- */
+.form-carte {
+  position: relative; overflow: hidden;
+  background: var(--blanc); border: 1px solid var(--ligne); border-radius: var(--rayon);
+  padding: clamp(22px, 3.4vw, 44px); box-shadow: var(--ombre);
+}
+.form-carte::before { content: ""; position: absolute; inset: 0 0 auto; height: 5px; background: var(--rouge); }
+.form-carte h2 { font-weight: 800; font-size: clamp(24px, 2.3vw, 31px); line-height: 1.15; letter-spacing: -.025em; text-wrap: balance; }
+.form-carte__sous { margin-top: 10px; font-size: 16px; line-height: 1.6; color: var(--texte-2); max-width: 60ch; }
+#formulaire [hidden] { display: none !important; }
+
+/* Alerte de retour d'erreur */
+.alerte {
+  display: flex; gap: 14px; align-items: flex-start; margin-top: 22px; padding: 16px 18px;
+  border-radius: var(--rayon-s); background: var(--rouge-7); border-left: 5px solid var(--rouge);
+  font: 700 15px/1.5 var(--titre); color: var(--noir);
+}
+.alerte p + p { margin-top: 6px; }
+.alerte__signe { width: 26px; height: 26px; border-radius: 50%; background: var(--rouge); color: var(--blanc); display: grid; place-items: center; flex-shrink: 0; font: 800 15px/1 var(--titre); }
+
+/* Confirmation (si la maquette sert un jour /contact/merci) */
+.succes { display: grid; justify-items: start; gap: 14px; }
+.succes__rond { width: 56px; height: 56px; border-radius: 50%; background: var(--vert); color: var(--blanc); display: grid; place-items: center; }
+.succes__rond .ic { width: 28px; height: 28px; stroke-width: 2.8; }
+.succes p { font-size: 17px; color: var(--texte-2); }
+
+/* ---------- Progression ---------- */
+.progres { margin-top: clamp(24px, 3vw, 32px); padding: 16px 18px 18px; border-radius: var(--rayon-s); background: var(--gris-6); }
+.progres__texte { font: 600 14.5px/1.3 var(--titre); color: var(--texte-3); }
+.progres__texte b { font-weight: 800; color: var(--noir); }
+.progres__pas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 12px; }
+.progres__pas li { display: grid; gap: 9px; min-width: 0; }
+.progres__barre { height: 6px; border-radius: 6px; background: var(--gris); transition: background-color .3s; }
+.progres__nom { display: flex; align-items: center; gap: 7px; font: 700 13px/1.2 var(--titre); color: var(--texte-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.progres__nom .num { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--gris); color: var(--texte-2); font-size: 11.5px; flex-shrink: 0; transition: background-color .3s, color .3s; }
+.progres__pas [data-etat="fait"] .progres__barre, .progres__pas [data-etat="fait"] .num { background: var(--noir); color: var(--blanc); }
+.progres__pas [data-etat="courant"] .progres__barre, .progres__pas [data-etat="courant"] .num { background: var(--rouge); color: var(--blanc); }
+.progres__pas [data-etat="fait"] .progres__nom, .progres__pas [data-etat="courant"] .progres__nom { color: var(--noir); }
+/* Mobile : le texte « Étape 2 sur 4 · Votre projet » suffit, les barres restent. */
+@media (max-width: 599px) { .progres__nom { display: none; } .progres__pas { gap: 5px; } }
+
+/* ---------- Étapes et blocs ---------- */
+.etape { margin-top: clamp(28px, 3vw, 36px); }
+/* Sans JavaScript : les étapes s'enchaînent, séparées d'un filet. */
+.etape + .etape { padding-top: 32px; border-top: 1px solid var(--ligne); }
+.js-etapes .etape { display: none; padding-top: 0; border-top: 0; }
+.js-etapes .etape[data-courant] { display: block; }
+.bloc + .bloc { margin-top: 32px; padding-top: 30px; border-top: 1px solid var(--ligne); }
+.bloc__titre { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; font: 800 clamp(18px, 1.6vw, 20px)/1.25 var(--titre); letter-spacing: -.01em; }
+.bloc__titre:focus { outline: none; }
+.bloc__titre:focus-visible { outline: 3px solid var(--noir); }
+.bloc__n { width: 34px; height: 34px; border-radius: 10px; background: var(--rouge); color: var(--blanc); display: grid; place-items: center; flex-shrink: 0; font-size: 15px; }
+.bloc__option { font: 600 15px/1.3 var(--corps); letter-spacing: 0; color: var(--texte-3); }
+.bloc__intro { margin: -6px 0 16px; font-size: 15.5px; line-height: 1.55; color: var(--texte-2); }
+
+/* ---------- Champs texte ---------- */
+.champs { display: grid; gap: 20px 16px; }
+@media (min-width: 640px) { .champs { grid-template-columns: 1fr 1fr; } .champ--large { grid-column: 1 / -1; } }
+.champ { display: grid; gap: 8px; align-content: start; min-width: 0; }
+.champ label { font: 700 15px/1.3 var(--titre); color: var(--noir); }
+.req { color: var(--rouge); }
+.champ__aide { font-size: 14.5px; line-height: 1.5; color: var(--texte-3); }
+.champ input, .champ textarea {
+  width: 100%; min-height: 52px; padding: 12px 16px;
+  border: 1.5px solid var(--bord-champ); border-radius: 14px; background: var(--blanc);
+  font: 400 17px/1.4 var(--corps); color: var(--noir);
+  -webkit-appearance: none; appearance: none; transition: border-color .2s, background-color .2s;
+}
+.champ textarea { min-height: 168px; resize: vertical; }
+.champ input::placeholder, .champ textarea::placeholder { color: #8A8A87; opacity: 1; }
+.champ input:hover, .champ textarea:hover { border-color: var(--noir); }
+.champ input:focus, .champ textarea:focus { outline: 2px solid var(--noir); outline-offset: 0; border-color: var(--noir); }
+
+/* Erreurs */
+.erreur { display: flex; gap: 8px; align-items: flex-start; margin-top: 2px; font: 700 14px/1.45 var(--titre); color: var(--rouge-fonce); }
+.erreur::before { content: "!"; display: grid; place-items: center; width: 18px; height: 18px; margin-top: 1px; border-radius: 50%; background: var(--rouge); color: var(--blanc); font-size: 11.5px; flex-shrink: 0; }
+.champ.est-erreur input, .champ.est-erreur textarea { border-color: var(--rouge); background: var(--rouge-7); }
+.groupe .erreur, .doc-zone .erreur, .consentement .erreur { margin-top: 12px; }
+
+/* ---------- Choix en pastilles ---------- */
+.groupe { border: 0; padding: 0; margin: 0; min-width: 0; }
+.groupe + .groupe { margin-top: 28px; }
+.groupe__legende { float: left; width: 100%; padding: 0; margin-bottom: 12px; font: 700 15.5px/1.35 var(--titre); color: var(--noir); }
+.groupe__legende + * { clear: both; }
+.choix-groupe { display: flex; flex-wrap: wrap; gap: 10px; }
+.choix { position: relative; display: flex; max-width: 100%; }
+/* Champ natif conservé (clavier, lecteurs d'écran) mais invisible : la
+   pastille entière, via le <label>, est la zone tactile. */
+.choix input { position: absolute; width: 1px; height: 1px; margin: 0; opacity: 0; }
+.choix__pastille {
+  display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 10px 18px 10px 13px;
+  border: 1.5px solid #D2D2CE; border-radius: 999px; background: var(--blanc);
+  font: 600 15.5px/1.3 var(--corps); color: var(--noir); cursor: pointer; user-select: none;
+  transition: background-color .15s, border-color .15s, color .15s;
+}
+.choix__case {
+  width: 22px; height: 22px; border: 2px solid var(--bord-champ); border-radius: 7px; background: var(--blanc);
+  display: grid; place-items: center; flex-shrink: 0; transition: background-color .15s, border-color .15s;
+}
+.choix input[type="radio"] + .choix__pastille .choix__case { border-radius: 50%; }
+.choix__case .ic { width: 14px; height: 14px; stroke-width: 3.4; opacity: 0; }
+.choix:hover .choix__pastille { border-color: var(--noir); }
+.choix input:checked + .choix__pastille { background: var(--noir); border-color: var(--noir); color: var(--blanc); }
+.choix input:checked + .choix__pastille .choix__case { background: var(--jaune); border-color: var(--jaune); color: var(--noir); }
+.choix input:checked + .choix__pastille .ic { opacity: 1; }
+.choix input:focus-visible + .choix__pastille { outline: 3px solid var(--rouge); outline-offset: 2px; }
+.groupe.est-erreur .choix__pastille { border-color: var(--rouge); }
+
+/* ---------- Documents ---------- */
+.docs { display: grid; gap: 12px; align-items: start; }
+@media (min-width: 640px) { .docs { grid-template-columns: 1fr 1fr; } }
+.doc-zone { display: grid; align-content: start; min-width: 0; }
+.doc {
+  display: grid; gap: 10px; padding: 14px 16px; cursor: pointer;
+  border: 1.5px dashed var(--bord-champ); border-radius: var(--rayon-s); background: var(--blanc);
+  transition: border-color .2s, background-color .2s;
+}
+.doc:hover { border-color: var(--noir); background: var(--gris-6); }
+.doc:focus-within { outline: 3px solid var(--noir); outline-offset: 2px; }
+.doc__nom { font: 700 15px/1.3 var(--titre); color: var(--noir); }
+.doc input[type="file"] { width: 100%; min-width: 0; font: 400 14px/1.35 var(--corps); color: var(--texte-2); cursor: pointer; }
+.doc input[type="file"]:focus { outline: none; }
+.doc input[type="file"]::file-selector-button {
+  min-height: 44px; margin-right: 12px; padding: 0 18px; border: 0; border-radius: 999px;
+  background: var(--noir); color: var(--blanc); font: 700 14px/1 var(--titre); cursor: pointer;
+}
+/* Avec JavaScript, le nom du fichier s'affiche en entier sous le bouton ;
+   sa ligne est réservée d'office : les 4 cases gardent la même hauteur. */
+html.js .doc input[type="file"] { color: transparent; }
+.doc__fichier { display: none; min-height: 1.4em; font: 600 14px/1.4 var(--corps); color: var(--noir); overflow-wrap: anywhere; }
+html.js .doc__fichier { display: block; }
+.doc-zone.est-erreur .doc { border-color: var(--rouge); background: var(--rouge-7); }
+
+/* ---------- Consentement, Turnstile ---------- */
+.consentement { margin-top: 30px; padding: 16px 18px; border-radius: var(--rayon-s); background: var(--gris-6); }
+.consentement label { display: flex; gap: 14px; align-items: flex-start; min-height: 44px; cursor: pointer; font-size: 15.5px; line-height: 1.55; color: var(--texte-2); }
+.consentement input { width: 24px; height: 24px; margin: 1px 0 0; accent-color: var(--rouge); flex-shrink: 0; cursor: pointer; }
+.consentement.est-erreur { background: var(--rouge-7); box-shadow: inset 0 0 0 1.5px var(--rouge); }
+.turnstile { margin-top: 22px; min-height: 65px; }
+
+/* ---------- Navigation entre étapes ---------- */
+.etape-nav { display: flex; flex-wrap: wrap; align-items: stretch; gap: 12px; margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--ligne); }
+.etape-nav .btn { min-height: 52px; }
+.etape-nav__suite { margin-left: auto; }
+.etape-nav__retour .ic { transform: rotate(180deg); }
+.etape-nav__retour:hover .ic { transform: rotate(180deg) translateX(3px); }
+.etape-nav .btn:disabled { opacity: .6; cursor: progress; transform: none; }
+.etape-nav__note { flex-basis: 100%; font-size: 14px; line-height: 1.5; color: var(--texte-3); }
+@media (max-width: 519px) {
+  /* Retour réduit à une flèche (nom conservé pour les lecteurs d'écran) :
+     le bouton principal garde toute la largeur. */
+  .etape-nav__retour { flex: 0 0 52px; padding: 0; }
+  .etape-nav__txt { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .etape-nav__suite { flex: 1 1 0; margin-left: 0; padding: 8px 18px; font-size: 15px; }
+  /* Dernière étape : le long libellé d'envoi prend toute la largeur,
+     puis la note, puis « Retour » (classe posée par contact.js). */
+  .etape-nav--fin .etape-nav__suite { order: -2; flex-basis: 100%; }
+  .etape-nav--fin .etape-nav__note { order: -1; }
+  .etape-nav--fin .etape-nav__retour { flex: 0 0 auto; padding: 0 22px; }
+  .etape-nav--fin .etape-nav__txt { position: static; width: auto; height: auto; overflow: visible; clip: auto; }
+}
+
+/* ---------- Colonne d'appui ---------- */
+.contact-cote { display: grid; gap: clamp(16px, 2vw, 20px); align-content: start; }
+.contact-cote h2:not(.sur) { font-weight: 800; font-size: clamp(21px, 1.9vw, 24px); line-height: 1.2; letter-spacing: -.02em; text-wrap: balance; }
+
+/* Coordonnées : aplat jaune, zones blanches (composant x-mq.coordonnees,
+   comme la bande contact des autres pages) */
+.cote-coord {
+  position: relative; overflow: hidden; isolation: isolate;
+  padding: clamp(22px, 2.4vw, 28px); border-radius: var(--rayon); background: var(--jaune); color: var(--noir);
+}
+.cote-coord::after {
+  content: ""; position: absolute; inset: 0; z-index: -1; background: var(--blanc); opacity: .22;
+  -webkit-mask: url("../img/marque/motif.svg") 0 0 / 240px auto repeat; mask: url("../img/marque/motif.svg") 0 0 / 240px auto repeat;
+}
+.cote-coord .sur { margin-bottom: 16px; }
+.cote-coord .coord { min-height: 64px; }
+@media (max-width: 519px) {
+  .cote-coord { padding: 20px 12px 12px; }
+  .cote-coord .sur { margin-left: 8px; }
+  .cote-coord .coord { gap: 12px; padding: 12px 14px; font-size: 15px; }
+}
+
+/* Engagements */
+.cote-reass { padding: clamp(22px, 2.4vw, 28px); border: 1px solid var(--ligne); border-radius: var(--rayon); background: var(--blanc); }
+.cote-reass h2 { margin-top: 14px; }
+.cote-reass > p { margin-top: 12px; font-size: 15.5px; line-height: 1.6; color: var(--texte-2); }
+.coches { display: grid; gap: 12px; margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--ligne); }
+.coches li { display: flex; gap: 12px; align-items: flex-start; font: 700 15px/1.45 var(--titre); color: var(--noir); }
+.coches .rond { width: 24px; height: 24px; margin-top: -1px; border-radius: 50%; background: var(--rouge); color: var(--blanc); display: grid; place-items: center; flex-shrink: 0; }
+.coches .rond .ic { width: 14px; height: 14px; stroke-width: 3; }
+
+/* Pourquoi CIBLE : aplat noir, pastilles des 5 couleurs */
+.cote-pourquoi { position: relative; overflow: hidden; isolation: isolate; padding: clamp(22px, 2.4vw, 28px); border-radius: var(--rayon); background: var(--noir); color: var(--blanc); }
+.cote-pourquoi h2 { position: relative; z-index: 1; color: var(--blanc); }
+.cote-pourquoi ul { position: relative; z-index: 1; display: grid; margin-top: 16px; }
+.cote-pourquoi li { display: flex; gap: 12px; align-items: flex-start; padding: 11px 0; border-top: 1px solid rgba(255,255,255,.14); font-size: 15.5px; line-height: 1.45; color: rgba(255,255,255,.9); }
+.cote-pourquoi li::before { content: ""; width: 9px; height: 9px; margin-top: 7px; border-radius: 50%; background: var(--c); flex-shrink: 0; }
+/* Tablette : la liste passe sur deux colonnes pour rester courte. */
+@media (min-width: 700px) and (max-width: 1099px) {
+  .cote-pourquoi ul { grid-template-columns: 1fr 1fr; column-gap: 28px; }
+}
+
+/* ---------- Barre d'action mobile (mise en page commune) ----------
+   Masquée tant que le formulaire occupe l'écran (classe posée par
+   contact.js) : elle ferait doublon et couvrirait les champs. */
+html.formulaire-en-vue .barre-action { transform: translateY(110%); }

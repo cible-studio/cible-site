@@ -149,7 +149,9 @@
     <p class="accroche">{{ \App\Support\Contenu::get('services.hero_accroche') }}</p>
     <div class="actions">
         <a class="bouton b-rouge" href="{{ route('contact') }}">{{ \App\Support\Contenu::get('services.hero_cta1') }}</a>
+        @if(config('cible.realisations_visibles'))
         <a class="bouton b-ligne" href="{{ route('references') }}">{{ \App\Support\Contenu::get('services.hero_cta2') }}</a>
+        @endif
     </div>
 </section>
 
@@ -438,7 +440,9 @@
     <p>{{ \App\Support\Contenu::get('services.cta_texte') }}</p>
     <div style="margin-top:32px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
         <a class="bouton b-rouge" href="{{ route('contact') }}">{{ \App\Support\Contenu::get('services.cta_bouton1') }}</a>
+        @if(config('cible.realisations_visibles'))
         <a class="bouton b-ligne" href="{{ route('references') }}">{{ \App\Support\Contenu::get('services.cta_bouton2') }}</a>
+        @endif
     </div>
 </section>
 

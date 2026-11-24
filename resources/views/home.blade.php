@@ -287,11 +287,26 @@
     .contact-home{background:var(--jaune);color:var(--noir);padding:clamp(60px,8vw,120px) var(--pad);position:relative;overflow:hidden}
     .motif{position:absolute;inset:-10% -10%;background-image:var(--tuile);background-size:340px 340px;animation:motifDerive 60s linear infinite;pointer-events:none;z-index:0}
     @keyframes motifDerive{from{background-position:0 0}to{background-position:340px 340px}}
-    .contact-inner{position:relative;z-index:2}
+    /* 2026-11-24 : la section envoie vers /contact (pas de second formulaire
+       ici). Grand bouton + ce qui se passe ensuite, et coordonnées en vraies
+       tuiles cliquables : l'ancien bandeau blanc ressemblait à un bouton mais
+       ne contenait que trois liens d'environ 24 px de haut (audit PPC.io). */
+    .contact-inner{position:relative;z-index:2;display:grid;gap:clamp(32px,5vw,64px);align-items:center}
+    @media(min-width:960px){.contact-inner{grid-template-columns:1.2fr .8fr}}
     .contact-home .t1{max-width:16ch}
     .contact-home p{margin-top:20px;max-width:44ch;font-size:clamp(16px,1.6vw,20px)}
-    .coord{margin-top:36px;display:flex;flex-wrap:wrap;gap:12px 40px;background:var(--blanc);padding:22px 28px;border-radius:22px;font-family:var(--titre);font-weight:700;font-size:15px}
-    .coord a:hover{color:var(--rouge)}
+    .contact-home .bouton{margin-top:30px;min-height:56px;padding:0 30px;font-size:15.5px}
+    @media(max-width:520px){.contact-home .bouton{width:100%;justify-content:center;padding:0 20px;text-align:center}}
+    .engagements{margin-top:18px;display:flex;flex-wrap:wrap;gap:8px 24px;list-style:none;font-weight:700;font-size:14.5px;line-height:1.4}
+    .engagements li{display:flex;align-items:flex-start;gap:8px}
+    .engagements svg{width:18px;height:18px;flex-shrink:0;margin-top:1px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+    .tuiles-contact{display:grid;gap:12px}
+    .tuile-contact{display:flex;align-items:center;gap:14px;min-height:64px;padding:12px 18px;background:var(--blanc);border-radius:18px;font-family:var(--titre);font-weight:700;font-size:16px;color:var(--noir);transition:transform .2s cubic-bezier(.2,.8,.3,1),box-shadow .2s}
+    .tuile-contact:hover{transform:translateX(4px);box-shadow:0 12px 28px -14px rgba(17,17,17,.35)}
+    .tuile-contact .ic{width:42px;height:42px;border-radius:50%;background:var(--rouge);color:var(--blanc);display:grid;place-items:center;flex-shrink:0}
+    .tuile-contact svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+    .tuile-contact small{display:block;font-family:var(--corps);font-weight:600;font-size:12.5px;color:#5F5F5F}
+    .tuile-contact .val{min-width:0;overflow-wrap:anywhere}
 @endpush
 
 @section('content')
@@ -319,7 +334,10 @@
             <p class="accroche">{!! \App\Support\Contenu::riche('accueil.hero_accroche') !!}</p>
             <div class="actions">
                 <a class="bouton b-rouge" href="{{ route('contact') }}">{{ \App\Support\Contenu::get('accueil.hero_cta1') }}<i class="fl dessin f-fleche" aria-hidden="true"></i></a>
+                {{-- Réalisations masquées tant que config('cible.realisations_visibles') est faux. --}}
+                @if(config('cible.realisations_visibles'))
                 <a class="bouton b-ligne" href="{{ route('references') }}">{{ \App\Support\Contenu::get('accueil.hero_cta2') }}</a>
+                @endif
             </div>
         </div>
         <div class="hero-visuel">
@@ -513,7 +531,10 @@
     <p class="fort">{{ \App\Support\Contenu::get('accueil.mission_fort') }}</p>
 </section>
 
-{{-- ═══ RÉALISATIONS ═══ --}}
+{{-- ═══ RÉALISATIONS ═══
+     Masquée depuis le 2026-11-24 (visuels et informations clients manquants) :
+     réafficher = CIBLE_REALISATIONS=true, cf. config/cible.php. --}}
+@if(config('cible.realisations_visibles'))
 <section class="travaux" id="travaux">
     <div class="couche">
         <span class="fleche dessin f-fleche" style="--c:var(--gris);--op:1;bottom:8%;left:-2%;width:170px;--r:-8deg;--dur:30s;--del:.3s"></span>
@@ -555,6 +576,7 @@
         @endforeach
     </div>
 </section>
+@endif
 
 {{-- ═══ RÉSEAU (bleu) ═══ --}}
 <section class="reseau" id="reseau">
@@ -595,16 +617,43 @@
 </section>
 
 {{-- ═══ CONTACT (jaune + motif plumes) ═══ --}}
-<section class="contact-home" id="contact">
+{{-- Section d'orientation vers /contact, sans formulaire : un seul formulaire
+     à maintenir et à protéger (cf. analyse de l'audit, 2026-11-24).
+     Coordonnées lues dans l'admin (section coordonnees), comme le pied de page :
+     plus de numéro écrit en dur. --}}
+@php
+    $co  = \App\Support\Contenu::section('coordonnees');
+    $tel = fn (string $n) => 'tel:+' . preg_replace('#\D#', '', $n);
+@endphp
+<section class="contact-home" id="contact" aria-labelledby="contact-titre">
     <div class="motif" aria-hidden="true"></div>
     <div class="contact-inner rev">
-        <h2 class="t1">{{ \App\Support\Contenu::get('accueil.contact_titre') }}</h2>
-        <p>{{ \App\Support\Contenu::get('accueil.contact_texte') }}</p>
-        <a class="bouton b-rouge" style="margin-top:28px" href="{{ route('contact') }}">{{ \App\Support\Contenu::get('accueil.contact_cta') }}<i class="fl dessin f-fleche" aria-hidden="true"></i></a>
-        <div class="coord">
-            <a href="tel:+2250798496674" class="num">+225 07 98 49 66 74</a>
-            <a href="mailto:commercial@cible-ci.com">commercial@cible-ci.com</a>
-            <a href="{{ route('contact') }}">Formulaire de contact</a>
+        <div>
+            <h2 class="t1" id="contact-titre">{{ \App\Support\Contenu::get('accueil.contact_titre') }}</h2>
+            <p>{{ \App\Support\Contenu::get('accueil.contact_texte') }}</p>
+            <a class="bouton b-rouge" href="{{ route('contact') }}">{{ \App\Support\Contenu::get('accueil.contact_cta') }}<i class="fl dessin f-fleche" aria-hidden="true"></i></a>
+            {{-- Ce qui se passe après le clic : les engagements de la page contact. --}}
+            <ul class="engagements">
+                @foreach(array_slice(\App\Support\Contenu::lignes('contact.reass_liste'), 0, 2) as $engagement)
+                    <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg>{{ $engagement }}</li>
+                @endforeach
+            </ul>
+        </div>
+        <div class="tuiles-contact">
+            <a class="tuile-contact" href="{{ $tel($co['tel_mobile']) }}">
+                <span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg></span>
+                <span class="val"><small>Mobile</small><span class="num">{{ $co['tel_mobile'] }}</span></span>
+            </a>
+            @if($co['tel_fixe'])
+            <a class="tuile-contact" href="{{ $tel($co['tel_fixe']) }}">
+                <span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg></span>
+                <span class="val"><small>Fixe</small><span class="num">{{ $co['tel_fixe'] }}</span></span>
+            </a>
+            @endif
+            <a class="tuile-contact" href="mailto:{{ $co['email_commercial'] }}">
+                <span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span>
+                <span class="val"><small>E-mail commercial</small>{{ $co['email_commercial'] }}</span>
+            </a>
         </div>
     </div>
 </section>

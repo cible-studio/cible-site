@@ -407,6 +407,42 @@ Git :
 
 ---
 
+## 🧪 Maquette de refonte — `/marquette` (depuis le 2026-11-24)
+
+Proposition de nouvelle mise en page, servie **à côté** du site sans le
+modifier. CIBLE ne vend plus seulement des panneaux : la maquette met les
+4 pôles au même niveau et intègre les corrections de l'audit PPC.io.
+
+- **Pages** : `/marquette`, `/marquette/qui-sommes-nous`, `/services`,
+  `/reseau`, `/contact` (routes `marquette.*`, `MarquetteController`).
+  `noindex`, absentes du menu du site, **sans GTM** (pas de pollution des
+  statistiques). Le formulaire de la maquette poste sur la vraie route
+  `/devis` : un envoi de test part réellement chez commercial@ et studio@.
+- **Textes** : les mêmes sources que le site (`Contenu::get` → admin) ou les
+  textes en dur des vues actuelles, mot pour mot. Rien d'inventé.
+- **Socle partagé** (cohérence entre pages) : `public/mq/mq.css` + `mq.js`,
+  `resources/views/marquette/layout.blade.php`, composants
+  `resources/views/components/mq/*` (photo, tete, chiffre, fil, reassurance,
+  coordonnees,
+  bande-contact). Styles propres à une page : `public/mq/pages/<page>.css`.
+- ⚠ Dossier statique nommé **`public/mq`** et non `public/marquette` : un
+  dossier homonyme de la route est servi à la place de la page (404/403).
+- **Photos** : catalogue unique `config/marquette.php`. `local` = vraies
+  photos CIBLE en WebP (`public/mq/img/photos`, générées depuis
+  `public/images`) ; `unsplash` = illustrations **provisoires**, à remplacer
+  avant toute mise en production (la CSP autorise `images.unsplash.com`
+  pour elles — à retirer ensuite). `?capture=1` force le chargement
+  immédiat des images (captures de contrôle uniquement).
+- **Police** : Poppins en attendant Made Tommy (charte 2026). Déposer les
+  `.woff2` Made Tommy dans `public/mq/fonts/` et ajouter leur `url()` dans
+  les `@font-face « Cible Titre »` de `mq.css`.
+- **Supprimer la maquette** : `MarquetteController`, son groupe de routes,
+  `resources/views/marquette`, `resources/views/components/mq`, `public/mq`,
+  `config/marquette.php`, `app/Support/Marquette.php`, et `$unsplash` dans
+  `SecurityHeaders`.
+
+---
+
 ## 🆘 Points de vigilance récurrents
 
 - **Chiffres officiels** : 1994, 3, **+400**, 31 → ne jamais improviser
@@ -416,6 +452,12 @@ Git :
 - **Réalisations** : les 6 projets vivent dans `CibleController::projets()` —
   source unique pour l'accueil, `/references` et les pages détail. Ne pas
   dupliquer les libellés dans une vue.
+  ⚠ **Masquées depuis le 2026-11-24** (visuels erronés, infos manquantes) via
+  `config('cible.realisations_visibles')` = `CIBLE_REALISATIONS`, faux par
+  défaut : section d'accueil, boutons, liens menu/pied de page cachés,
+  `/references` → redirection 302 vers `/services` (l'admin connecté voit
+  toujours les pages). Tout nouveau lien vers les réalisations doit passer
+  par ce même `@if`.
 - **Formulaire /contact** : les listes de choix viennent de
   `CibleController::formOptions()`. La validation contrôle les clés puis
   retraduit en libellés avant l'envoi du mail → le commercial ne reçoit

@@ -320,9 +320,14 @@
             <a href="{{ route('home') }}" {{ $current==='home' ? 'aria-current=page' : '' }}>Accueil</a>
             <a href="{{ route('qui') }}" {{ $current==='qui' ? 'aria-current=page' : '' }}>Qui sommes-nous</a>
             <a href="{{ route('services') }}" {{ $current==='services' ? 'aria-current=page' : '' }}>Nos services</a>
+            {{-- Réalisations masquées : cf. config('cible.realisations_visibles'). --}}
+            @if(config('cible.realisations_visibles'))
             <a href="{{ route('references') }}" {{ $current==='references' ? 'aria-current=page' : '' }}>Nos réalisations</a>
-            <a href="{{ route('reseau') }}" {{ $current==='reseau' ? 'aria-current=page' : '' }}>Notre réseau</a>
-            <a href="{{ route('contact') }}" {{ $current==='contact' ? 'aria-current=page' : '' }}>Contact</a>
+            @endif
+            {{-- Couleur fixée ici : les règles nth-child décaleraient d'un cran
+                 quand le lien Réalisations est masqué. --}}
+            <a href="{{ route('reseau') }}" style="--c:var(--jaune)" {{ $current==='reseau' ? 'aria-current=page' : '' }}>Notre réseau</a>
+            <a href="{{ route('contact') }}" style="--c:var(--bleu)" {{ $current==='contact' ? 'aria-current=page' : '' }}>Contact</a>
         </div>
         {{-- CTA unifié 2026-08-10 : "Demander un devis" retiré partout au
              profit de "Recevoir ma recommandation média" (doc textes). --}}
@@ -355,7 +360,9 @@
                 <li><a href="{{ route('home') }}">Accueil</a></li>
                 <li><a href="{{ route('qui') }}">Qui sommes-nous</a></li>
                 <li><a href="{{ route('services') }}">Nos services</a></li>
+                @if(config('cible.realisations_visibles'))
                 <li><a href="{{ route('references') }}">Réalisations</a></li>
+                @endif
                 <li><a href="{{ route('reseau') }}">Notre réseau</a></li>
             </ul>
         </div>
