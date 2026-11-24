@@ -416,6 +416,12 @@ Git :
 - **Réalisations** : les 6 projets vivent dans `CibleController::projets()` —
   source unique pour l'accueil, `/references` et les pages détail. Ne pas
   dupliquer les libellés dans une vue.
+  ⚠ **Masquées depuis le 2026-11-24** (visuels erronés, infos manquantes) via
+  `config('cible.realisations_visibles')` = `CIBLE_REALISATIONS`, faux par
+  défaut : section d'accueil, boutons, liens menu/pied de page cachés,
+  `/references` → redirection 302 vers `/services` (l'admin connecté voit
+  toujours les pages). Tout nouveau lien vers les réalisations doit passer
+  par ce même `@if`.
 - **Formulaire /contact** : les listes de choix viennent de
   `CibleController::formOptions()`. La validation contrôle les clés puis
   retraduit en libellés avant l'envoi du mail → le commercial ne reçoit

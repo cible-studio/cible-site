@@ -319,7 +319,10 @@
             <p class="accroche">{!! \App\Support\Contenu::riche('accueil.hero_accroche') !!}</p>
             <div class="actions">
                 <a class="bouton b-rouge" href="{{ route('contact') }}">{{ \App\Support\Contenu::get('accueil.hero_cta1') }}<i class="fl dessin f-fleche" aria-hidden="true"></i></a>
+                {{-- Réalisations masquées tant que config('cible.realisations_visibles') est faux. --}}
+                @if(config('cible.realisations_visibles'))
                 <a class="bouton b-ligne" href="{{ route('references') }}">{{ \App\Support\Contenu::get('accueil.hero_cta2') }}</a>
+                @endif
             </div>
         </div>
         <div class="hero-visuel">
@@ -513,7 +516,10 @@
     <p class="fort">{{ \App\Support\Contenu::get('accueil.mission_fort') }}</p>
 </section>
 
-{{-- ═══ RÉALISATIONS ═══ --}}
+{{-- ═══ RÉALISATIONS ═══
+     Masquée depuis le 2026-11-24 (visuels et informations clients manquants) :
+     réafficher = CIBLE_REALISATIONS=true, cf. config/cible.php. --}}
+@if(config('cible.realisations_visibles'))
 <section class="travaux" id="travaux">
     <div class="couche">
         <span class="fleche dessin f-fleche" style="--c:var(--gris);--op:1;bottom:8%;left:-2%;width:170px;--r:-8deg;--dur:30s;--del:.3s"></span>
@@ -555,6 +561,7 @@
         @endforeach
     </div>
 </section>
+@endif
 
 {{-- ═══ RÉSEAU (bleu) ═══ --}}
 <section class="reseau" id="reseau">
