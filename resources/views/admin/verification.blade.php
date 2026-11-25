@@ -28,9 +28,20 @@
             <button type="submit" class="bt bt-rouge" style="width:100%;justify-content:center">Valider et se connecter</button>
         </form>
 
-        <form method="POST" action="{{ route('admin.renvoyer') }}" style="margin-top:14px;text-align:center">
+        {{-- $renvoi : secondes avant le prochain renvoi possible (3 / 10 min),
+             0 = libre. Compte à rebours : script commun dans admin._layout. --}}
+        <form method="POST" action="{{ route('admin.renvoyer') }}" style="margin-top:14px;text-align:center"
+              @if($renvoi > 0) data-blocage="{{ $renvoi }}" @endif>
             @csrf
-            <button type="submit" class="bt" style="background:none;color:#111;text-decoration:underline;padding:10px 12px">Je n'ai rien reçu : renvoyer un code</button>
+            <button type="submit" class="bt" style="background:none;color:#111;text-decoration:underline;padding:10px 12px"
+                    data-libre="Je n'ai rien reçu : renvoyer un code" data-attente="Nouvel envoi possible dans"
+                    @disabled($renvoi > 0)>
+                @if($renvoi > 0)
+                    Nouvel envoi possible dans {{ intdiv($renvoi, 60) }}:{{ sprintf('%02d', $renvoi % 60) }}
+                @else
+                    Je n'ai rien reçu : renvoyer un code
+                @endif
+            </button>
         </form>
     </div>
 

@@ -2,6 +2,11 @@
 
 @section('contenu')
 
+{{-- $blocage : secondes restantes du blocage après 6 mots de passe faux
+     (0 = libre). Pendant le blocage, formulaire grisé et compte à rebours
+     sur le bouton (script commun dans admin._layout). --}}
+@php $bloque = ($blocage ?? 0) > 0; @endphp
+
 <div style="max-width:420px;margin:8vh auto 0">
     <div style="text-align:center;margin-bottom:26px">
         <img src="{{ asset('images/icone-192.png') }}" alt="CIBLE" style="height:64px;width:auto;display:inline-block">
@@ -10,21 +15,32 @@
     </div>
 
     <div class="carte" style="margin-top:0">
-        @if($errors->has('email'))
+        @if($bloque)
+            <div class="alerte a-ko" data-blocage-alerte>Trop de tentatives de connexion. Pour protéger l'administration, la connexion est suspendue jusqu'à la fin du délai.</div>
+        @elseif($errors->has('email'))
             <div class="alerte a-ko">{{ $errors->first('email') }}</div>
         @endif
 
-        <form method="POST" action="{{ route('admin.authentifier') }}">
+        <form method="POST" action="{{ route('admin.authentifier') }}" @if($bloque) data-blocage="{{ $blocage }}" @endif>
             @csrf
-            <div class="champ">
-                <label for="email">Adresse email</label>
-                <input id="email" type="email" name="email" value="{{ old('email') }}" required autocomplete="username" autofocus>
-            </div>
-            <div class="champ">
-                <label for="password">Mot de passe</label>
-                <input id="password" type="password" name="password" required autocomplete="current-password">
-            </div>
-            <button type="submit" class="bt bt-rouge" style="width:100%;justify-content:center">Se connecter</button>
+            <fieldset @disabled($bloque) style="border:0;margin:0;padding:0;min-width:0">
+                <div class="champ">
+                    <label for="email">Adresse email</label>
+                    <input id="email" type="email" name="email" value="{{ old('email') }}" required autocomplete="username" autofocus>
+                </div>
+                <div class="champ">
+                    <label for="password">Mot de passe</label>
+                    <input id="password" type="password" name="password" required autocomplete="current-password">
+                </div>
+                <button type="submit" class="bt bt-rouge" style="width:100%;justify-content:center"
+                        data-libre="Se connecter" data-attente="Réessayez dans">
+                    @if($bloque)
+                        Réessayez dans {{ intdiv($blocage, 60) }}:{{ sprintf('%02d', $blocage % 60) }}
+                    @else
+                        Se connecter
+                    @endif
+                </button>
+            </fieldset>
         </form>
     </div>
 

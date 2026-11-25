@@ -10,6 +10,7 @@ use App\Support\Schema;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
@@ -25,16 +26,42 @@ class AdminController extends Controller
 {
     /* ═══════════════════ Authentification ═══════════════════ */
 
-    public function login()
+    /*
+     * Limites d'essais, par adresse IP, sur 10 minutes (2026-11-25).
+     *
+     * Elles vivent ici et non dans un middleware `throttle` de la route : un
+     * middleware ne protège que l'envoi du formulaire, la page elle-même ne
+     * sait pas qu'un blocage est en cours — le formulaire restait utilisable
+     * et chaque envoi était refusé. Ici, la page connaît le temps restant :
+     * formulaire grisé et compte à rebours jusqu'à la fin du blocage.
+     */
+    private const FENETRE = 600;
+    /** Mots de passe faux avant blocage. Seuls les échecs comptent. */
+    private const ESSAIS_CONNEXION = 6;
+    /** Codes envoyés après un bon mot de passe (quota d'envoi du site). */
+    private const ENVOIS_CODE = 6;
+    /** « Renvoyer un code » depuis la page de vérification. */
+    private const RENVOIS_CODE = 3;
+
+    public function login(Request $request)
     {
         abort_unless(AdminAuth::configure(), 404);
 
-        return $this->sansCache(response()->view('admin.login'));
+        return $this->sansCache(response()->view('admin.login', [
+            'blocage' => $this->attente($this->cle('connexion', $request), self::ESSAIS_CONNEXION),
+        ]));
     }
 
     public function authentifier(Request $request)
     {
         abort_unless(AdminAuth::configure(), 404);
+
+        // Blocage en cours : refus sans même vérifier le mot de passe. La
+        // page de connexion affiche le formulaire grisé et le délai.
+        $cle = $this->cle('connexion', $request);
+        if ($this->attente($cle, self::ESSAIS_CONNEXION) > 0) {
+            return redirect()->route('admin.login');
+        }
 
         $data = $request->validate([
             'email'    => ['required', 'string', 'max:150'],
@@ -44,11 +71,28 @@ class AdminController extends Controller
         if (!AdminAuth::tenter($data['email'], $data['password'])) {
             AdminAuth::journaliser('connexion_refusee', $request, ['email' => $data['email']]);
 
+            RateLimiter::hit($cle, self::FENETRE);
+            if (RateLimiter::tooManyAttempts($cle, self::ESSAIS_CONNEXION)) {
+                AdminAuth::journaliser('connexion_bloquee', $request, ['secondes' => RateLimiter::availableIn($cle)]);
+            }
+
             // Message unique : distinguer « email inconnu » de « mot de passe
             // incorrect » confirmerait à un attaquant qu'il a trouvé
             // l'identifiant.
             return back()->withErrors(['email' => 'Identifiants incorrects.']);
         }
+
+        // Bon mot de passe : les échecs précédents sont oubliés. Les envois de
+        // code restent plafonnés : sans cela, quelqu'un qui connaît le mot de
+        // passe pourrait inonder la boîte admin et épuiser le quota d'envoi
+        // du site — celui-là même qui achemine le formulaire de contact.
+        RateLimiter::clear($cle);
+
+        $cleEnvois = $this->cle('envois-code', $request);
+        if ($reste = $this->attente($cleEnvois, self::ENVOIS_CODE)) {
+            return back()->withErrors(['email' => 'Trop de codes de connexion demandés. Réessayez dans ' . $this->duree($reste) . '.']);
+        }
+        RateLimiter::hit($cleEnvois, self::FENETRE);
 
         // Mot de passe correct : on NE connecte PAS. Un code part à l'adresse
         // admin ; sans lui, personne n'entre (double authentification).
@@ -75,6 +119,7 @@ class AdminController extends Controller
         return $this->sansCache(response()->view('admin.verification', [
             'email'   => $this->masquerEmail((string) config('cible.admin.email')),
             'minutes' => AdminAuth::CODE_MINUTES,
+            'renvoi'  => $this->attente($this->cle('renvoi-code', $request), self::RENVOIS_CODE),
         ]));
     }
 
@@ -118,6 +163,14 @@ class AdminController extends Controller
             return redirect()->route('admin.login');
         }
 
+        // Plafond atteint : la page de vérification affiche le bouton grisé
+        // et le délai avant le prochain envoi possible.
+        $cle = $this->cle('renvoi-code', $request);
+        if ($this->attente($cle, self::RENVOIS_CODE) > 0) {
+            return redirect()->route('admin.verification');
+        }
+        RateLimiter::hit($cle, self::FENETRE);
+
         if (!$this->envoyerCode($request)) {
             return back()->withErrors(['code' => 'Le code n\'a pas pu être renvoyé. Réessayez dans quelques instants.']);
         }
@@ -149,6 +202,26 @@ class AdminController extends Controller
         AdminAuth::journaliser('code_envoye', $request);
 
         return true;
+    }
+
+    /** Compteur d'essais propre à une action et à une adresse IP. */
+    private function cle(string $action, Request $request): string
+    {
+        return 'admin-' . $action . ':' . $request->ip();
+    }
+
+    /** Secondes de blocage restantes sur ce compteur ; 0 = libre. */
+    private function attente(string $cle, int $plafond): int
+    {
+        return RateLimiter::tooManyAttempts($cle, $plafond) ? max(1, RateLimiter::availableIn($cle)) : 0;
+    }
+
+    /** 125 → « 3 minutes » (arrondi au-dessus : on n'annonce jamais trop court). */
+    private function duree(int $secondes): string
+    {
+        $minutes = max(1, (int) ceil($secondes / 60));
+
+        return $minutes . ' minute' . ($minutes > 1 ? 's' : '');
     }
 
     /** « studio@cible-ci.com » → « st••••@cible-ci.com » : on rappelle où chercher sans afficher l'adresse. */

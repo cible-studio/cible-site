@@ -1,5 +1,6 @@
-{{-- Limite d'essais atteinte, hors connexion admin et formulaire de contact
-     (ceux-là reviennent sur leur page avec un message, cf. bootstrap/app.php).
+{{-- Limite d'essais atteinte, hors espace admin et formulaire de contact
+     (ceux-là reviennent sur leur page avec un message : AdminController et
+     bootstrap/app.php).
      Page autonome : aucune dépendance au layout, elle doit s'afficher même
      quand le reste du site est sollicité. --}}
 <!DOCTYPE html>

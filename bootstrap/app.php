@@ -45,19 +45,15 @@ return Application::configure(basePath: dirname(__DIR__))
         // « 429 Too Many Requests » en anglais, la personne revient sur sa
         // page avec un message en français et le délai exact. La limite
         // elle-même ne change pas. Ailleurs : vue errors/429.
+        // La connexion admin et le renvoi de code ne passent plus par ici :
+        // leurs limites sont dans AdminController (formulaire grisé).
         $exceptions->render(function (\Illuminate\Http\Exceptions\ThrottleRequestsException $e, Request $request) {
             $secondes = (int) ($e->getHeaders()['Retry-After'] ?? 600);
             $minutes  = max(1, (int) ceil($secondes / 60));
             $duree    = $minutes . ' minute' . ($minutes > 1 ? 's' : '');
 
             switch ($request->route()?->getName()) {
-                case 'admin.authentifier':
-                    return redirect()->route('admin.login')->withErrors([
-                        'email' => "Trop de tentatives de connexion. Pour protéger l'administration, réessayez dans $duree.",
-                    ]);
-
                 case 'admin.verifier':
-                case 'admin.renvoyer':
                     return redirect()->route('admin.verification')->withErrors([
                         'code' => "Trop d'essais. Réessayez dans $duree.",
                     ]);
