@@ -40,4 +40,38 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*'),
         );
+
+        // Limite d'essais atteinte (2026-11-25) : au lieu de la page brute
+        // « 429 Too Many Requests » en anglais, la personne revient sur sa
+        // page avec un message en français et le délai exact. La limite
+        // elle-même ne change pas. Ailleurs : vue errors/429.
+        $exceptions->render(function (\Illuminate\Http\Exceptions\ThrottleRequestsException $e, Request $request) {
+            $secondes = (int) ($e->getHeaders()['Retry-After'] ?? 600);
+            $minutes  = max(1, (int) ceil($secondes / 60));
+            $duree    = $minutes . ' minute' . ($minutes > 1 ? 's' : '');
+
+            switch ($request->route()?->getName()) {
+                case 'admin.authentifier':
+                    return redirect()->route('admin.login')->withErrors([
+                        'email' => "Trop de tentatives de connexion. Pour protéger l'administration, réessayez dans $duree.",
+                    ]);
+
+                case 'admin.verifier':
+                case 'admin.renvoyer':
+                    return redirect()->route('admin.verification')->withErrors([
+                        'code' => "Trop d'essais. Réessayez dans $duree.",
+                    ]);
+
+                case 'devis.submit':
+                    // Saisie conservée (sauf fichiers et jetons) : le prospect
+                    // ne retape pas son brief.
+                    $tel = \App\Support\Contenu::get('coordonnees.tel_mobile');
+                    return back()
+                        ->withInput($request->except(['_token', '_ts', 'cf-turnstile-response',
+                            'doc_brief', 'doc_logo', 'doc_charte', 'doc_cahier']))
+                        ->with('devis_error', "Vous avez envoyé plusieurs demandes en peu de temps. Merci de réessayer dans $duree, ou appelez-nous au $tel.");
+            }
+
+            return null;   // rendu par défaut : resources/views/errors/429.blade.php
+        });
     })->create();
