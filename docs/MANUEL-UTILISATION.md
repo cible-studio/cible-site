@@ -46,7 +46,9 @@ charte quoi qu'il arrive.
 > sans attendre (studio@cible-ci.com).
 
 Après six tentatives de mot de passe ratées, la connexion se bloque pendant dix
-minutes. C'est une protection contre les robots.
+minutes. C'est une protection contre les robots : un message en rouge l'indique
+sur la page de connexion, avec le temps d'attente restant. Patientez, puis
+reconnectez-vous normalement.
 
 ---
 
