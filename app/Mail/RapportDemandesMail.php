@@ -8,7 +8,9 @@ use Illuminate\Queue\SerializesModels;
 
 /**
  * Récapitulatif mensuel des demandes (2026-11-25) — chiffres seulement,
- * aucune donnée personnelle, et pas l'adresse secrète de l'administration.
+ * aucune donnée personnelle. Contient un lien vers le rapport de l'admin,
+ * donc l'adresse confidentielle de l'administration : décision du
+ * 2026-11-25, l'accès reste protégé par le mot de passe et le code e-mail.
  */
 class RapportDemandesMail extends Mailable
 {
@@ -19,6 +21,7 @@ class RapportDemandesMail extends Mailable
         public array $stats,
         public int $totalAvant,
         public string $libelleAvant,
+        public string $lien,
     ) {}
 
     public function build()

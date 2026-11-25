@@ -479,7 +479,12 @@ détail est effacé et seuls les chiffres du mois restent dans `archives.json`
 (aucune donnée personnelle). Récapitulatif mensuel : commande
 `cible:rapport-demandes` (`--mois=AAAA-MM`, `--a=adresse` pour un essai),
 lancée par une **tâche planifiée Coolify** `0 8 1 * *` — le conteneur n'a pas
-de planificateur Laravel.
+de planificateur Laravel. Le mail contient un bouton vers le rapport de l'admin
+(`route('admin.demandes')`), donc **l'adresse confidentielle de l'admin** :
+choix assumé le 2026-11-25, l'accès reste fermé sans mot de passe ni code
+e-mail. Ne pas transférer ce mail hors de l'équipe. Après connexion,
+l'administrateur arrive sur la page demandée (`redirect()->guest()` /
+`intended()`), pas sur le tableau de bord.
 
 **Contenu des uploads** (2026-11-18, `CibleController::contenuDangereux()`) :
 en plus de l'extension, le contenu réel est inspecté et **refusé** s'il ne

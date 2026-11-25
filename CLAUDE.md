@@ -471,7 +471,9 @@ modifier. CIBLE ne vend plus seulement des panneaux : la maquette met les
   l'envoi du mail, sans pièces jointes. Écran admin « Demandes reçues »
   (chiffres, détail, export Excel, suppression) et récapitulatif mensuel par
   mail (`php artisan cible:rapport-demandes`, tâche planifiée Coolify
-  `0 8 1 * *`, destinataires `CIBLE_RAPPORT_TO`, chiffres seulement).
+  `0 8 1 * *`, destinataires `CIBLE_RAPPORT_TO`, chiffres seulement + un
+  bouton vers le rapport de l'admin — donc l'adresse confidentielle de
+  l'admin, choix assumé : l'accès reste protégé par mot de passe + code).
   Au-delà de 12 mois : détail effacé, chiffres gardés dans `archives.json`.
   ⚠ `post_max_size` (Dockerfile) borne le corps **entier** de la requête :
   il doit rester ≥ 4 × `DOC_MAX_KO`, sinon PHP jette le POST avant Laravel

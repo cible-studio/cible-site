@@ -51,7 +51,16 @@ class RapportDemandes extends Command
         [$debutAvant, $finAvant] = Demandes::periodeMois($avant);
         $totalAvant = Demandes::statistiques($debutAvant, $finAvant)['total'];
 
-        Mail::to($destinataires)->send(new RapportDemandesMail($libelle, $stats, $totalAvant, Demandes::libelleMois($avant)));
+        // Lien vers le rapport de l'admin, sur la période la plus proche du
+        // mois résumé (adresse secrète en vigueur, via le nom de route).
+        $periode = match ($mois) {
+            now()->format('Y-m')                         => 'mois',
+            now()->subMonthNoOverflow()->format('Y-m')   => 'mois-precedent',
+            default                                      => '12-mois',
+        };
+        $lien = route('admin.demandes', ['periode' => $periode]);
+
+        Mail::to($destinataires)->send(new RapportDemandesMail($libelle, $stats, $totalAvant, Demandes::libelleMois($avant), $lien));
 
         $this->info("Récapitulatif « $libelle » envoyé à " . implode(', ', $destinataires) . " : {$stats['total']} demande(s).");
 

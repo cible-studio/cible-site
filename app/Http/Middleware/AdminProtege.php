@@ -25,7 +25,9 @@ class AdminProtege
         abort_unless(AdminAuth::configure(), 404);
 
         if (!AdminAuth::connecte($request)) {
-            return redirect()->route('admin.login');
+            // guest() retient la page demandée (ex. le lien du récapitulatif
+            // mensuel) : après mot de passe et code, on y arrive directement.
+            return redirect()->guest(route('admin.login'));
         }
 
         $reponse = $next($request);

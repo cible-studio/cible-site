@@ -48,8 +48,13 @@
             </td></tr>
         @endforeach
     @endif
-    <tr><td style="padding:22px 32px 30px">
-        <p style="margin:0;font-size:13.5px;line-height:1.6;color:#3A3A3A">Le détail de chaque demande (contact, message, export Excel) se trouve dans l'administration du site, rubrique « Demandes reçues ».</p>
+    <tr><td style="padding:26px 32px 30px">
+        <table role="presentation" cellpadding="0" cellspacing="0"><tr>
+            <td style="border-radius:999px;background:#E20613">
+                <a href="{{ $lien }}" style="display:inline-block;padding:14px 26px;font-size:15px;font-weight:bold;color:#FFFFFF;text-decoration:none">Voir le détail des demandes</a>
+            </td>
+        </tr></table>
+        <p style="margin:12px 0 0;font-size:12.5px;line-height:1.6;color:#5F5F5F">Accès réservé : mot de passe et code de connexion requis.</p>
     </td></tr>
 </table>
 <p style="margin:16px 0 0;font-size:12px;color:#8A8A8A">Message automatique envoyé par le site www.cible-ci.com le 1er de chaque mois.</p>
