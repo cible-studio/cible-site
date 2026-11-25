@@ -472,9 +472,16 @@ modifier. CIBLE ne vend plus seulement des panneaux : la maquette met les
 - **Panora n'existe pas ici** → aucune référence
 - **Contact studio** : `studio@cible-ci.com` (l'utilisateur)
 - **Aucun compte client, aucune BDD relationnelle** — c'est une vitrine pure.
-  Seule exception : l'espace d'administration `/admin`, compte unique en
+  Seule exception : l'espace d'administration, compte unique en
   variables d'environnement (pas de table `users`). Il répond 404 tant que
   `CIBLE_ADMIN_EMAIL` / `CIBLE_ADMIN_HASH` ne sont pas renseignés.
+  ⚠ **Depuis le 2026-11-25** : adresse secrète `CIBLE_ADMIN_CHEMIN` (préfixe
+  des routes `admin.*`, `/admin` seulement si vide — ne jamais l'écrire dans
+  git ni dans une vue : toujours `route('admin.…')`) et **double
+  authentification par e-mail** : le mot de passe envoie un code à 6 chiffres
+  à `CIBLE_ADMIN_EMAIL` (10 min, 5 essais), seul le code ouvre la session.
+  Si les mails du site tombent en panne, personne n'entre : c'est voulu.
+  Détail : `docs/DOSSIER-TECHNIQUE.md`, section Routes.
 - **Contenu éditable** : `config/admin-schema.php` décrit tous les champs
   modifiables sans développeur (6 pages, ~195 champs). Chaîne complète :
 

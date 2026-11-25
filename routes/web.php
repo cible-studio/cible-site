@@ -76,11 +76,26 @@ Route::get('/visuels/{nom}',    [CibleController::class, 'visuel'])->name('visue
 | site, donc la seule cible d'une attaque par force brute.
 |
 */
-Route::prefix('admin')->name('admin.')->group(function () {
+// Adresse secrète (2026-11-25) : le préfixe vient de CIBLE_ADMIN_CHEMIN
+// (config/cible.php) ; « admin » seulement tant qu'elle n'est pas renseignée.
+// Toutes les vues passent par les noms de route (admin.*) : rien d'autre à
+// changer quand l'adresse change.
+Route::prefix(config('cible.admin.chemin'))->name('admin.')->group(function () {
     Route::get('/connexion',  [AdminController::class, 'login'])->name('login');
     Route::post('/connexion', [AdminController::class, 'authentifier'])
         ->middleware('throttle:6,10')
         ->name('authentifier');
+
+    // Double authentification : code à 6 chiffres envoyé par e-mail après le
+    // mot de passe. Saisie limitée (10 / 10 min) en plus des 5 essais par
+    // code ; renvoi limité (3 / 10 min) pour ne pas inonder la boîte admin.
+    Route::get('/verification',  [AdminController::class, 'verification'])->name('verification');
+    Route::post('/verification', [AdminController::class, 'verifier'])
+        ->middleware('throttle:10,10')
+        ->name('verifier');
+    Route::post('/verification/renvoyer', [AdminController::class, 'renvoyer'])
+        ->middleware('throttle:3,10')
+        ->name('renvoyer');
     Route::post('/deconnexion', [AdminController::class, 'deconnexion'])->name('deconnexion');
 
     Route::middleware(AdminProtege::class)->group(function () {
