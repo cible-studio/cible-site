@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\CibleContactMail;
 use App\Support\AntiSpam;
 use App\Support\Contenu;
+use App\Support\Demandes;
 use App\Support\Journal;
 use App\Support\Turnstile;
 use Illuminate\Http\Request;
@@ -522,6 +523,24 @@ class CibleController extends Controller
             }
         }
 
+        // Conservation pour le rapport de l'admin (2026-11-25), AVANT l'envoi :
+        // si le mail échoue, la demande n'est plus perdue. Pièces jointes non
+        // conservées, seulement leur libellé. Un échec disque n'empêche pas
+        // l'envoi du mail (Demandes::enregistrer renvoie alors null).
+        $idDemande = Demandes::enregistrer([
+            'nom'        => $data['nom'],
+            'entreprise' => $data['entreprise'],
+            'poste'      => $data['poste'] ?? null,
+            'email'      => $data['email'],
+            'tel'        => $data['tel'],
+            'message'    => $data['message'] ?? null,
+            ...$lisible,
+            'documents'  => array_map(
+                fn ($f) => $f['label'] . ' (' . mb_substr($f['file']->getClientOriginalName(), 0, 80) . ')',
+                $fichiers
+            ),
+        ]);
+
         try {
             // Tableau d'adresses (cf. config/mail.php) ; filet si la variable
             // a été vidée par erreur, pour ne jamais envoyer à personne.
@@ -544,7 +563,9 @@ class CibleController extends Controller
                 'email' => $data['email'], 'ip' => $request->ip(),
                 'documents' => count($fichiers),
             ]);
+            Demandes::marquerMail($idDemande, true);
         } catch (\Throwable $e) {
+            Demandes::marquerMail($idDemande, false);
             Journal::erreur('cible.devis.mail_failed', [
                 'error' => $e->getMessage(),
                 // Les fichiers ne sont pas journalisés (volume + données client).

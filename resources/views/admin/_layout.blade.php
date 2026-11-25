@@ -163,7 +163,7 @@
     ];
     // Fil d'Ariane : évite de dupliquer le titre dans chaque vue.
     $courant = $pages[$onglet]['titre']
-        ?? ($transversaux[$onglet][0] ?? 'Tableau de bord');
+        ?? ($transversaux[$onglet][0] ?? ($onglet === 'demandes' ? 'Demandes reçues' : 'Tableau de bord'));
 @endphp
 
 <aside class="cote" id="cote">
@@ -176,6 +176,9 @@
         <div class="groupe">Vue d'ensemble</div>
         <a href="{{ route('admin.tableau') }}" @if($onglet==='tableau') aria-current="page" @endif>
             <span class="pastille" style="background:#888"></span> Tableau de bord
+        </a>
+        <a href="{{ route('admin.demandes') }}" @if($onglet==='demandes') aria-current="page" @endif>
+            <span class="pastille" style="background:var(--rouge)"></span> Demandes reçues
         </a>
 
         <div class="groupe">Les pages du site</div>
