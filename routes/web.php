@@ -82,20 +82,20 @@ Route::get('/visuels/{nom}',    [CibleController::class, 'visuel'])->name('visue
 // changer quand l'adresse change.
 Route::prefix(config('cible.admin.chemin'))->name('admin.')->group(function () {
     Route::get('/connexion',  [AdminController::class, 'login'])->name('login');
-    Route::post('/connexion', [AdminController::class, 'authentifier'])
-        ->middleware('throttle:6,10')
-        ->name('authentifier');
+    // Mot de passe : 6 échecs / 10 min, compté dans AdminController (et non
+    // par un middleware `throttle`) pour que la page grise le formulaire
+    // pendant le blocage.
+    Route::post('/connexion', [AdminController::class, 'authentifier'])->name('authentifier');
 
     // Double authentification : code à 6 chiffres envoyé par e-mail après le
     // mot de passe. Saisie limitée (10 / 10 min) en plus des 5 essais par
-    // code ; renvoi limité (3 / 10 min) pour ne pas inonder la boîte admin.
+    // code ; renvoi limité (3 / 10 min, dans AdminController, même raison)
+    // pour ne pas inonder la boîte admin.
     Route::get('/verification',  [AdminController::class, 'verification'])->name('verification');
     Route::post('/verification', [AdminController::class, 'verifier'])
         ->middleware('throttle:10,10')
         ->name('verifier');
-    Route::post('/verification/renvoyer', [AdminController::class, 'renvoyer'])
-        ->middleware('throttle:3,10')
-        ->name('renvoyer');
+    Route::post('/verification/renvoyer', [AdminController::class, 'renvoyer'])->name('renvoyer');
     Route::post('/deconnexion', [AdminController::class, 'deconnexion'])->name('deconnexion');
 
     Route::middleware(AdminProtege::class)->group(function () {

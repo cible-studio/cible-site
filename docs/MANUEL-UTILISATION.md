@@ -45,10 +45,11 @@ charte quoi qu'il arrive.
 > passe. Ne communiquez le code à personne, et faites changer le mot de passe
 > sans attendre (studio@cible-ci.com).
 
-Après six tentatives de mot de passe ratées, la connexion se bloque pendant dix
-minutes. C'est une protection contre les robots : un message en rouge l'indique
-sur la page de connexion, avec le temps d'attente restant. Patientez, puis
-reconnectez-vous normalement.
+Après six mots de passe faux, la connexion se bloque pendant dix minutes au
+plus. C'est une protection contre les robots : un message en rouge l'indique,
+le formulaire est grisé et le bouton affiche le temps restant (« Réessayez
+dans 9:42 »). À zéro, le formulaire se rouvre tout seul : reconnectez-vous
+normalement. Une connexion réussie remet le compteur à zéro.
 
 ---
 
@@ -268,10 +269,10 @@ barre latérale.
 | Un message rouge sous un champ | Le contenu saisi ne convient pas — la raison est indiquée. Corrigez et réenregistrez. |
 | La page publique n'a pas changé | Actualisez avec **Ctrl+F5** (Cmd+Shift+R sur Mac) : votre navigateur affiche une version en cache. |
 | `/admin` répond « page introuvable » | C'est normal : l'administration a une adresse confidentielle. Si cette adresse elle-même répond « introuvable », les identifiants ne sont pas configurés sur le serveur : contactez votre développeur. |
-| Le code de connexion n'arrive pas | Vérifiez les courriers indésirables, puis « renvoyer un code » (3 envois toutes les 10 minutes). Si rien n'arrive, l'envoi des e-mails du site est en panne : contactez votre développeur. |
+| Le code de connexion n'arrive pas | Vérifiez les courriers indésirables, puis « renvoyer un code » (3 envois toutes les 10 minutes ; au-delà, le bouton affiche le délai avant le prochain envoi). Si rien n'arrive, l'envoi des e-mails du site est en panne : contactez votre développeur. |
 
 **Contact technique** : studio@cible-ci.com
 
 ---
 
-*Dernière mise à jour : 14 août 2026*
+*Dernière mise à jour : 25 novembre 2026*

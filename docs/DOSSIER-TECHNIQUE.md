@@ -274,9 +274,17 @@ personne ne peut entrer dans l'admin : c'est voulu.
 
 | Méthode | URL | Action |
 |---|---|---|
-| GET/POST | `/admin/connexion` | mot de passe, limité 6/10 min → envoi du code |
+| GET/POST | `/admin/connexion` | mot de passe : 6 échecs / 10 min (un succès remet à zéro) ; 6 codes envoyés / 10 min → envoi du code |
 | GET/POST | `/admin/verification` | saisie du code, limitée 10/10 min (et 5 essais par code) |
 | POST | `/admin/verification/renvoyer` | nouveau code, limité 3/10 min |
+
+⚠ Les limites de la connexion et du renvoi sont comptées dans
+`AdminController` (`RateLimiter`, clé `admin-<action>:<ip>`), **pas** par un
+middleware `throttle` : la page doit connaître le temps restant pour griser
+le formulaire et afficher le compte à rebours (script commun dans
+`admin/_layout`). Un middleware ne bloque que l'envoi : le formulaire restait
+utilisable et chaque envoi était refusé. Seule la saisie du code garde
+`throttle:10,10` (message en français via `bootstrap/app.php`).
 | GET | `/admin/demandes[?periode=…]` | rapport des demandes du formulaire |
 | GET | `/admin/demandes/export` | export CSV (« ; », BOM UTF-8, formules neutralisées) |
 | POST | `/admin/demandes/{id}/supprimer` | effacement d'une demande (RGPD) |
@@ -454,7 +462,8 @@ exigeraient en plus `'unsafe-eval'` — à éviter.
 |---|---|---|
 | `devis-ip` | 5 / 10 min par IP | l'acharnement d'une source |
 | `devis-global` | 40 / heure toutes sources | une attaque distribuée qui changerait d'IP |
-| connexion admin | 6 / 10 min | la force brute |
+| connexion admin | 6 mots de passe faux / 10 min par IP | la force brute |
+| codes de connexion envoyés | 6 / 10 min par IP (+ 3 renvois) | l'inondation de la boîte admin et du quota d'envoi |
 | `/api/reseau-map` | 60 / min | |
 
 **Anti-spam** (`AntiSpam`) : notation par signaux, seuil de rejet à 5. Champs

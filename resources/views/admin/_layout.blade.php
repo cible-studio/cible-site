@@ -117,6 +117,10 @@
     .bt-gris:hover{background:#D5D5D5}
     .bt-lien{background:none;color:#777;padding:12px 4px;text-decoration:underline}
     .bt-petit{padding:9px 16px;font-size:13px}
+    /* Formulaire suspendu (limite d'essais) : visiblement inactif. */
+    .bt:disabled{opacity:.5;cursor:not-allowed}
+    .bt-rouge:disabled:hover{background:var(--rouge)}
+    input:disabled{background:#F4F4F2;color:#999;cursor:not-allowed}
     .actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:24px}
 
     .alerte{border-radius:11px;padding:14px 18px;margin-bottom:20px;font-size:14px;font-weight:600}
@@ -260,6 +264,38 @@
 })();
 </script>
 @endif
+
+<script>
+// Limite d'essais atteinte (connexion, renvoi du code) : le formulaire
+// porte data-blocage = secondes restantes, calculées par le serveur. Le
+// bouton affiche le compte à rebours, puis tout se réactive à zéro. Sans
+// JavaScript, le formulaire reste grisé jusqu'au rechargement de la page —
+// et le serveur refuse de toute façon un envoi pendant le blocage.
+(function () {
+    document.querySelectorAll('form[data-blocage]').forEach(function (f) {
+        var bouton = f.querySelector('[data-attente]');
+        // Le serveur arrondit le délai à la seconde supérieure : le
+        // formulaire ne se rouvre donc jamais avant la fin réelle du blocage.
+        var fin = Date.now() + parseInt(f.getAttribute('data-blocage'), 10) * 1000;
+
+        function tic() {
+            var s = Math.ceil((fin - Date.now()) / 1000);
+            if (s <= 0) {
+                f.querySelectorAll('[disabled]').forEach(function (el) { el.disabled = false; });
+                bouton.textContent = bouton.getAttribute('data-libre');
+                var alerte = f.parentNode.querySelector('[data-blocage-alerte]');
+                if (alerte) { alerte.remove(); }
+                var premier = f.querySelector('input:not([type=hidden])');
+                if (premier) { premier.focus(); }
+                return;
+            }
+            bouton.textContent = bouton.getAttribute('data-attente') + ' ' + Math.floor(s / 60) + ':' + ('0' + (s % 60)).slice(-2);
+            setTimeout(tic, 500);
+        }
+        tic();
+    });
+})();
+</script>
 
 </body>
 </html>
