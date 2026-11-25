@@ -20,6 +20,22 @@ return [
     'admin' => [
         'email' => env('CIBLE_ADMIN_EMAIL'),
         'hash'  => env('CIBLE_ADMIN_HASH'),
+
+        /*
+        | Adresse de l'espace admin (2026-11-25). « /admin » est la première
+        | adresse que testent les robots : en production, CIBLE_ADMIN_CHEMIN
+        | porte une valeur longue et imprévisible, et /admin répond 404 comme
+        | une page qui n'existe pas. Jamais écrite dans git.
+        | Lettres minuscules, chiffres et tirets seulement. Une valeur vide,
+        | trop courte ou réservée par une page du site retombe sur « admin »,
+        | pour ne jamais rendre l'espace inaccessible par erreur.
+        */
+        'chemin' => (function () {
+            $c = preg_replace('#[^a-z0-9-]#', '', strtolower(trim((string) env('CIBLE_ADMIN_CHEMIN', 'admin'), '/')));
+            $reserves = ['qui-sommes-nous', 'services', 'reseau', 'references', 'contact', 'devis',
+                         'api', 'visuels', 'marquette', 'mq', 'images', 'data', 'up', 'storage'];
+            return ($c === '' || strlen($c) < 5 || in_array($c, $reserves, true)) ? 'admin' : $c;
+        })(),
     ],
 
     /*

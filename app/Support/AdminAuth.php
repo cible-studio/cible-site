@@ -21,7 +21,23 @@ use Illuminate\Support\Facades\Storage;
  */
 class AdminAuth
 {
-    private const CLE_SESSION = 'cible_admin';
+    /*
+     * Clé renommée le 2026-11-25 avec l'arrivée du code par e-mail : les
+     * sessions ouvertes avant (« cible_admin ») ne valent plus rien, personne
+     * ne reste connecté sans être passé par le code.
+     */
+    private const CLE_SESSION = 'cible_admin_2fa';
+
+    /*
+     * Double authentification par e-mail : après le mot de passe, un code à
+     * 6 chiffres part à l'adresse admin ; sans lui, pas de connexion.
+     * Rien en base : l'empreinte du code (jamais le code lui-même), son
+     * échéance et le nombre d'essais vivent dans la session du navigateur
+     * qui a saisi le bon mot de passe.
+     */
+    private const CLE_CODE = 'cible_admin_code';
+    public const CODE_MINUTES = 10;
+    public const CODE_ESSAIS  = 5;
 
     public static function configure(): bool
     {
@@ -186,6 +202,83 @@ class AdminAuth
             ),
             'passe_ok'         => $hash !== null && Hash::check($motDePasse, $hash),
         ];
+    }
+
+    /**
+     * Crée le code de connexion de cette session et le renvoie (pour l'e-mail).
+     * Un nouvel appel remplace le précédent : seul le dernier code envoyé vaut.
+     */
+    public static function preparerCode(Request $request): string
+    {
+        $code = (string) random_int(100000, 999999);
+
+        $request->session()->put(self::CLE_CODE, [
+            'empreinte' => self::empreinte($code),
+            'expire'    => now()->getTimestamp() + self::CODE_MINUTES * 60,
+            'essais'    => 0,
+        ]);
+
+        return $code;
+    }
+
+    /** Un code attend-il d'être saisi dans cette session ? */
+    public static function codeEnAttente(Request $request): bool
+    {
+        $att = $request->session()->get(self::CLE_CODE);
+
+        return is_array($att) && now()->getTimestamp() <= $att['expire'];
+    }
+
+    public static function essaisRestants(Request $request): int
+    {
+        $att = $request->session()->get(self::CLE_CODE);
+
+        return is_array($att) ? max(0, self::CODE_ESSAIS - $att['essais']) : 0;
+    }
+
+    public static function annulerCode(Request $request): void
+    {
+        $request->session()->forget(self::CLE_CODE);
+    }
+
+    /**
+     * Vérifie le code saisi. Résultat : 'ok' | 'faux' | 'expire' | 'epuise' | 'absent'.
+     * Expiré ou essais épuisés : le code est détruit, il faut repasser par
+     * le mot de passe. Comparaison à temps constant (hash_equals).
+     */
+    public static function verifierCode(Request $request, string $saisie): string
+    {
+        $att = $request->session()->get(self::CLE_CODE);
+
+        if (!is_array($att)) {
+            return 'absent';
+        }
+        if (now()->getTimestamp() > $att['expire']) {
+            self::annulerCode($request);
+            return 'expire';
+        }
+
+        $att['essais']++;
+        $code = preg_replace('/\D/', '', $saisie);   // espaces collés depuis l'e-mail
+
+        if (hash_equals($att['empreinte'], self::empreinte($code))) {
+            self::annulerCode($request);
+            return 'ok';
+        }
+        if ($att['essais'] >= self::CODE_ESSAIS) {
+            self::annulerCode($request);
+            return 'epuise';
+        }
+
+        $request->session()->put(self::CLE_CODE, $att);
+
+        return 'faux';
+    }
+
+    /** Empreinte du code liée à la clé de l'application : inutilisable hors de ce site. */
+    private static function empreinte(string $code): string
+    {
+        return hash_hmac('sha256', $code, (string) config('app.key'));
     }
 
     public static function connecter(Request $request): void

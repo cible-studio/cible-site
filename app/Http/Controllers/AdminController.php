@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\AdminCodeMail;
 use App\Support\AdminAuth;
 use App\Support\Contenu;
 use App\Support\Schema;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
@@ -26,7 +28,7 @@ class AdminController extends Controller
     {
         abort_unless(AdminAuth::configure(), 404);
 
-        return view('admin.login');
+        return $this->sansCache(response()->view('admin.login'));
     }
 
     public function authentifier(Request $request)
@@ -47,10 +49,119 @@ class AdminController extends Controller
             return back()->withErrors(['email' => 'Identifiants incorrects.']);
         }
 
-        AdminAuth::connecter($request);
-        AdminAuth::journaliser('connexion_reussie', $request);
+        // Mot de passe correct : on NE connecte PAS. Un code part à l'adresse
+        // admin ; sans lui, personne n'entre (double authentification).
+        // Nouvelle session dès maintenant : un identifiant obtenu avant ce
+        // point ne doit pas pouvoir porter la vérification.
+        $request->session()->regenerate();
 
-        return redirect()->route('admin.tableau');
+        if (!$this->envoyerCode($request)) {
+            return back()->withErrors(['email' => 'Le code de connexion n\'a pas pu être envoyé. Réessayez dans quelques instants.']);
+        }
+
+        return redirect()->route('admin.verification');
+    }
+
+    /** Page de saisie du code reçu par e-mail. */
+    public function verification(Request $request)
+    {
+        abort_unless(AdminAuth::configure(), 404);
+
+        if (!AdminAuth::codeEnAttente($request)) {
+            return redirect()->route('admin.login');
+        }
+
+        return $this->sansCache(response()->view('admin.verification', [
+            'email'   => $this->masquerEmail((string) config('cible.admin.email')),
+            'minutes' => AdminAuth::CODE_MINUTES,
+        ]));
+    }
+
+    public function verifier(Request $request)
+    {
+        abort_unless(AdminAuth::configure(), 404);
+
+        $data = $request->validate(['code' => ['required', 'string', 'max:20']]);
+
+        switch (AdminAuth::verifierCode($request, $data['code'])) {
+            case 'ok':
+                AdminAuth::connecter($request);
+                AdminAuth::journaliser('connexion_reussie', $request);
+                return redirect()->route('admin.tableau');
+
+            case 'faux':
+                AdminAuth::journaliser('code_refuse', $request);
+                $reste = AdminAuth::essaisRestants($request);
+                return back()->withErrors(['code' => "Code incorrect. Il vous reste $reste essai" . ($reste > 1 ? 's' : '') . '.']);
+
+            case 'expire':
+                AdminAuth::journaliser('code_expire', $request);
+                return redirect()->route('admin.login')->withErrors(['email' => 'Le code a expiré. Reconnectez-vous pour en recevoir un nouveau.']);
+
+            case 'epuise':
+                AdminAuth::journaliser('code_epuise', $request);
+                return redirect()->route('admin.login')->withErrors(['email' => 'Trop d\'essais. Reconnectez-vous pour recevoir un nouveau code.']);
+
+            default:   // 'absent' : pas de mot de passe validé dans cette session
+                return redirect()->route('admin.login');
+        }
+    }
+
+    /** Nouveau code, sans ressaisir le mot de passe (déjà validé dans cette session). */
+    public function renvoyer(Request $request)
+    {
+        abort_unless(AdminAuth::configure(), 404);
+
+        if (!AdminAuth::codeEnAttente($request)) {
+            return redirect()->route('admin.login');
+        }
+
+        if (!$this->envoyerCode($request)) {
+            return back()->withErrors(['code' => 'Le code n\'a pas pu être renvoyé. Réessayez dans quelques instants.']);
+        }
+
+        return redirect()->route('admin.verification')->with('info', 'Un nouveau code vous a été envoyé. Seul le dernier reçu est valable.');
+    }
+
+    /**
+     * Crée un code et l'envoie à l'adresse admin. En cas d'échec d'envoi, le
+     * code est détruit : l'accès reste fermé, il n'existe aucune autre voie.
+     */
+    private function envoyerCode(Request $request): bool
+    {
+        $code = AdminAuth::preparerCode($request);
+
+        try {
+            Mail::to((string) config('cible.admin.email'))->send(new AdminCodeMail(
+                code:    $code,
+                minutes: AdminAuth::CODE_MINUTES,
+                quand:   now()->timezone('Africa/Abidjan')->format('d/m/Y à H:i'),
+                ip:      (string) $request->ip(),
+            ));
+        } catch (\Throwable $e) {
+            AdminAuth::annulerCode($request);
+            AdminAuth::journaliser('code_non_envoye', $request, ['erreur' => $e->getMessage()]);
+            return false;
+        }
+
+        AdminAuth::journaliser('code_envoye', $request);
+
+        return true;
+    }
+
+    /** « studio@cible-ci.com » → « st••••@cible-ci.com » : on rappelle où chercher sans afficher l'adresse. */
+    private function masquerEmail(string $email): string
+    {
+        [$nom, $domaine] = array_pad(explode('@', $email, 2), 2, '');
+
+        return mb_substr($nom, 0, 2) . str_repeat('•', max(2, mb_strlen($nom) - 2)) . '@' . $domaine;
+    }
+
+    /** Pages d'accès à l'admin : ni indexées, ni gardées en cache par un intermédiaire. */
+    private function sansCache($reponse)
+    {
+        return $reponse->header('X-Robots-Tag', 'noindex, nofollow, noarchive')
+                       ->header('Cache-Control', 'no-store, private');
     }
 
     public function deconnexion(Request $request)

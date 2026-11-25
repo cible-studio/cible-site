@@ -257,12 +257,26 @@ une demande sur un simple déclencheur « Page vue » (Page Path =
 ⚠ Renommer cette URL casse la mesure des conversions dans GTM, GA4 et Google
 Ads : prévenir le gestionnaire du conteneur avant.
 
-**Administration** — préfixe `/admin`, toutes derrière `AdminProtege` sauf la
-connexion.
+**Administration** — préfixe secret `CIBLE_ADMIN_CHEMIN` (`/admin` seulement
+tant qu'il n'est pas renseigné ; ci-dessous noté `/admin`), toutes derrière
+`AdminProtege` sauf la connexion et la vérification.
+
+**Double authentification par e-mail (2026-11-25)** : le mot de passe ne
+connecte pas. Il déclenche l'envoi d'un code à 6 chiffres à
+`CIBLE_ADMIN_EMAIL` (`AdminCodeMail`) ; seule la saisie de ce code ouvre la
+session. Rien en base : empreinte HMAC du code (clé de l'application),
+échéance de 10 min et compteur d'essais en session. 5 codes faux, ou un code
+expiré, renvoient au mot de passe. Échec d'envoi du mail → accès refusé,
+jamais de contournement. Événements journalisés : `code_envoye`,
+`code_refuse`, `code_expire`, `code_epuise`, `code_non_envoye`,
+`connexion_reussie`. ⚠ Si l'envoi des mails du site tombe en panne, plus
+personne ne peut entrer dans l'admin : c'est voulu.
 
 | Méthode | URL | Action |
 |---|---|---|
-| GET/POST | `/admin/connexion` | connexion, limitée 6/10 min |
+| GET/POST | `/admin/connexion` | mot de passe, limité 6/10 min → envoi du code |
+| GET/POST | `/admin/verification` | saisie du code, limitée 10/10 min (et 5 essais par code) |
+| POST | `/admin/verification/renvoyer` | nouveau code, limité 3/10 min |
 | GET | `/admin` | tableau de bord |
 | GET/POST | `/admin/page/{cle}` | **écrans générés depuis le schéma** |
 | GET/POST | `/admin/coordonnees` `/admin/chiffres` | sections fixes |
@@ -297,8 +311,9 @@ CIBLE_GTM_ID=            # Google Tag Manager, prioritaire sur CIBLE_GA_ID
 CIBLE_GA_ID=             # GA4 direct, seulement sans GTM ; les deux vides = aucun traceur
 TURNSTILE_SITE_KEY=      # vides = widget non rendu, site inchangé
 TURNSTILE_SECRET_KEY=
-CIBLE_ADMIN_EMAIL=       # vides = /admin répond 404
+CIBLE_ADMIN_EMAIL=       # vides = /admin répond 404 ; reçoit le code de connexion
 CIBLE_ADMIN_HASH=
+CIBLE_ADMIN_CHEMIN=      # adresse secrète de l'admin (vide = /admin) — jamais dans git
 ```
 
 Trois fonctionnalités sont **opt-in par variable vide** : Analytics, Turnstile

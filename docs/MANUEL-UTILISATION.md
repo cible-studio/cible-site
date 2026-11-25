@@ -28,16 +28,25 @@ charte quoi qu'il arrive.
 
 ## 2. Se connecter
 
-1. Rendez-vous sur **https://www.cible-ci.com/admin**
-2. Saisissez votre email et votre mot de passe
+1. Rendez-vous sur **l'adresse confidentielle de l'administration** qui vous a
+   été communiquée (elle se termine par `/connexion`). Gardez-la dans un
+   gestionnaire de mots de passe : elle n'est écrite nulle part sur le site, et
+   l'ancienne adresse `/admin` répond « page introuvable ».
+2. Saisissez votre email et votre mot de passe.
+3. **Un code à 6 chiffres vous est envoyé par e-mail**, à l'adresse de
+   l'administration. Saisissez-le sur la page « Vérification » : sans ce code,
+   personne n'entre, même avec le bon mot de passe.
+   - Le code est valable **10 minutes**, pour une seule connexion.
+   - Rien reçu ? Regardez les courriers indésirables, puis utilisez « Je n'ai
+     rien reçu : renvoyer un code ». Seul le dernier code reçu est valable.
+   - Après 5 codes faux, il faut recommencer depuis le mot de passe.
 
-> **L'adresse ne fonctionne pas ?** C'est normal si les identifiants ne sont pas
-> configurés : la page répond « introuvable » plutôt que d'afficher un
-> formulaire de connexion. C'est une protection — un robot qui parcourt le site
-> ne voit aucune porte à forcer. Contactez votre développeur.
+> **Vous recevez un code sans l'avoir demandé ?** Quelqu'un connaît le mot de
+> passe. Ne communiquez le code à personne, et faites changer le mot de passe
+> sans attendre (studio@cible-ci.com).
 
-Après six tentatives ratées, la connexion se bloque pendant dix minutes. Là
-encore, c'est une protection contre les robots.
+Après six tentatives de mot de passe ratées, la connexion se bloque pendant dix
+minutes. C'est une protection contre les robots.
 
 ---
 
@@ -232,7 +241,8 @@ barre latérale.
 | « Le visuel actuel est introuvable » | L'image a été supprimée ou n'a jamais été déposée. Déposez-en une nouvelle. |
 | Un message rouge sous un champ | Le contenu saisi ne convient pas — la raison est indiquée. Corrigez et réenregistrez. |
 | La page publique n'a pas changé | Actualisez avec **Ctrl+F5** (Cmd+Shift+R sur Mac) : votre navigateur affiche une version en cache. |
-| `/admin` répond « page introuvable » | Les identifiants ne sont pas configurés sur le serveur. Contactez votre développeur. |
+| `/admin` répond « page introuvable » | C'est normal : l'administration a une adresse confidentielle. Si cette adresse elle-même répond « introuvable », les identifiants ne sont pas configurés sur le serveur : contactez votre développeur. |
+| Le code de connexion n'arrive pas | Vérifiez les courriers indésirables, puis « renvoyer un code » (3 envois toutes les 10 minutes). Si rien n'arrive, l'envoi des e-mails du site est en panne : contactez votre développeur. |
 
 **Contact technique** : studio@cible-ci.com
 
