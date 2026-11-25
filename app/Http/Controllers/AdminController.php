@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\AdminCodeMail;
 use App\Support\AdminAuth;
 use App\Support\Contenu;
+use App\Support\Demandes;
 use App\Support\Schema;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -182,6 +183,57 @@ class AdminController extends Controller
                 ->mapWithKeys(fn ($s) => [$s => Contenu::estSurchargee($s)])
                 ->all(),
         ]);
+    }
+
+    /* ═══════════════════ Demandes reçues (rapport) ═══════════════════ */
+
+    /** Rapport des demandes du formulaire : chiffres + détail, par période. */
+    public function demandes(Request $request)
+    {
+        $cle = $this->clePeriode($request);
+        [$debut, $fin, $libelle] = Demandes::periode($cle);
+
+        return $this->sansCache(response()->view('admin.demandes', [
+            'periode'  => $cle,
+            'libelle'  => $libelle,
+            'periodes' => Demandes::PERIODES,
+            'stats'    => Demandes::statistiques($debut, $fin),
+            'demandes' => Demandes::lister($debut, $fin),
+        ]));
+    }
+
+    /** Export tableur de la période affichée. */
+    public function exporterDemandes(Request $request)
+    {
+        $cle = $this->clePeriode($request);
+        [$debut, $fin] = Demandes::periode($cle);
+        $lignes = Demandes::lister($debut, $fin);
+
+        AdminAuth::journaliser('demandes_exportees', $request, ['periode' => $cle, 'nombre' => count($lignes)]);
+
+        return response(Demandes::csv($lignes), 200, [
+            'Content-Type'        => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="demandes-cible-' . $cle . '-' . now()->format('Y-m-d') . '.csv"',
+            'Cache-Control'       => 'no-store, private',
+        ]);
+    }
+
+    /** Suppression d'une demande (un prospect peut demander l'effacement de ses données). */
+    public function supprimerDemande(Request $request, string $id)
+    {
+        abort_unless((bool) preg_match('/^[0-9A-HJKMNP-TV-Z]{26}$/', $id), 404);
+
+        $ok = Demandes::supprimer($id);
+        AdminAuth::journaliser('demande_supprimee', $request, ['id' => $id, 'trouvee' => $ok]);
+
+        return back()->with($ok ? 'ok' : 'info', $ok ? 'Demande supprimée.' : 'Cette demande n\'existe plus.');
+    }
+
+    private function clePeriode(Request $request): string
+    {
+        $cle = (string) $request->query('periode', '3-mois');
+
+        return array_key_exists($cle, Demandes::PERIODES) ? $cle : '3-mois';
     }
 
     /* ═══════════════════ Coordonnées ═══════════════════ */

@@ -277,6 +277,9 @@ personne ne peut entrer dans l'admin : c'est voulu.
 | GET/POST | `/admin/connexion` | mot de passe, limité 6/10 min → envoi du code |
 | GET/POST | `/admin/verification` | saisie du code, limitée 10/10 min (et 5 essais par code) |
 | POST | `/admin/verification/renvoyer` | nouveau code, limité 3/10 min |
+| GET | `/admin/demandes[?periode=…]` | rapport des demandes du formulaire |
+| GET | `/admin/demandes/export` | export CSV (« ; », BOM UTF-8, formules neutralisées) |
+| POST | `/admin/demandes/{id}/supprimer` | effacement d'une demande (RGPD) |
 | GET | `/admin` | tableau de bord |
 | GET/POST | `/admin/page/{cle}` | **écrans générés depuis le schéma** |
 | GET/POST | `/admin/coordonnees` `/admin/chiffres` | sections fixes |
@@ -314,6 +317,7 @@ TURNSTILE_SECRET_KEY=
 CIBLE_ADMIN_EMAIL=       # vides = /admin répond 404 ; reçoit le code de connexion
 CIBLE_ADMIN_HASH=
 CIBLE_ADMIN_CHEMIN=      # adresse secrète de l'admin (vide = /admin) — jamais dans git
+CIBLE_RAPPORT_TO=        # destinataires du récapitulatif mensuel des demandes ; vide = aucun envoi
 ```
 
 Trois fonctionnalités sont **opt-in par variable vide** : Analytics, Turnstile
@@ -463,7 +467,19 @@ ne peut donc pas identifier ce qui l'a trahi.
 
 **Uploads** : validés par `extensions:` et non `mimes:` — un `.ai` est un PDF
 déguisé, un `.eps` du PostScript, et `mimes:` rejetait des fichiers légitimes.
-Rien n'est stocké : les fichiers partent en pièce jointe et disparaissent.
+Les fichiers ne sont jamais stockés : ils partent en pièce jointe et disparaissent.
+
+**Demandes conservées (2026-11-25, `App\Support\Demandes`)** : chaque demande
+valide est enregistrée **avant** l'envoi du mail (un échec SMTP ne perd plus
+le prospect ; statut `mail` true/false affiché dans l'admin), sans les pièces
+jointes, dans `storage/app/contenu/demandes/AAAA-MM.jsonl` (volume persistant,
+écriture sous verrou `flock`). Un renvoi identique dans les 30 min ne crée pas
+de doublon. Les robots écartés ne sont pas enregistrés. Au-delà de 12 mois, le
+détail est effacé et seuls les chiffres du mois restent dans `archives.json`
+(aucune donnée personnelle). Récapitulatif mensuel : commande
+`cible:rapport-demandes` (`--mois=AAAA-MM`, `--a=adresse` pour un essai),
+lancée par une **tâche planifiée Coolify** `0 8 1 * *` — le conteneur n'a pas
+de planificateur Laravel.
 
 **Contenu des uploads** (2026-11-18, `CibleController::contenuDangereux()`) :
 en plus de l'extension, le contenu réel est inspecté et **refusé** s'il ne

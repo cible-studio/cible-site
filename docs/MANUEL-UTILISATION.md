@@ -183,8 +183,32 @@ en un clic, sans développeur.
 ## 7. Le formulaire de demande de devis
 
 Les demandes envoyées depuis la page Contact arrivent par email à
-**commercial@cible-ci.com**. Rien n'est stocké sur le site : ni les messages,
-ni les fichiers joints.
+**commercial@cible-ci.com** et **studio@cible-ci.com**. Depuis le 25/11/2026,
+chaque demande est aussi conservée **12 mois** dans l'administration (voir
+ci-dessous). Les fichiers joints, eux, ne sont jamais conservés sur le site :
+ils ne se trouvent que dans l'email.
+
+### Le rapport des demandes
+
+Rubrique **« Demandes reçues »** du menu de l'administration :
+
+- choisissez la période (ce mois-ci, mois précédent, 3 ou 12 derniers mois) ;
+- lisez les chiffres : nombre de demandes, demandes par mois, et répartition
+  par objectif, service, zone, cible, budget, période et provenance ;
+- ouvrez une demande pour voir le contact complet et le message ;
+- **Exporter (Excel)** télécharge la période affichée en tableau, à ouvrir
+  directement dans Excel.
+
+Un bandeau rouge signale les demandes dont l'email n'a pas pu partir : elles
+n'existent que là, recontactez ces prospects.
+
+**Récapitulatif mensuel** : le 1er de chaque mois, un email résume les chiffres
+du mois écoulé (sans aucune donnée personnelle) aux adresses prévues dans les
+réglages du site.
+
+**Un prospect demande l'effacement de ses données** : ouvrez sa demande et
+cliquez sur « Supprimer cette demande ». Pensez aussi à supprimer l'email
+correspondant dans les boîtes commercial@ et studio@.
 
 Le visiteur peut joindre jusqu'à **4 documents de 10 Mo** (brief, logo, charte,
 cahier des charges).

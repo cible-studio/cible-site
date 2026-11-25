@@ -49,4 +49,12 @@ return [
     */
     'realisations_visibles' => (bool) env('CIBLE_REALISATIONS', false),
 
+    /*
+    | Récapitulatif mensuel des demandes du formulaire (2026-11-25), envoyé
+    | par « php artisan cible:rapport-demandes » (tâche planifiée Coolify,
+    | le 1er du mois). Adresses séparées par des virgules ; vide = aucun envoi.
+    | Le mail ne contient que des chiffres, aucune donnée personnelle.
+    */
+    'rapport_to' => array_values(array_filter(array_map('trim', explode(',', (string) env('CIBLE_RAPPORT_TO', ''))))),
+
 ];

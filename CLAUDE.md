@@ -464,7 +464,15 @@ modifier. CIBLE ne vend plus seulement des panneaux : la maquette met les
   jamais de slug. Ajouter une option = la déclarer là, nulle part ailleurs.
 - **Uploads** : validés par `extensions:` et non `mimes:` (un .ai est un PDF
   déguisé, un .eps du PostScript → `mimes:` rejetait des fichiers légitimes).
-  Rien n'est stocké : les fichiers partent en pièce jointe et disparaissent.
+  Les fichiers ne sont jamais stockés : ils partent en pièce jointe et disparaissent.
+- **Demandes conservées (depuis le 2026-11-25)** : chaque demande valide du
+  formulaire est enregistrée 12 mois sur le volume persistant
+  (`App\Support\Demandes`, `storage/app/contenu/demandes/`), **avant**
+  l'envoi du mail, sans pièces jointes. Écran admin « Demandes reçues »
+  (chiffres, détail, export Excel, suppression) et récapitulatif mensuel par
+  mail (`php artisan cible:rapport-demandes`, tâche planifiée Coolify
+  `0 8 1 * *`, destinataires `CIBLE_RAPPORT_TO`, chiffres seulement).
+  Au-delà de 12 mois : détail effacé, chiffres gardés dans `archives.json`.
   ⚠ `post_max_size` (Dockerfile) borne le corps **entier** de la requête :
   il doit rester ≥ 4 × `DOC_MAX_KO`, sinon PHP jette le POST avant Laravel
   et le visiteur reçoit un 419 au lieu d'un message de validation.

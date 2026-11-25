@@ -101,6 +101,11 @@ Route::prefix(config('cible.admin.chemin'))->name('admin.')->group(function () {
     Route::middleware(AdminProtege::class)->group(function () {
         Route::get('/', [AdminController::class, 'tableau'])->name('tableau');
 
+        // Rapport des demandes du formulaire de contact (2026-11-25).
+        Route::get('/demandes',                  [AdminController::class, 'demandes'])->name('demandes');
+        Route::get('/demandes/export',           [AdminController::class, 'exporterDemandes'])->name('demandes.export');
+        Route::post('/demandes/{id}/supprimer',  [AdminController::class, 'supprimerDemande'])->name('demandes.supprimer');
+
         Route::get('/coordonnees',  [AdminController::class, 'coordonnees'])->name('coordonnees');
         Route::post('/coordonnees', [AdminController::class, 'enregistrerCoordonnees'])->name('coordonnees.enregistrer');
 
