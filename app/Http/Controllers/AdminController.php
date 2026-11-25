@@ -88,7 +88,8 @@ class AdminController extends Controller
             case 'ok':
                 AdminAuth::connecter($request);
                 AdminAuth::journaliser('connexion_reussie', $request);
-                return redirect()->route('admin.tableau');
+                // Page demandée avant la connexion (lien du récapitulatif), sinon le tableau de bord.
+                return redirect()->intended(route('admin.tableau'));
 
             case 'faux':
                 AdminAuth::journaliser('code_refuse', $request);
